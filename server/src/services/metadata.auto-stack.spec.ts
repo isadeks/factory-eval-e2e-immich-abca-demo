@@ -1,5 +1,5 @@
 import { Stats } from 'node:fs';
-import { ImmichWorker } from 'src/enum';
+import { DatabaseLock, ImmichWorker } from 'src/enum';
 import { ImmichTags } from 'src/repositories/metadata.repository';
 import { MetadataService } from 'src/services/metadata.service';
 import { AssetFactory } from 'test/factories/asset.factory';
@@ -113,5 +113,16 @@ describe(`${MetadataService.name} auto stacking`, () => {
     await sut.handleMetadataExtraction({ id: asset.id });
 
     expect(mocks.stack.create).not.toHaveBeenCalled();
+  });
+
+  it('should serialize stacking of concurrent jobs with a database lock', async () => {
+    const asset = AssetFactory.create();
+    mocks.assetJob.getForMetadataExtraction.mockResolvedValue(getForMetadataExtraction(asset));
+    mocks.stack.findAutoStackMatches.mockResolvedValue([{ id: asset.id, stackId: null }]);
+    mockReadTags({ BurstID: 'burst-1' });
+
+    await sut.handleMetadataExtraction({ id: asset.id });
+
+    expect(mocks.database.withLock).toHaveBeenCalledWith(DatabaseLock.AutoStack, expect.any(Function));
   });
 });

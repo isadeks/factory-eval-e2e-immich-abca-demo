@@ -208,39 +208,43 @@ export class MetadataService extends BaseService {
    * similar to how Google Photos groups similar shots.
    */
   private async autoStack(asset: { id: string; ownerId: string }, exifInfo: Insertable<AssetExifTable>): Promise<void> {
-    if (!exifInfo.autoStackId) {
+    const autoStackId = exifInfo.autoStackId;
+    if (!autoStackId) {
       return;
     }
 
-    const group = await this.stackRepository.findAutoStackMatches({
-      ownerId: asset.ownerId,
-      autoStackId: exifInfo.autoStackId,
+    // concurrent extraction jobs of the same burst must not create competing stacks
+    await this.databaseRepository.withLock(DatabaseLock.AutoStack, async () => {
+      const group = await this.stackRepository.findAutoStackMatches({
+        ownerId: asset.ownerId,
+        autoStackId,
+      });
+
+      const self = group.find(({ id }) => id === asset.id);
+      // nothing to stack with, or the asset is not part of the timeline
+      if (!self || group.length < 2) {
+        return;
+      }
+
+      // never move an asset out of an existing (possibly manually created) stack
+      if (self.stackId) {
+        return;
+      }
+
+      const existing = group.find(({ stackId }) => !!stackId);
+      if (existing?.stackId) {
+        await this.assetRepository.update({ id: asset.id, stackId: existing.stackId });
+        await this.eventRepository.emit('StackUpdate', { stackId: existing.stackId, userId: asset.ownerId });
+        return;
+      }
+
+      // the earliest asset of the group becomes the primary asset of the stack
+      const stack = await this.stackRepository.create(
+        { ownerId: asset.ownerId },
+        group.map(({ id }) => id),
+      );
+      await this.eventRepository.emit('StackCreate', { stackId: stack.id, userId: asset.ownerId });
     });
-
-    const self = group.find(({ id }) => id === asset.id);
-    // nothing to stack with, or the asset is not part of the timeline
-    if (!self || group.length < 2) {
-      return;
-    }
-
-    // never move an asset out of an existing (possibly manually created) stack
-    if (self.stackId) {
-      return;
-    }
-
-    const existing = group.find(({ stackId }) => !!stackId);
-    if (existing?.stackId) {
-      await this.assetRepository.update({ id: asset.id, stackId: existing.stackId });
-      await this.eventRepository.emit('StackUpdate', { stackId: existing.stackId, userId: asset.ownerId });
-      return;
-    }
-
-    // the earliest asset of the group becomes the primary asset of the stack
-    const stack = await this.stackRepository.create(
-      { ownerId: asset.ownerId },
-      group.map(({ id }) => id),
-    );
-    await this.eventRepository.emit('StackCreate', { stackId: stack.id, userId: asset.ownerId });
   }
 
   private isOrientationSidewards(orientation: ExifOrientation | number): boolean {

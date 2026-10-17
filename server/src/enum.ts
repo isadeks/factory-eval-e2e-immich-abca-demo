@@ -969,6 +969,7 @@ export enum DatabaseLock {
   IntegrityCheck = 67,
   VersionCheck = 800,
   HlsSessionCleanup = 850,
+  AutoStack = 900,
 }
 
 export enum MaintenanceAction {
