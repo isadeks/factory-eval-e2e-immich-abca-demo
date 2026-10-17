@@ -4,6 +4,7 @@ import { jsonArrayFrom } from 'kysely/helpers/postgres';
 import { InjectKysely } from 'nestjs-kysely';
 import { columns } from 'src/database';
 import { DummyValue, GenerateSql } from 'src/decorators';
+import { AssetVisibility } from 'src/enum';
 import { DB } from 'src/schema';
 import { StackTable } from 'src/schema/tables/stack.table';
 import { asUuid, withDefaultVisibility } from 'src/utils/database';
@@ -11,6 +12,11 @@ import { asUuid, withDefaultVisibility } from 'src/utils/database';
 export interface StackSearch {
   ownerId: string;
   primaryAssetId?: string;
+}
+
+export interface AutoStackSearch {
+  ownerId: string;
+  autoStackId: string;
 }
 
 const withAssets = (eb: ExpressionBuilder<DB, 'stack'>, withTags = false) => {
@@ -166,5 +172,20 @@ export class StackRepository {
   @GenerateSql({ params: [{ sourceId: DummyValue.UUID, targetId: DummyValue.UUID }] })
   merge({ sourceId, targetId }: { sourceId: string; targetId: string }) {
     return this.db.updateTable('asset').set({ stackId: targetId }).where('asset.stackId', '=', sourceId).execute();
+  }
+
+  @GenerateSql({ params: [{ ownerId: DummyValue.UUID, autoStackId: DummyValue.STRING }] })
+  findAutoStackMatches({ ownerId, autoStackId }: AutoStackSearch) {
+    return this.db
+      .selectFrom('asset')
+      .innerJoin('asset_exif', 'asset.id', 'asset_exif.assetId')
+      .select(['asset.id', 'asset.stackId'])
+      .where('asset.ownerId', '=', asUuid(ownerId))
+      .where('asset_exif.autoStackId', '=', autoStackId)
+      .where('asset.deletedAt', 'is', null)
+      .where('asset.visibility', '=', AssetVisibility.Timeline)
+      .orderBy('asset.fileCreatedAt', 'asc')
+      .orderBy('asset.id', 'asc')
+      .execute();
   }
 }

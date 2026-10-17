@@ -203,6 +203,46 @@ export class MetadataService extends BaseService {
     await this.eventRepository.emit('AssetHide', { assetId: motionAsset.id, userId: motionAsset.ownerId });
   }
 
+  /**
+   * Automatically stacks photos that the camera marked as belonging together (e.g. burst shots),
+   * similar to how Google Photos groups similar shots.
+   */
+  private async autoStack(asset: { id: string; ownerId: string }, exifInfo: Insertable<AssetExifTable>): Promise<void> {
+    if (!exifInfo.autoStackId) {
+      return;
+    }
+
+    const group = await this.stackRepository.findAutoStackMatches({
+      ownerId: asset.ownerId,
+      autoStackId: exifInfo.autoStackId,
+    });
+
+    const self = group.find(({ id }) => id === asset.id);
+    // nothing to stack with, or the asset is not part of the timeline
+    if (!self || group.length < 2) {
+      return;
+    }
+
+    // never move an asset out of an existing (possibly manually created) stack
+    if (self.stackId) {
+      return;
+    }
+
+    const existing = group.find(({ stackId }) => !!stackId);
+    if (existing?.stackId) {
+      await this.assetRepository.update({ id: asset.id, stackId: existing.stackId });
+      await this.eventRepository.emit('StackUpdate', { stackId: existing.stackId, userId: asset.ownerId });
+      return;
+    }
+
+    // the earliest asset of the group becomes the primary asset of the stack
+    const stack = await this.stackRepository.create(
+      { ownerId: asset.ownerId },
+      group.map(({ id }) => id),
+    );
+    await this.eventRepository.emit('StackCreate', { stackId: stack.id, userId: asset.ownerId });
+  }
+
   private isOrientationSidewards(orientation: ExifOrientation | number): boolean {
     return [
       ExifOrientation.MirrorHorizontalRotate270CW,
@@ -402,6 +442,10 @@ export class MetadataService extends BaseService {
 
     if (exifData.livePhotoCID) {
       await this.linkLivePhotos(asset, exifData);
+    }
+
+    if (exifData.autoStackId) {
+      await this.autoStack(asset, exifData);
     }
 
     await this.assetRepository.upsertJobStatus({ assetId: asset.id, metadataExtractedAt: new Date() });

@@ -162,3 +162,19 @@ set
   "stackId" = $1
 where
   "asset"."stackId" = $2
+
+-- StackRepository.findAutoStackMatches
+select
+  "asset"."id",
+  "asset"."stackId"
+from
+  "asset"
+  inner join "asset_exif" on "asset"."id" = "asset_exif"."assetId"
+where
+  "asset"."ownerId" = $1
+  and "asset_exif"."autoStackId" = $2
+  and "asset"."deletedAt" is null
+  and "asset"."visibility" = $3
+order by
+  "asset"."fileCreatedAt" asc,
+  "asset"."id" asc
