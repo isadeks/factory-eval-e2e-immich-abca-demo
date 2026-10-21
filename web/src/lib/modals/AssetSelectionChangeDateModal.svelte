@@ -30,6 +30,12 @@
   // the offsets (and validity) for time zones may change if the date is changed, which is why we recompute the list
   let selectedOption = $derived(getPreferredTimeZone(initialDate, initialTimeZone, timezones, lastSelectedTimezone));
 
+  const initialSelectedDate = selectedDate;
+  // svelte-ignore state_referenced_locally
+  const initialSelectedTimeZone = selectedOption?.value;
+  const isDateChanged = $derived(selectedDate !== initialSelectedDate);
+  const isTimeZoneChanged = $derived(selectedOption?.value !== initialSelectedTimeZone);
+
   const onSubmit = async () => {
     const ids = getOwnedAssetsWithWarning(assets, authManager.user);
     try {
@@ -79,12 +85,26 @@
     <Label for="relativedatetime" class="mb-1 block">{$t('offset')}</Label>
     <DurationInput class="mb-2 immich-form-input w-full" id="relativedatetime" bind:value={selectedDuration} />
   {:else}
-    <Label for="datetime" class="mb-1 block">{$t('date_and_time')}</Label>
-    <DateInput class="mb-2 immich-form-input w-full" id="datetime" type="datetime-local" bind:value={selectedDate} />
+    <div class="relative">
+      <Label for="datetime" class="mb-1 block">{$t('date_and_time')}</Label>
+      {#if isDateChanged}
+        <span class="absolute inset-e-0 top-0 text-xs font-medium text-primary" data-testid="date-changed-indicator">
+          {$t('changed')}
+        </span>
+      {/if}
+    </div>
+    <DateInput
+      class="mb-2 immich-form-input w-full {isDateChanged ? 'ring-2! ring-primary!' : ''}"
+      data-changed={isDateChanged || undefined}
+      id="datetime"
+      type="datetime-local"
+      bind:value={selectedDate}
+    />
   {/if}
   <div class="w-full">
     <Combobox
       bind:selectedOption
+      changed={isTimeZoneChanged}
       label={$t('timezone')}
       options={timezones}
       placeholder={$t('search_timezone')}

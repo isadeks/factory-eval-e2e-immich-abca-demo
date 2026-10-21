@@ -47,6 +47,10 @@
     defaultFirstOption?: boolean;
     onSelect?: (option: ComboBoxOption | undefined) => void;
     forceFocus?: boolean;
+    /**
+     * whether the value differs from its initial value; highlights the field and shows a "changed" badge.
+     */
+    changed?: boolean;
   }
 
   let {
@@ -60,6 +64,7 @@
     defaultFirstOption = false,
     onSelect = () => {},
     forceFocus = false,
+    changed = false,
   }: Props = $props();
 
   /**
@@ -268,7 +273,16 @@
 </script>
 
 <svelte:window onresize={onPositionChange} />
-<Label class="mb-1 block {hideLabel ? 'sr-only' : ''} text-xs font-light text-neutral-500" for={inputId}>{label}</Label>
+<div class="relative">
+  <Label class="mb-1 block {hideLabel ? 'sr-only' : ''} text-xs font-light text-neutral-500" for={inputId}
+    >{label}</Label
+  >
+  {#if changed && !hideLabel}
+    <span class="absolute inset-e-0 top-0 text-xs font-medium text-primary" data-testid="changed-indicator">
+      {$t('changed')}
+    </span>
+  {/if}
+</div>
 <div
   class="relative w-full text-base text-gray-700 dark:text-gray-300"
   use:focusOutside={{ onFocusOut: deactivate }}
@@ -304,6 +318,9 @@
       class:rounded-b-none!={isOpen && dropdownDirection === 'bottom'}
       class:rounded-t-none!={isOpen && dropdownDirection === 'top'}
       class:cursor-pointer={!isActive}
+      class:ring-2!={changed}
+      class:ring-primary!={changed}
+      data-changed={changed || undefined}
       class="immich-form-input w-full pe-12! text-sm transition-all"
       id={inputId}
       onfocus={activate}

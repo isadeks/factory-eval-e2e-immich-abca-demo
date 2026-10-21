@@ -25,6 +25,11 @@
 
   let selectedOption = $state(getPreferredTimeZone(initialDate, initialTimeZone, getTimezones(selectedDate)));
 
+  const initialSelectedDate = selectedDate;
+  const initialSelectedTimeZone = selectedOption?.value;
+  const isDateChanged = $derived(selectedDate !== initialSelectedDate);
+  const isTimeZoneChanged = $derived(selectedOption?.value !== initialSelectedTimeZone);
+
   const onSubmit = async () => {
     if (!date.isValid || !selectedOption) {
       onClose(false);
@@ -61,16 +66,30 @@
   disabled={!date.isValid || !selectedOption}
   size="small"
 >
-  <Label for="datetime" class="mb-1 block">{$t('date_and_time')}</Label>
+  <div class="relative">
+    <Label for="datetime" class="mb-1 block">{$t('date_and_time')}</Label>
+    {#if isDateChanged}
+      <span class="absolute inset-e-0 top-0 text-xs font-medium text-primary" data-testid="date-changed-indicator">
+        {$t('changed')}
+      </span>
+    {/if}
+  </div>
   <DateInput
-    class="mb-2 immich-form-input w-full"
+    class="mb-2 immich-form-input w-full {isDateChanged ? 'ring-2! ring-primary!' : ''}"
+    data-changed={isDateChanged || undefined}
     id="datetime"
     type="datetime-local"
     bind:value={() => selectedDate, updateSelectedDate}
   />
   {#if timezoneInput}
     <div class="w-full">
-      <Combobox bind:selectedOption label={$t('timezone')} options={timezones} placeholder={$t('search_timezone')} />
+      <Combobox
+        bind:selectedOption
+        changed={isTimeZoneChanged}
+        label={$t('timezone')}
+        options={timezones}
+        placeholder={$t('search_timezone')}
+      />
     </div>
   {/if}
 </FormModal>
