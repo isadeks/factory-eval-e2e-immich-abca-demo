@@ -76,6 +76,9 @@
     --immich-dark-bg: 10 10 10;
     --immich-dark-fg: 229 231 235;
     --immich-dark-gray: 33 33 33;
+
+    /* page background (light and dark) */
+    --immich-app-background: #22c55e;
   }
 
   button:not(:disabled),
@@ -147,6 +150,7 @@
   body {
     margin: 0;
     color: var(--immich-ui-dark);
+    background-color: var(--immich-app-background);
   }
 
   body.asset-viewer-open {
