@@ -113,6 +113,9 @@ export const Route = {
   // sharing
   sharing: () => '/sharing',
 
+  // camera
+  camera: () => '/camera',
+
   // shared links
   sharedLinks: (params?: { filter?: SharedLinkTab }) => '/shared-links' + asQueryString(params),
   editSharedLink: ({ id }: { id: string }) => `/shared-links/${id}/edit`,

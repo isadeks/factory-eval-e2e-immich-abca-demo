@@ -14,6 +14,8 @@
     mdiAccountOutline,
     mdiArchiveArrowDown,
     mdiArchiveArrowDownOutline,
+    mdiCamera,
+    mdiCameraOutline,
     mdiFolderOutline,
     mdiHeart,
     mdiHeartOutline,
@@ -62,6 +64,8 @@
     icon={mdiAccountMultipleOutline}
     activeIcon={mdiAccountMultiple}
   />
+
+  <NavbarItem title={$t('camera')} href={Route.camera()} icon={mdiCameraOutline} activeIcon={mdiCamera} />
 
   <NavbarGroup title={$t('library')} size="tiny" />
 
