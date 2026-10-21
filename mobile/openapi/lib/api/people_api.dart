@@ -16,6 +16,64 @@ class PeopleApi {
 
   final ApiClient apiClient;
 
+  /// Confirm a match suggestion
+  ///
+  /// Confirm that both people are the same person. The suggested person absorbs the new person.
+  ///
+  /// Note: This method returns the HTTP [Response].
+  ///
+  /// Parameters:
+  ///
+  /// * [String] id (required):
+  Future<Response> confirmMatchSuggestionWithHttpInfo(String id, { Future<void>? abortTrigger, }) async {
+    // ignore: prefer_const_declarations
+    final apiPath = r'/people/suggestions/{id}/confirm'
+      .replaceAll('{id}', id);
+
+    // ignore: prefer_final_locals
+    Object? postBody;
+
+    final queryParams = <QueryParam>[];
+    final headerParams = <String, String>{};
+    final formParams = <String, String>{};
+
+    const contentTypes = <String>[];
+
+
+    return apiClient.invokeAPI(
+      apiPath,
+      'POST',
+      queryParams,
+      postBody,
+      headerParams,
+      formParams,
+      contentTypes.isEmpty ? null : contentTypes.first,
+      abortTrigger: abortTrigger,
+    );
+  }
+
+  /// Confirm a match suggestion
+  ///
+  /// Confirm that both people are the same person. The suggested person absorbs the new person.
+  ///
+  /// Parameters:
+  ///
+  /// * [String] id (required):
+  Future<PersonResponseDto?> confirmMatchSuggestion(String id, { Future<void>? abortTrigger, }) async {
+    final response = await confirmMatchSuggestionWithHttpInfo(id, abortTrigger: abortTrigger,);
+    if (response.statusCode >= HttpStatus.badRequest) {
+      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
+    }
+    // When a remote server returns no body with a status of 204, we shall not decode it.
+    // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
+    // FormatException when trying to decode an empty string.
+    if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
+      return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'PersonResponseDto',) as PersonResponseDto;
+    
+    }
+    return null;
+  }
+
   /// Create a person
   ///
   /// Create a new person that can have multiple faces assigned to them.
@@ -267,6 +325,58 @@ class PeopleApi {
     if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
       return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'PeopleResponseDto',) as PeopleResponseDto;
     
+    }
+    return null;
+  }
+
+  /// Get match suggestions
+  ///
+  /// Retrieve pairs of people that the face similarity algorithm is unsure about, so the user can confirm or reject them.
+  ///
+  /// Note: This method returns the HTTP [Response].
+  Future<Response> getMatchSuggestionsWithHttpInfo({ Future<void>? abortTrigger, }) async {
+    // ignore: prefer_const_declarations
+    final apiPath = r'/people/suggestions';
+
+    // ignore: prefer_final_locals
+    Object? postBody;
+
+    final queryParams = <QueryParam>[];
+    final headerParams = <String, String>{};
+    final formParams = <String, String>{};
+
+    const contentTypes = <String>[];
+
+
+    return apiClient.invokeAPI(
+      apiPath,
+      'GET',
+      queryParams,
+      postBody,
+      headerParams,
+      formParams,
+      contentTypes.isEmpty ? null : contentTypes.first,
+      abortTrigger: abortTrigger,
+    );
+  }
+
+  /// Get match suggestions
+  ///
+  /// Retrieve pairs of people that the face similarity algorithm is unsure about, so the user can confirm or reject them.
+  Future<List<PersonMatchSuggestionResponseDto>?> getMatchSuggestions({ Future<void>? abortTrigger, }) async {
+    final response = await getMatchSuggestionsWithHttpInfo(abortTrigger: abortTrigger,);
+    if (response.statusCode >= HttpStatus.badRequest) {
+      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
+    }
+    // When a remote server returns no body with a status of 204, we shall not decode it.
+    // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
+    // FormatException when trying to decode an empty string.
+    if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
+      final responseBody = await _decodeBodyBytes(response);
+      return (await apiClient.deserializeAsync(responseBody, 'List<PersonMatchSuggestionResponseDto>') as List)
+        .cast<PersonMatchSuggestionResponseDto>()
+        .toList(growable: false);
+
     }
     return null;
   }
@@ -573,6 +683,56 @@ class PeopleApi {
 
     }
     return null;
+  }
+
+  /// Reject a match suggestion
+  ///
+  /// Reject a match suggestion: the two people are different and stay separate.
+  ///
+  /// Note: This method returns the HTTP [Response].
+  ///
+  /// Parameters:
+  ///
+  /// * [String] id (required):
+  Future<Response> rejectMatchSuggestionWithHttpInfo(String id, { Future<void>? abortTrigger, }) async {
+    // ignore: prefer_const_declarations
+    final apiPath = r'/people/suggestions/{id}/reject'
+      .replaceAll('{id}', id);
+
+    // ignore: prefer_final_locals
+    Object? postBody;
+
+    final queryParams = <QueryParam>[];
+    final headerParams = <String, String>{};
+    final formParams = <String, String>{};
+
+    const contentTypes = <String>[];
+
+
+    return apiClient.invokeAPI(
+      apiPath,
+      'POST',
+      queryParams,
+      postBody,
+      headerParams,
+      formParams,
+      contentTypes.isEmpty ? null : contentTypes.first,
+      abortTrigger: abortTrigger,
+    );
+  }
+
+  /// Reject a match suggestion
+  ///
+  /// Reject a match suggestion: the two people are different and stay separate.
+  ///
+  /// Parameters:
+  ///
+  /// * [String] id (required):
+  Future<void> rejectMatchSuggestion(String id, { Future<void>? abortTrigger, }) async {
+    final response = await rejectMatchSuggestionWithHttpInfo(id, abortTrigger: abortTrigger,);
+    if (response.statusCode >= HttpStatus.badRequest) {
+      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
+    }
   }
 
   /// Update people

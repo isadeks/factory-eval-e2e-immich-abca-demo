@@ -24,6 +24,7 @@ import {
   PeopleResponseDto,
   PeopleUpdateDto,
   PersonCreateDto,
+  PersonMatchSuggestionResponseDto,
   PersonResponseDto,
   PersonSearchDto,
   PersonStatisticsResponseDto,
@@ -89,6 +90,42 @@ export class PersonController {
   })
   deletePeople(@Auth() auth: AuthDto, @Body() dto: BulkIdsDto): Promise<void> {
     return this.service.deleteAll(auth, dto);
+  }
+
+  @Get('suggestions')
+  @Authenticated({ permission: Permission.PersonRead })
+  @Endpoint({
+    summary: 'Get match suggestions',
+    description:
+      'Retrieve pairs of people that the face similarity algorithm is unsure about, so the user can confirm or reject them.',
+    history: new HistoryBuilder().added('v3.1.0').alpha('v3.1.0'),
+  })
+  getMatchSuggestions(@Auth() auth: AuthDto): Promise<PersonMatchSuggestionResponseDto[]> {
+    return this.service.getMatchSuggestions(auth);
+  }
+
+  @Post('suggestions/:id/confirm')
+  @Authenticated({ permission: Permission.PersonMerge })
+  @HttpCode(HttpStatus.OK)
+  @Endpoint({
+    summary: 'Confirm a match suggestion',
+    description: 'Confirm that both people are the same person. The suggested person absorbs the new person.',
+    history: new HistoryBuilder().added('v3.1.0').alpha('v3.1.0'),
+  })
+  confirmMatchSuggestion(@Auth() auth: AuthDto, @Param() { id }: UUIDParamDto): Promise<PersonResponseDto> {
+    return this.service.confirmMatchSuggestion(auth, id);
+  }
+
+  @Post('suggestions/:id/reject')
+  @Authenticated({ permission: Permission.PersonUpdate })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Endpoint({
+    summary: 'Reject a match suggestion',
+    description: 'Reject a match suggestion: the two people are different and stay separate.',
+    history: new HistoryBuilder().added('v3.1.0').alpha('v3.1.0'),
+  })
+  rejectMatchSuggestion(@Auth() auth: AuthDto, @Param() { id }: UUIDParamDto): Promise<void> {
+    return this.service.rejectMatchSuggestion(auth, id);
   }
 
   @Get(':id')

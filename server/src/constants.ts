@@ -44,6 +44,10 @@ export const VECTOR_INDEX_TABLES = {
 export const VECTORCHORD_LIST_SLACK_FACTOR = 1.2;
 
 export const SALT_ROUNDS = 10;
+
+// Faces further away than `facialRecognition.maxDistance` but within this margin of it are "maybe the same person":
+// the user is asked to confirm instead of the faces being merged automatically.
+export const FACE_UNCERTAIN_DISTANCE_MARGIN = 0.1;
 // Syntactically valid bcrypt hash used in login() preventing timing-based user enumeration.
 export const LOGIN_DUMMY_HASH = '$2b$10$abcdefghijklmnopqrstuuABCDEFGHIJKLMNOPQRSTUVWXYZabcde';
 

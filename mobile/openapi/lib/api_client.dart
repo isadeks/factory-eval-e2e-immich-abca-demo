@@ -519,6 +519,8 @@ class ApiClient {
           return PermissionTypeTransformer().decode(value);
         case 'PersonCreateDto':
           return PersonCreateDto.fromJson(value);
+        case 'PersonMatchSuggestionResponseDto':
+          return PersonMatchSuggestionResponseDto.fromJson(value);
         case 'PersonResponseDto':
           return PersonResponseDto.fromJson(value);
         case 'PersonStatisticsResponseDto':

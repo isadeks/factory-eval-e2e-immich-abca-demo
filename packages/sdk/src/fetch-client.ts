@@ -1490,6 +1490,16 @@ export type PeopleUpdateDto = {
     /** People to update */
     people: PeopleUpdateItem[];
 };
+export type PersonMatchSuggestionResponseDto = {
+    /** Face embedding distance between the two people (lower is more similar) */
+    distance: number;
+    /** Suggestion ID */
+    id: string;
+    /** The person the algorithm is unsure about */
+    person: PersonResponseDto;
+    /** The existing person it might be the same as */
+    suggestedPerson: PersonResponseDto;
+};
 export type PersonUpdateDto = {
     /** Person date of birth */
     birthDate?: string | null;
@@ -5415,6 +5425,42 @@ export function updatePeople({ peopleUpdateDto }: {
         method: "PUT",
         body: peopleUpdateDto
     })));
+}
+/**
+ * Get match suggestions
+ */
+export function getMatchSuggestions(opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: PersonMatchSuggestionResponseDto[];
+    }>("/people/suggestions", {
+        ...opts
+    }));
+}
+/**
+ * Confirm a match suggestion
+ */
+export function confirmMatchSuggestion({ id }: {
+    id: string;
+}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: PersonResponseDto;
+    }>(`/people/suggestions/${encodeURIComponent(id)}/confirm`, {
+        ...opts,
+        method: "POST"
+    }));
+}
+/**
+ * Reject a match suggestion
+ */
+export function rejectMatchSuggestion({ id }: {
+    id: string;
+}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchText(`/people/suggestions/${encodeURIComponent(id)}/reject`, {
+        ...opts,
+        method: "POST"
+    }));
 }
 /**
  * Delete person

@@ -216,15 +216,18 @@ Class | Method | HTTP request | Description
 *PartnersApi* | [**getPartners**](doc//PartnersApi.md#getpartners) | **GET** /partners | Retrieve partners
 *PartnersApi* | [**removePartner**](doc//PartnersApi.md#removepartner) | **DELETE** /partners/{id} | Remove a partner
 *PartnersApi* | [**updatePartner**](doc//PartnersApi.md#updatepartner) | **PUT** /partners/{id} | Update a partner
+*PeopleApi* | [**confirmMatchSuggestion**](doc//PeopleApi.md#confirmmatchsuggestion) | **POST** /people/suggestions/{id}/confirm | Confirm a match suggestion
 *PeopleApi* | [**createPerson**](doc//PeopleApi.md#createperson) | **POST** /people | Create a person
 *PeopleApi* | [**deletePeople**](doc//PeopleApi.md#deletepeople) | **DELETE** /people | Delete people
 *PeopleApi* | [**deletePerson**](doc//PeopleApi.md#deleteperson) | **DELETE** /people/{id} | Delete person
 *PeopleApi* | [**getAllPeople**](doc//PeopleApi.md#getallpeople) | **GET** /people | Get all people
+*PeopleApi* | [**getMatchSuggestions**](doc//PeopleApi.md#getmatchsuggestions) | **GET** /people/suggestions | Get match suggestions
 *PeopleApi* | [**getPerson**](doc//PeopleApi.md#getperson) | **GET** /people/{id} | Get a person
 *PeopleApi* | [**getPersonStatistics**](doc//PeopleApi.md#getpersonstatistics) | **GET** /people/{id}/statistics | Get person statistics
 *PeopleApi* | [**getPersonThumbnail**](doc//PeopleApi.md#getpersonthumbnail) | **GET** /people/{id}/thumbnail | Get person thumbnail
 *PeopleApi* | [**mergePerson**](doc//PeopleApi.md#mergeperson) | **POST** /people/{id}/merge | Merge people
 *PeopleApi* | [**reassignFaces**](doc//PeopleApi.md#reassignfaces) | **PUT** /people/{id}/reassign | Reassign faces
+*PeopleApi* | [**rejectMatchSuggestion**](doc//PeopleApi.md#rejectmatchsuggestion) | **POST** /people/suggestions/{id}/reject | Reject a match suggestion
 *PeopleApi* | [**updatePeople**](doc//PeopleApi.md#updatepeople) | **PUT** /people | Update people
 *PeopleApi* | [**updatePerson**](doc//PeopleApi.md#updateperson) | **PUT** /people/{id} | Update person
 *PluginsApi* | [**getPlugin**](doc//PluginsApi.md#getplugin) | **GET** /plugins/{id} | Retrieve a plugin
@@ -516,6 +519,7 @@ Class | Method | HTTP request | Description
  - [PeopleUpdateItem](doc//PeopleUpdateItem.md)
  - [Permission](doc//Permission.md)
  - [PersonCreateDto](doc//PersonCreateDto.md)
+ - [PersonMatchSuggestionResponseDto](doc//PersonMatchSuggestionResponseDto.md)
  - [PersonResponseDto](doc//PersonResponseDto.md)
  - [PersonStatisticsResponseDto](doc//PersonStatisticsResponseDto.md)
  - [PersonUpdateDto](doc//PersonUpdateDto.md)

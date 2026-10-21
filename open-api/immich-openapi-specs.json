@@ -8976,6 +8976,162 @@
         "x-immich-state": "Stable"
       }
     },
+    "/people/suggestions": {
+      "get": {
+        "description": "Retrieve pairs of people that the face similarity algorithm is unsure about, so the user can confirm or reject them.",
+        "operationId": "getMatchSuggestions",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PersonMatchSuggestionResponseDto"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          },
+          {
+            "cookie": []
+          },
+          {
+            "api_key": []
+          }
+        ],
+        "summary": "Get match suggestions",
+        "tags": [
+          "People"
+        ],
+        "x-immich-history": [
+          {
+            "version": "v3.1.0",
+            "state": "Added"
+          },
+          {
+            "version": "v3.1.0",
+            "state": "Alpha"
+          }
+        ],
+        "x-immich-permission": "person.read",
+        "x-immich-state": "Alpha"
+      }
+    },
+    "/people/suggestions/{id}/confirm": {
+      "post": {
+        "description": "Confirm that both people are the same person. The suggested person absorbs the new person.",
+        "operationId": "confirmMatchSuggestion",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12})$",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonResponseDto"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          },
+          {
+            "cookie": []
+          },
+          {
+            "api_key": []
+          }
+        ],
+        "summary": "Confirm a match suggestion",
+        "tags": [
+          "People"
+        ],
+        "x-immich-history": [
+          {
+            "version": "v3.1.0",
+            "state": "Added"
+          },
+          {
+            "version": "v3.1.0",
+            "state": "Alpha"
+          }
+        ],
+        "x-immich-permission": "person.merge",
+        "x-immich-state": "Alpha"
+      }
+    },
+    "/people/suggestions/{id}/reject": {
+      "post": {
+        "description": "Reject a match suggestion: the two people are different and stay separate.",
+        "operationId": "rejectMatchSuggestion",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12})$",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          },
+          {
+            "cookie": []
+          },
+          {
+            "api_key": []
+          }
+        ],
+        "summary": "Reject a match suggestion",
+        "tags": [
+          "People"
+        ],
+        "x-immich-history": [
+          {
+            "version": "v3.1.0",
+            "state": "Added"
+          },
+          {
+            "version": "v3.1.0",
+            "state": "Alpha"
+          }
+        ],
+        "x-immich-permission": "person.update",
+        "x-immich-state": "Alpha"
+      }
+    },
     "/people/{id}": {
       "delete": {
         "description": "Delete an individual person.",
@@ -21069,6 +21225,36 @@
             "type": "string"
           }
         },
+        "type": "object"
+      },
+      "PersonMatchSuggestionResponseDto": {
+        "description": "A pair of people the face similarity algorithm is unsure about; the user is asked to confirm",
+        "properties": {
+          "distance": {
+            "description": "Face embedding distance between the two people (lower is more similar)",
+            "type": "number"
+          },
+          "id": {
+            "description": "Suggestion ID",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12})$",
+            "type": "string"
+          },
+          "person": {
+            "$ref": "#/components/schemas/PersonResponseDto",
+            "description": "The person the algorithm is unsure about"
+          },
+          "suggestedPerson": {
+            "$ref": "#/components/schemas/PersonResponseDto",
+            "description": "The existing person it might be the same as"
+          }
+        },
+        "required": [
+          "distance",
+          "id",
+          "person",
+          "suggestedPerson"
+        ],
         "type": "object"
       },
       "PersonResponseDto": {

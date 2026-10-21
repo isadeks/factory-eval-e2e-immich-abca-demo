@@ -171,6 +171,17 @@ const PeopleResponseSchema = z
   .describe('People response');
 export class PeopleResponseDto extends createZodDto(PeopleResponseSchema) {}
 
+const PersonMatchSuggestionResponseSchema = z
+  .object({
+    id: z.uuidv4().describe('Suggestion ID'),
+    person: PersonResponseSchema.describe('The person the algorithm is unsure about'),
+    suggestedPerson: PersonResponseSchema.describe('The existing person it might be the same as'),
+    distance: z.number().describe('Face embedding distance between the two people (lower is more similar)'),
+  })
+  .describe('A pair of people the face similarity algorithm is unsure about; the user is asked to confirm')
+  .meta({ id: 'PersonMatchSuggestionResponseDto' });
+export class PersonMatchSuggestionResponseDto extends createZodDto(PersonMatchSuggestionResponseSchema) {}
+
 export function mapPerson(person: MaybeDehydrated<Person>): PersonResponseDto {
   return {
     id: person.id,

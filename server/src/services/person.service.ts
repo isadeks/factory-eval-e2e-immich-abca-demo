@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { Insertable, Updateable } from 'kysely';
-import { JOBS_ASSET_PAGINATION_SIZE } from 'src/constants';
+import { FACE_UNCERTAIN_DISTANCE_MARGIN, JOBS_ASSET_PAGINATION_SIZE } from 'src/constants';
 import { Person } from 'src/database';
 import { Chunked, OnJob } from 'src/decorators';
 import { BulkIdErrorReason, BulkIdResponseDto, BulkIdsDto } from 'src/dtos/asset-ids.response.dto';
@@ -17,6 +17,7 @@ import {
   PeopleResponseDto,
   PeopleUpdateDto,
   PersonCreateDto,
+  PersonMatchSuggestionResponseDto,
   PersonResponseDto,
   PersonSearchDto,
   PersonStatisticsResponseDto,
@@ -143,6 +144,8 @@ export class PersonService extends BaseService {
 
       if (assetFace) {
         await this.personRepository.update({ id: personId, faceAssetId: assetFace.id });
+        // the cover is picked automatically (latest photo) again, so new photos may replace it
+        await this.personRepository.clearCustomCover(personId);
         jobs.push({ name: JobName.PersonGenerateThumbnail, data: { id: personId } });
       }
     }
@@ -214,6 +217,8 @@ export class PersonService extends BaseService {
     });
 
     if (assetId) {
+      // the user picked the cover by hand, do not replace it with newer photos automatically
+      await this.personRepository.setCustomCover(id);
       await this.jobRepository.queue({ name: JobName.PersonGenerateThumbnail, data: { id } });
     }
 
@@ -525,16 +530,43 @@ export class PersonService extends BaseService {
       }
     }
 
+    let isNewPerson = false;
     if (isCore && !personId) {
+      // not close enough to merge automatically, but is there an existing person that might be the same one?
+      const [uncertainMatch] =
+        (await this.searchRepository.searchFaces({
+          userIds: [face.asset.ownerId],
+          embedding: face.faceSearch.embedding,
+          maxDistance: machineLearning.facialRecognition.maxDistance + FACE_UNCERTAIN_DISTANCE_MARGIN,
+          numResults: 1,
+          hasPerson: true,
+          minBirthDate: new Date(face.asset.fileCreatedAt),
+        })) ?? [];
+
       this.logger.log(`Creating new person for face ${id}`);
       const newPerson = await this.personRepository.create({ ownerId: face.asset.ownerId, faceAssetId: face.id });
       await this.jobRepository.queue({ name: JobName.PersonGenerateThumbnail, data: { id: newPerson.id } });
       personId = newPerson.id;
+      isNewPerson = true;
+
+      if (uncertainMatch?.personId) {
+        this.logger.debug(`Face ${id} might be person ${uncertainMatch.personId}, asking the user to confirm`);
+        await this.personRepository.createMatchSuggestion(
+          newPerson.id,
+          uncertainMatch.personId,
+          uncertainMatch.distance,
+        );
+      }
     }
 
     if (personId) {
       this.logger.debug(`Assigning face ${id} to person ${personId}`);
       await this.personRepository.reassignFaces({ faceIds: [id], newPersonId: personId });
+
+      // the cover of a person defaults to its latest photo
+      if (!isNewPerson && (await this.personRepository.updateFeatureFaceIfNewer(personId, id))) {
+        await this.jobRepository.queue({ name: JobName.PersonGenerateThumbnail, data: { id: personId } });
+      }
     }
 
     return JobStatus.Success;
@@ -612,6 +644,41 @@ export class PersonService extends BaseService {
       }
     }
     return results;
+  }
+
+  async getMatchSuggestions(auth: AuthDto): Promise<PersonMatchSuggestionResponseDto[]> {
+    const suggestions = await this.personRepository.getMatchSuggestions(auth.user.id);
+    return suggestions.map((suggestion) => ({
+      id: suggestion.id,
+      distance: suggestion.distance,
+      person: mapPerson(suggestion.person),
+      suggestedPerson: mapPerson(suggestion.suggestedPerson),
+    }));
+  }
+
+  /** The user confirms both are the same person: merge the new person into the existing one. */
+  async confirmMatchSuggestion(auth: AuthDto, id: string): Promise<PersonResponseDto> {
+    const suggestion = await this.findSuggestionOrFail(auth, id);
+    const [result] = await this.mergePerson(auth, suggestion.suggestedPersonId, { ids: [suggestion.personId] });
+    if (!result?.success) {
+      throw new BadRequestException('Unable to merge people');
+    }
+
+    return mapPerson(await this.findOrFail(suggestion.suggestedPersonId));
+  }
+
+  /** The user says these are different people: keep them apart and stop asking. */
+  async rejectMatchSuggestion(auth: AuthDto, id: string): Promise<void> {
+    await this.findSuggestionOrFail(auth, id);
+    await this.personRepository.deleteMatchSuggestion(id);
+  }
+
+  private async findSuggestionOrFail(auth: AuthDto, id: string) {
+    const suggestion = await this.personRepository.getMatchSuggestion(id, auth.user.id);
+    if (!suggestion) {
+      throw new NotFoundException('Suggestion not found');
+    }
+    return suggestion;
   }
 
   private async findOrFail(id: string) {

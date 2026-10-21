@@ -325,10 +325,146 @@ select
   "asset_face".*
 from
   "asset_face"
+  inner join "asset" on "asset"."id" = "asset_face"."assetId"
 where
   "asset_face"."personId" = $1
   and "asset_face"."deletedAt" is null
   and "asset_face"."isVisible" is true
+  and "asset"."deletedAt" is null
+order by
+  asset.visibility = 'timeline' desc,
+  "asset"."fileCreatedAt" desc
+limit
+  $2
+
+-- PersonRepository.updateFeatureFaceIfNewer
+update "person"
+set
+  "faceAssetId" = $1
+where
+  "person"."id" = $2
+  and not exists (
+    select
+    from
+      "person_custom_cover"
+    where
+      "person_custom_cover"."personId" = "person"."id"
+  )
+  and exists (
+    select
+    from
+      "asset_face"
+      inner join "asset" on "asset"."id" = "asset_face"."assetId"
+    where
+      "asset_face"."id" = $3
+      and "asset_face"."deletedAt" is null
+      and "asset"."deletedAt" is null
+      and "asset"."visibility" = 'timeline'
+  )
+  and (
+    "person"."faceAssetId" is null
+    or (
+      select
+        "currentAsset"."fileCreatedAt"
+      from
+        "asset_face" as "current"
+        inner join "asset" as "currentAsset" on "currentAsset"."id" = "current"."assetId"
+      where
+        "current"."id" = "person"."faceAssetId"
+    ) < (
+      select
+        "asset"."fileCreatedAt"
+      from
+        "asset_face"
+        inner join "asset" on "asset"."id" = "asset_face"."assetId"
+      where
+        "asset_face"."id" = $4
+    )
+  )
+returning
+  "person"."id"
+
+-- PersonRepository.setCustomCover
+insert into
+  "person_custom_cover" ("personId")
+values
+  ($1)
+on conflict ("personId") do nothing
+
+-- PersonRepository.clearCustomCover
+delete from "person_custom_cover"
+where
+  "personId" = $1
+
+-- PersonRepository.createMatchSuggestion
+insert into
+  "person_match_suggestion" ("personId", "suggestedPersonId", "distance")
+values
+  ($1, $2, $3)
+on conflict ("personId", "suggestedPersonId") do nothing
+
+-- PersonRepository.getMatchSuggestions
+select
+  "person_match_suggestion"."id",
+  "person_match_suggestion"."distance",
+  "person_match_suggestion"."createdAt",
+  (
+    select
+      to_json(obj)
+    from
+      (
+        select
+          "person".*
+        from
+          "person"
+        where
+          "person"."id" = "person_match_suggestion"."personId"
+      ) as obj
+  ) as "person",
+  (
+    select
+      to_json(obj)
+    from
+      (
+        select
+          "suggested".*
+        from
+          "person" as "suggested"
+        where
+          "suggested"."id" = "person_match_suggestion"."suggestedPersonId"
+      ) as obj
+  ) as "suggestedPerson"
+from
+  "person_match_suggestion"
+  inner join "person" on "person"."id" = "person_match_suggestion"."personId"
+  inner join "person" as "suggested" on "suggested"."id" = "person_match_suggestion"."suggestedPersonId"
+where
+  "person"."ownerId" = $1
+  and "suggested"."ownerId" = $2
+  and "person"."isHidden" = $3
+  and "suggested"."isHidden" = $4
+order by
+  "person_match_suggestion"."createdAt" desc,
+  "person_match_suggestion"."id" asc
+
+-- PersonRepository.getMatchSuggestion
+select
+  "person_match_suggestion"."id",
+  "person_match_suggestion"."personId",
+  "person_match_suggestion"."suggestedPersonId"
+from
+  "person_match_suggestion"
+  inner join "person" on "person"."id" = "person_match_suggestion"."personId"
+  inner join "person" as "suggested" on "suggested"."id" = "person_match_suggestion"."suggestedPersonId"
+where
+  "person_match_suggestion"."id" = $1
+  and "person"."ownerId" = $2
+  and "suggested"."ownerId" = $3
+
+-- PersonRepository.deleteMatchSuggestion
+delete from "person_match_suggestion"
+where
+  "id" = $1
 
 -- PersonRepository.getLatestFaceDate
 select

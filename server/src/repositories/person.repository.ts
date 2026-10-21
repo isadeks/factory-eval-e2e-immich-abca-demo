@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ExpressionBuilder, Insertable, Kysely, Selectable, sql, Updateable } from 'kysely';
+import { ExpressionBuilder, Insertable, Kysely, NotNull, Selectable, sql, Updateable } from 'kysely';
 import { jsonObjectFrom } from 'kysely/helpers/postgres';
 import { InjectKysely } from 'nestjs-kysely';
 import { AssetFace } from 'src/database';
@@ -490,15 +490,150 @@ export class PersonRepository {
       .execute();
   }
 
+  /**
+   * Picks the face to use as the cover of a person. Despite the name, this is not random: the face on the most
+   * recent photo wins (preferring photos in the timeline over archived/locked ones), so the cover defaults to the
+   * latest photo of the person.
+   */
   @GenerateSql({ params: [DummyValue.UUID] })
   getRandomFace(personId: string) {
     return this.db
       .selectFrom('asset_face')
+      .innerJoin('asset', 'asset.id', 'asset_face.assetId')
       .selectAll('asset_face')
       .where('asset_face.personId', '=', personId)
       .where('asset_face.deletedAt', 'is', null)
       .where('asset_face.isVisible', 'is', true)
+      .where('asset.deletedAt', 'is', null)
+      .orderBy(sql`asset.visibility = ${sql.lit(AssetVisibility.Timeline)}`, 'desc')
+      .orderBy('asset.fileCreatedAt', 'desc')
+      .limit(1)
       .executeTakeFirst();
+  }
+
+  /**
+   * Makes `faceId` the cover of the person if the user did not pick a cover themselves and the face is on a more
+   * recent timeline photo than the current cover. Returns true when the cover changed.
+   */
+  @GenerateSql({ params: [DummyValue.UUID, DummyValue.UUID] })
+  async updateFeatureFaceIfNewer(personId: string, faceId: string): Promise<boolean> {
+    const result = await this.db
+      .updateTable('person')
+      .set({ faceAssetId: faceId })
+      .where('person.id', '=', personId)
+      .where((eb) =>
+        eb.not(
+          eb.exists(eb.selectFrom('person_custom_cover').whereRef('person_custom_cover.personId', '=', 'person.id')),
+        ),
+      )
+      .where((eb) =>
+        eb.exists(
+          eb
+            .selectFrom('asset_face')
+            .innerJoin('asset', 'asset.id', 'asset_face.assetId')
+            .where('asset_face.id', '=', faceId)
+            .where('asset_face.deletedAt', 'is', null)
+            .where('asset.deletedAt', 'is', null)
+            .where('asset.visibility', '=', sql.lit(AssetVisibility.Timeline)),
+        ),
+      )
+      .where((eb) =>
+        eb.or([
+          eb('person.faceAssetId', 'is', null),
+          eb(
+            eb
+              .selectFrom('asset_face as current')
+              .innerJoin('asset as currentAsset', 'currentAsset.id', 'current.assetId')
+              .select('currentAsset.fileCreatedAt')
+              .whereRef('current.id', '=', 'person.faceAssetId'),
+            '<',
+            eb
+              .selectFrom('asset_face')
+              .innerJoin('asset', 'asset.id', 'asset_face.assetId')
+              .select('asset.fileCreatedAt')
+              .where('asset_face.id', '=', faceId),
+          ),
+        ]),
+      )
+      .returning('person.id')
+      .executeTakeFirst();
+
+    return !!result;
+  }
+
+  @GenerateSql({ params: [DummyValue.UUID] })
+  async setCustomCover(personId: string): Promise<void> {
+    await this.db
+      .insertInto('person_custom_cover')
+      .values({ personId })
+      .onConflict((oc) => oc.column('personId').doNothing())
+      .execute();
+  }
+
+  @GenerateSql({ params: [DummyValue.UUID] })
+  async clearCustomCover(personId: string): Promise<void> {
+    await this.db.deleteFrom('person_custom_cover').where('personId', '=', personId).execute();
+  }
+
+  @GenerateSql({ params: [DummyValue.UUID, DummyValue.UUID, 0.55] })
+  async createMatchSuggestion(personId: string, suggestedPersonId: string, distance: number): Promise<void> {
+    await this.db
+      .insertInto('person_match_suggestion')
+      .values({ personId, suggestedPersonId, distance })
+      .onConflict((oc) => oc.columns(['personId', 'suggestedPersonId']).doNothing())
+      .execute();
+  }
+
+  @GenerateSql({ params: [DummyValue.UUID] })
+  getMatchSuggestions(ownerId: string) {
+    return this.db
+      .selectFrom('person_match_suggestion')
+      .innerJoin('person', 'person.id', 'person_match_suggestion.personId')
+      .innerJoin('person as suggested', 'suggested.id', 'person_match_suggestion.suggestedPersonId')
+      .select(['person_match_suggestion.id', 'person_match_suggestion.distance', 'person_match_suggestion.createdAt'])
+      .select((eb) =>
+        jsonObjectFrom(
+          eb.selectFrom('person').selectAll('person').whereRef('person.id', '=', 'person_match_suggestion.personId'),
+        ).as('person'),
+      )
+      .select((eb) =>
+        jsonObjectFrom(
+          eb
+            .selectFrom('person as suggested')
+            .selectAll('suggested')
+            .whereRef('suggested.id', '=', 'person_match_suggestion.suggestedPersonId'),
+        ).as('suggestedPerson'),
+      )
+      .where('person.ownerId', '=', ownerId)
+      .where('suggested.ownerId', '=', ownerId)
+      .where('person.isHidden', '=', false)
+      .where('suggested.isHidden', '=', false)
+      .orderBy('person_match_suggestion.createdAt', 'desc')
+      .orderBy('person_match_suggestion.id', 'asc')
+      .$narrowType<{ person: NotNull; suggestedPerson: NotNull }>()
+      .execute();
+  }
+
+  @GenerateSql({ params: [DummyValue.UUID, DummyValue.UUID] })
+  getMatchSuggestion(id: string, ownerId: string) {
+    return this.db
+      .selectFrom('person_match_suggestion')
+      .innerJoin('person', 'person.id', 'person_match_suggestion.personId')
+      .innerJoin('person as suggested', 'suggested.id', 'person_match_suggestion.suggestedPersonId')
+      .select([
+        'person_match_suggestion.id',
+        'person_match_suggestion.personId',
+        'person_match_suggestion.suggestedPersonId',
+      ])
+      .where('person_match_suggestion.id', '=', id)
+      .where('person.ownerId', '=', ownerId)
+      .where('suggested.ownerId', '=', ownerId)
+      .executeTakeFirst();
+  }
+
+  @GenerateSql({ params: [DummyValue.UUID] })
+  async deleteMatchSuggestion(id: string): Promise<void> {
+    await this.db.deleteFrom('person_match_suggestion').where('id', '=', id).execute();
   }
 
   @GenerateSql()
