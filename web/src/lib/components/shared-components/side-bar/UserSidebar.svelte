@@ -48,10 +48,6 @@
     <NavbarItem title={$t('map')} href={Route.map()} icon={mdiMapOutline} activeIcon={mdiMap} />
   {/if}
 
-  {#if authManager.preferences.people.enabled && authManager.preferences.people.sidebarWeb}
-    <NavbarItem title={$t('people')} href={Route.people()} icon={mdiAccountOutline} activeIcon={mdiAccount} />
-  {/if}
-
   {#if authManager.preferences.sharedLinks.enabled && authManager.preferences.sharedLinks.sidebarWeb}
     <NavbarItem title={$t('shared_links')} href={Route.sharedLinks()} icon={mdiLink} />
   {/if}
@@ -64,6 +60,10 @@
   />
 
   <NavbarGroup title={$t('library')} size="tiny" />
+
+  {#if authManager.preferences.people.enabled && authManager.preferences.people.sidebarWeb}
+    <NavbarItem title={$t('people')} href={Route.people()} icon={mdiAccountOutline} activeIcon={mdiAccount} />
+  {/if}
 
   <NavbarItem title={$t('favorites')} href={Route.favorites()} icon={mdiHeartOutline} activeIcon={mdiHeart} />
 

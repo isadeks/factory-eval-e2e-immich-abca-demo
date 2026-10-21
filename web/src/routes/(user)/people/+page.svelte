@@ -1,10 +1,11 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
+  import { goto, invalidateAll } from '$app/navigation';
   import { page } from '$app/stores';
   import { scrollMemory } from '$lib/actions/scroll-memory';
   import { shortcut } from '$lib/actions/shortcut';
   import PeopleCard from './PeopleCard.svelte';
   import PeopleInfiniteScroll from './PeopleInfiniteScroll.svelte';
+  import PersonMatchSuggestions from './PersonMatchSuggestions.svelte';
   import SearchPeople from '$lib/components/faces-page/PeopleSearch.svelte';
   import UserPageLayout from '$lib/components/layouts/UserPageLayout.svelte';
   import OnEvents from '$lib/components/OnEvents.svelte';
@@ -211,6 +212,17 @@
 
   let people = $derived(data.people.people);
 
+  let resolvedSuggestionIds = $state<string[]>([]);
+  let suggestions = $derived(data.suggestions.filter(({ id }) => !resolvedSuggestionIds.includes(id)));
+
+  const onSuggestionResolved = async (suggestion: { id: string }, merged: boolean) => {
+    resolvedSuggestionIds = [...resolvedSuggestionIds, suggestion.id];
+    if (merged) {
+      // the merged person is gone, reload the list
+      await invalidateAll();
+    }
+  };
+
   let visiblePeople = $derived(people.filter((people) => !people.isHidden));
   let countVisiblePeople = $derived(searchName ? searchedPeopleLocal.length : data.people.total - data.people.hidden);
   let showPeople = $derived(searchName ? searchedPeopleLocal : visiblePeople);
@@ -337,6 +349,10 @@
       </div>
     {/if}
   {/snippet}
+
+  {#if !searchName}
+    <PersonMatchSuggestions {suggestions} onResolved={onSuggestionResolved} />
+  {/if}
 
   {#if countVisiblePeople > 0 && (!searchName || searchedPeopleLocal.length > 0)}
     <PeopleInfiniteScroll people={showPeople} hasNextPage={!!nextPage && !searchName} {loadNextPage}>
