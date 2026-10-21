@@ -4,7 +4,13 @@
   import DurationInput from '$lib/elements/DurationInput.svelte';
   import { authManager } from '$lib/managers/auth-manager.svelte';
   import type { TimelineAsset } from '$lib/managers/timeline-manager/types';
-  import { getPreferredTimeZone, getTimezones, toIsoDate, type ZoneOption } from '$lib/modals/timezone-utils';
+  import {
+    getPreferredTimeZone,
+    getTimezones,
+    isDateTimeChanged,
+    toIsoDate,
+    type ZoneOption,
+  } from '$lib/modals/timezone-utils';
   import { getOwnedAssetsWithWarning } from '$lib/utils/asset-utils';
   import { handleError } from '$lib/utils/handle-error';
   import { updateAssets } from '@immich/sdk';
@@ -23,12 +29,19 @@
 
   let showRelative = $state(false);
   let selectedDuration = $state(0);
-  let selectedDate = $state(initialDate.toFormat("yyyy-MM-dd'T'HH:mm:ss.SSS"));
+  // svelte-ignore state_referenced_locally
+  const originalDate = initialDate.toFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+  let selectedDate = $state(originalDate);
   const timezones = $derived(getTimezones(selectedDate));
   // svelte-ignore state_referenced_locally
   let lastSelectedTimezone = $state(getPreferredTimeZone(initialDate, initialTimeZone, timezones));
   // the offsets (and validity) for time zones may change if the date is changed, which is why we recompute the list
   let selectedOption = $derived(getPreferredTimeZone(initialDate, initialTimeZone, timezones, lastSelectedTimezone));
+  // svelte-ignore state_referenced_locally
+  const originalTimeZone = getPreferredTimeZone(initialDate, initialTimeZone, timezones);
+  const isDateChanged = $derived(isDateTimeChanged(originalDate, selectedDate));
+  const isOffsetChanged = $derived(selectedDuration !== 0);
+  const isTimeZoneChanged = $derived(selectedOption?.value !== originalTimeZone.value);
 
   const onSubmit = async () => {
     const ids = getOwnedAssetsWithWarning(assets, authManager.user);
@@ -77,10 +90,20 @@
   </Field>
   {#if showRelative}
     <Label for="relativedatetime" class="mb-1 block">{$t('offset')}</Label>
-    <DurationInput class="mb-2 immich-form-input w-full" id="relativedatetime" bind:value={selectedDuration} />
+    <DurationInput
+      class="mb-2 immich-form-input w-full {isOffsetChanged ? 'immich-form-input-changed' : ''}"
+      id="relativedatetime"
+      bind:value={selectedDuration}
+    />
   {:else}
     <Label for="datetime" class="mb-1 block">{$t('date_and_time')}</Label>
-    <DateInput class="mb-2 immich-form-input w-full" id="datetime" type="datetime-local" bind:value={selectedDate} />
+    <DateInput
+      class="mb-2 immich-form-input w-full {isDateChanged ? 'immich-form-input-changed' : ''}"
+      data-changed={isDateChanged ? 'true' : undefined}
+      id="datetime"
+      type="datetime-local"
+      bind:value={selectedDate}
+    />
   {/if}
   <div class="w-full">
     <Combobox
@@ -89,6 +112,7 @@
       options={timezones}
       placeholder={$t('search_timezone')}
       onSelect={(option) => (lastSelectedTimezone = option as ZoneOption)}
+      changed={isTimeZoneChanged}
     ></Combobox>
   </div>
   <!-- <Card color="secondary" class={!showRelative || !currentInterval ? 'invisible' : ''}>

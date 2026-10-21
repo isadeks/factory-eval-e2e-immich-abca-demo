@@ -135,6 +135,20 @@ export function getPreferredTimeZone(
   return previousSelection ?? fromInitialTimeZone ?? sameAsUserTimeZone ?? firstWithSameOffset ?? utcFallback;
 }
 
+/**
+ * Whether two `datetime-local` style strings represent a different local date/time.
+ *
+ * Compared by value rather than by string, as browsers may strip insignificant seconds/milliseconds.
+ */
+export function isDateTimeChanged(initial: string, current: string) {
+  const initialDate = DateTime.fromISO(initial, { zone: 'utc' });
+  const currentDate = DateTime.fromISO(current, { zone: 'utc' });
+  if (!initialDate.isValid || !currentDate.isValid) {
+    return initial !== current;
+  }
+  return initialDate.toMillis() !== currentDate.toMillis();
+}
+
 export function toDatetime(selectedDate: string, selectedZone: ZoneOption) {
   const dtComponents = DateTime.fromISO(selectedDate, { zone: 'utc' });
 

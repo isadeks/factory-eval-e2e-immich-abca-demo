@@ -2,7 +2,7 @@
   import Combobox from '$lib/components/shared-components/Combobox.svelte';
   import DateInput from '$lib/elements/DateInput.svelte';
   import type { TimelineAsset } from '$lib/managers/timeline-manager/types';
-  import { getPreferredTimeZone, getTimezones, toIsoDate } from '$lib/modals/timezone-utils';
+  import { getPreferredTimeZone, getTimezones, isDateTimeChanged, toIsoDate } from '$lib/modals/timezone-utils';
   import { handleError } from '$lib/utils/handle-error';
   import { updateAsset } from '@immich/sdk';
   import { FormModal, Label } from '@immich/ui';
@@ -20,10 +20,16 @@
 
   let { initialDate = DateTime.now(), initialTimeZone, timezoneInput = true, asset, onClose }: Props = $props();
 
-  let selectedDate = $state(initialDate.toFormat("yyyy-MM-dd'T'HH:mm:ss.SSS"));
+  // svelte-ignore state_referenced_locally
+  const originalDate = initialDate.toFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+  let selectedDate = $state(originalDate);
   const timezones = $derived(getTimezones(selectedDate));
 
-  let selectedOption = $state(getPreferredTimeZone(initialDate, initialTimeZone, getTimezones(selectedDate)));
+  // svelte-ignore state_referenced_locally
+  const originalTimeZone = getPreferredTimeZone(initialDate, initialTimeZone, getTimezones(selectedDate));
+  let selectedOption = $state(originalTimeZone);
+  const isDateChanged = $derived(isDateTimeChanged(originalDate, selectedDate));
+  const isTimeZoneChanged = $derived(selectedOption?.value !== originalTimeZone.value);
 
   const onSubmit = async () => {
     if (!date.isValid || !selectedOption) {
@@ -63,14 +69,21 @@
 >
   <Label for="datetime" class="mb-1 block">{$t('date_and_time')}</Label>
   <DateInput
-    class="mb-2 immich-form-input w-full"
+    class="mb-2 immich-form-input w-full {isDateChanged ? 'immich-form-input-changed' : ''}"
+    data-changed={isDateChanged ? 'true' : undefined}
     id="datetime"
     type="datetime-local"
     bind:value={() => selectedDate, updateSelectedDate}
   />
   {#if timezoneInput}
     <div class="w-full">
-      <Combobox bind:selectedOption label={$t('timezone')} options={timezones} placeholder={$t('search_timezone')} />
+      <Combobox
+        bind:selectedOption
+        label={$t('timezone')}
+        options={timezones}
+        placeholder={$t('search_timezone')}
+        changed={isTimeZoneChanged}
+      />
     </div>
   {/if}
 </FormModal>
