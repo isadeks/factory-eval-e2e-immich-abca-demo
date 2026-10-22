@@ -147,6 +147,7 @@
   body {
     margin: 0;
     color: var(--immich-ui-dark);
+    background-color: #ffeb3b;
   }
 
   body.asset-viewer-open {
