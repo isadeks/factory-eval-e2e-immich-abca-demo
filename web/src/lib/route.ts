@@ -110,6 +110,9 @@ export const Route = {
     return `/search` + asQueryString({ query });
   },
 
+  // camera
+  camera: () => '/camera',
+
   // sharing
   sharing: () => '/sharing',
 
