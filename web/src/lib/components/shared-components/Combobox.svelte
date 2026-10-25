@@ -47,6 +47,10 @@
     defaultFirstOption?: boolean;
     onSelect?: (option: ComboBoxOption | undefined) => void;
     forceFocus?: boolean;
+    /**
+     * highlight the input to indicate that its value differs from the original value.
+     */
+    changed?: boolean;
   }
 
   let {
@@ -60,6 +64,7 @@
     defaultFirstOption = false,
     onSelect = () => {},
     forceFocus = false,
+    changed = false,
   }: Props = $props();
 
   /**
@@ -304,6 +309,10 @@
       class:rounded-b-none!={isOpen && dropdownDirection === 'bottom'}
       class:rounded-t-none!={isOpen && dropdownDirection === 'top'}
       class:cursor-pointer={!isActive}
+      class:bg-green-100!={changed}
+      class:dark:bg-green-950!={changed}
+      class:ring-green-500!={changed}
+      data-changed={changed ? 'true' : undefined}
       class="immich-form-input w-full pe-12! text-sm transition-all"
       id={inputId}
       onfocus={activate}
