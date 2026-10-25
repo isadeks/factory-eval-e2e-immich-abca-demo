@@ -25,6 +25,13 @@
 
   let selectedOption = $state(getPreferredTimeZone(initialDate, initialTimeZone, getTimezones(selectedDate)));
 
+  // svelte-ignore state_referenced_locally
+  const originalDate = selectedDate;
+  // svelte-ignore state_referenced_locally
+  const originalTimeZone = selectedOption?.value;
+  const isDateChanged = $derived(selectedDate !== originalDate);
+  const isTimeZoneChanged = $derived(selectedOption?.value !== originalTimeZone);
+
   const onSubmit = async () => {
     if (!date.isValid || !selectedOption) {
       onClose(false);
@@ -63,14 +70,21 @@
 >
   <Label for="datetime" class="mb-1 block">{$t('date_and_time')}</Label>
   <DateInput
-    class="mb-2 immich-form-input w-full"
+    class="mb-2 immich-form-input w-full {isDateChanged ? 'bg-green-100! ring-green-500! dark:bg-green-950!' : ''}"
+    data-changed={isDateChanged ? 'true' : undefined}
     id="datetime"
     type="datetime-local"
     bind:value={() => selectedDate, updateSelectedDate}
   />
   {#if timezoneInput}
     <div class="w-full">
-      <Combobox bind:selectedOption label={$t('timezone')} options={timezones} placeholder={$t('search_timezone')} />
+      <Combobox
+        bind:selectedOption
+        label={$t('timezone')}
+        options={timezones}
+        placeholder={$t('search_timezone')}
+        changed={isTimeZoneChanged}
+      />
     </div>
   {/if}
 </FormModal>
