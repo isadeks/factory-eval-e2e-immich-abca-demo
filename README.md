@@ -50,6 +50,10 @@
 > [!NOTE]
 > You can find the main documentation, including installation guides, at https://immich.app/.
 
+## Hello
+
+Hello, and welcome to Immich! Start with the [documentation](https://docs.immich.app/) to get up and running, or try the [demo](#demo) first.
+
 ## Links
 
 - [Documentation](https://docs.immich.app/)
