@@ -4,6 +4,7 @@
   import DurationInput from '$lib/elements/DurationInput.svelte';
   import { authManager } from '$lib/managers/auth-manager.svelte';
   import type { TimelineAsset } from '$lib/managers/timeline-manager/types';
+  import { changedFieldClass, formatOriginalDate, isDateChanged, toLocalInputValue } from '$lib/modals/original-value';
   import { getPreferredTimeZone, getTimezones, toIsoDate, type ZoneOption } from '$lib/modals/timezone-utils';
   import { getOwnedAssetsWithWarning } from '$lib/utils/asset-utils';
   import { handleError } from '$lib/utils/handle-error';
@@ -23,7 +24,8 @@
 
   let showRelative = $state(false);
   let selectedDuration = $state(0);
-  let selectedDate = $state(initialDate.toFormat("yyyy-MM-dd'T'HH:mm:ss.SSS"));
+  let selectedDate = $state(toLocalInputValue(initialDate));
+  const dateChanged = $derived(isDateChanged(initialDate, selectedDate));
   const timezones = $derived(getTimezones(selectedDate));
   // svelte-ignore state_referenced_locally
   let lastSelectedTimezone = $state(getPreferredTimeZone(initialDate, initialTimeZone, timezones));
@@ -80,7 +82,13 @@
     <DurationInput class="mb-2 immich-form-input w-full" id="relativedatetime" bind:value={selectedDuration} />
   {:else}
     <Label for="datetime" class="mb-1 block">{$t('date_and_time')}</Label>
-    <DateInput class="mb-2 immich-form-input w-full" id="datetime" type="datetime-local" bind:value={selectedDate} />
+    <DateInput
+      class={`mb-2 immich-form-input w-full ${dateChanged ? changedFieldClass : ''}`}
+      title={dateChanged ? $t('was_value', { values: { value: formatOriginalDate(initialDate) } }) : undefined}
+      id="datetime"
+      type="datetime-local"
+      bind:value={selectedDate}
+    />
   {/if}
   <div class="w-full">
     <Combobox

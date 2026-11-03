@@ -2,6 +2,7 @@
   import Combobox from '$lib/components/shared-components/Combobox.svelte';
   import DateInput from '$lib/elements/DateInput.svelte';
   import type { TimelineAsset } from '$lib/managers/timeline-manager/types';
+  import { changedFieldClass, formatOriginalDate, isDateChanged, toLocalInputValue } from '$lib/modals/original-value';
   import { getPreferredTimeZone, getTimezones, toIsoDate } from '$lib/modals/timezone-utils';
   import { handleError } from '$lib/utils/handle-error';
   import { updateAsset } from '@immich/sdk';
@@ -20,10 +21,15 @@
 
   let { initialDate = DateTime.now(), initialTimeZone, timezoneInput = true, asset, onClose }: Props = $props();
 
-  let selectedDate = $state(initialDate.toFormat("yyyy-MM-dd'T'HH:mm:ss.SSS"));
+  let selectedDate = $state(toLocalInputValue(initialDate));
   const timezones = $derived(getTimezones(selectedDate));
 
   let selectedOption = $state(getPreferredTimeZone(initialDate, initialTimeZone, getTimezones(selectedDate)));
+  // svelte-ignore state_referenced_locally
+  const originalOption = selectedOption;
+
+  const dateChanged = $derived(isDateChanged(initialDate, selectedDate));
+  const timezoneChanged = $derived(selectedOption?.value !== originalOption?.value);
 
   const onSubmit = async () => {
     if (!date.isValid || !selectedOption) {
@@ -63,13 +69,17 @@
 >
   <Label for="datetime" class="mb-1 block">{$t('date_and_time')}</Label>
   <DateInput
-    class="mb-2 immich-form-input w-full"
+    class={`mb-2 immich-form-input w-full ${dateChanged ? changedFieldClass : ''}`}
+    title={dateChanged ? $t('was_value', { values: { value: formatOriginalDate(initialDate) } }) : undefined}
     id="datetime"
     type="datetime-local"
     bind:value={() => selectedDate, updateSelectedDate}
   />
   {#if timezoneInput}
-    <div class="w-full">
+    <div
+      class="w-full"
+      title={timezoneChanged ? $t('was_value', { values: { value: originalOption?.label } }) : undefined}
+    >
       <Combobox bind:selectedOption label={$t('timezone')} options={timezones} placeholder={$t('search_timezone')} />
     </div>
   {/if}

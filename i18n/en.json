@@ -2258,6 +2258,7 @@
   "waiting": "Waiting",
   "waiting_count": "Waiting: {count}",
   "warning": "Warning",
+  "was_value": "Was: {value}",
   "week": "Week",
   "welcome": "Welcome",
   "welcome_to_immich": "Welcome to Immich",
