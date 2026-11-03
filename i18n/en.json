@@ -2113,6 +2113,7 @@
   "time_based_memories_duration": "Number of seconds to display each image.",
   "timeline": "Timeline",
   "timezone": "Timezone",
+  "timezone_hint": "Times are shown in the selected timezone.",
   "to_archive": "Archive",
   "to_change_password": "Change password",
   "to_favorite": "Favorite",
