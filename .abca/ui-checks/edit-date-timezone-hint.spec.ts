@@ -37,7 +37,7 @@ test('edit date dialog shows a muted hint under the timezone selector', async ({
 
   const dialog = page.getByRole('dialog');
   const hint = dialog.getByTestId('timezone-hint');
-  await expect(hint).toHaveText('Times are shown in the selected timezone.');
+  await expect(hint).toHaveText('Times are shown in the timezone you pick.');
   const timezone = dialog.getByRole('combobox', { name: /timezone/i });
   await expect(timezone).toBeVisible();
 
