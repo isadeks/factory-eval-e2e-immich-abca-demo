@@ -63,7 +63,8 @@ test('edit date dialog shows the original value as a tooltip on a changed field'
   // change the date
   await setDate(dateInput, '2024-05-02T08:15:00.000');
 
-  const expected = original.slice(0, 16).replace('T', ' ');
+  // same format as the field's own value (the browser omits zero seconds/milliseconds in inputValue)
+  const expected = original.length === 16 ? `${original}:00.000` : original;
   await expect(dateInput).toHaveAttribute('title', `Was: ${expected}`);
   await expect(dateInput).toHaveClass(/bg-green/);
 

@@ -5,7 +5,7 @@ describe('original-value', () => {
   const original = DateTime.fromISO('2024-05-01T10:30:00.000');
 
   it('formats the original date', () => {
-    expect(formatOriginalDate(original)).toBe('2024-05-01 10:30');
+    expect(formatOriginalDate(original)).toBe('2024-05-01T10:30:00.000');
     expect(toLocalInputValue(original)).toBe('2024-05-01T10:30:00.000');
   });
 
