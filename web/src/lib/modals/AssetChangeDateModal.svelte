@@ -20,10 +20,18 @@
 
   let { initialDate = DateTime.now(), initialTimeZone, timezoneInput = true, asset, onClose }: Props = $props();
 
-  let selectedDate = $state(initialDate.toFormat("yyyy-MM-dd'T'HH:mm:ss.SSS"));
+  // svelte-ignore state_referenced_locally
+  const originalDate = initialDate.toFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+  // svelte-ignore state_referenced_locally
+  const originalOption = getPreferredTimeZone(initialDate, initialTimeZone, getTimezones(originalDate));
+
+  let selectedDate = $state(originalDate);
   const timezones = $derived(getTimezones(selectedDate));
 
-  let selectedOption = $state(getPreferredTimeZone(initialDate, initialTimeZone, getTimezones(selectedDate)));
+  let selectedOption = $state(originalOption);
+
+  const isDateChanged = $derived(selectedDate !== originalDate);
+  const isTimeZoneChanged = $derived(selectedOption?.value !== originalOption.value);
 
   const onSubmit = async () => {
     if (!date.isValid || !selectedOption) {
@@ -48,6 +56,9 @@
     selectedOption = getPreferredTimeZone(initialDate, initialTimeZone, getTimezones(value), selectedOption);
   };
 
+  const resetDate = () => updateSelectedDate(originalDate);
+  const resetTimeZone = () => (selectedOption = originalOption);
+
   // when changing the time zone, assume the configured date/time is meant for that time zone (instead of updating it)
   const date = $derived(DateTime.fromISO(selectedDate, { zone: selectedOption?.value, setZone: true }));
 </script>
@@ -61,16 +72,38 @@
   disabled={!date.isValid || !selectedOption}
   size="small"
 >
-  <Label for="datetime" class="mb-1 block">{$t('date_and_time')}</Label>
+  <div class="mb-1 flex items-center justify-between">
+    <Label for="datetime">{$t('date_and_time')}</Label>
+    {#if isDateChanged}
+      <button
+        type="button"
+        class="text-xs text-primary hover:underline"
+        data-testid="reset-date-button"
+        onclick={resetDate}
+      >
+        {$t('reset')}
+      </button>
+    {/if}
+  </div>
   <DateInput
-    class="mb-2 immich-form-input w-full"
+    class={`mb-2 immich-form-input w-full ${isDateChanged ? 'bg-green-100! dark:bg-green-900/40!' : ''}`}
     id="datetime"
     type="datetime-local"
     bind:value={() => selectedDate, updateSelectedDate}
   />
   {#if timezoneInput}
-    <div class="w-full">
+    <div class={['relative w-full', isTimeZoneChanged && '[&_input]:bg-green-100! dark:[&_input]:bg-green-900/40!']}>
       <Combobox bind:selectedOption label={$t('timezone')} options={timezones} placeholder={$t('search_timezone')} />
+      {#if isTimeZoneChanged}
+        <button
+          type="button"
+          class="absolute inset-e-0 top-0 text-xs text-primary hover:underline"
+          data-testid="reset-timezone-button"
+          onclick={resetTimeZone}
+        >
+          {$t('reset')}
+        </button>
+      {/if}
     </div>
   {/if}
 </FormModal>
