@@ -187,11 +187,15 @@ export const handleUpdateUserAlbumRole = async ({
   }
 };
 
-export const handleAddUsersToAlbum = async (album: AlbumResponseDto, users: UserResponseDto[]) => {
+export const handleAddUsersToAlbum = async (
+  album: AlbumResponseDto,
+  users: UserResponseDto[],
+  role: AlbumUserRole = AlbumUserRole.Editor,
+) => {
   const $t = await getFormatter();
 
   try {
-    await addUsersToAlbum({ id: album.id, addUsersDto: { albumUsers: users.map(({ id }) => ({ userId: id })) } });
+    await addUsersToAlbum({ id: album.id, addUsersDto: { albumUsers: users.map(({ id }) => ({ userId: id, role })) } });
     eventManager.emit('AlbumShare');
     return true;
   } catch (error) {

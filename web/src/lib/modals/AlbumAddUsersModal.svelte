@@ -3,8 +3,8 @@
   import UserAvatar from '$lib/components/shared-components/UserAvatar.svelte';
   import { handleAddUsersToAlbum } from '$lib/services/album.service';
   import { normalizeSearchString } from '$lib/utils/string-utils';
-  import { searchUsers, type AlbumResponseDto, type UserResponseDto } from '@immich/sdk';
-  import { FormModal, ListButton, LoadingSpinner, Stack, Text } from '@immich/ui';
+  import { AlbumUserRole, searchUsers, type AlbumResponseDto, type UserResponseDto } from '@immich/sdk';
+  import { Field, FormModal, ListButton, LoadingSpinner, Select, Stack, Text, type SelectOption } from '@immich/ui';
   import { sortBy } from 'lodash-es';
   import { onMount } from 'svelte';
   import { t } from 'svelte-i18n';
@@ -33,6 +33,7 @@
   );
   const selectedUsers = new SvelteMap<string, UserResponseDto>();
   let loading = $state(true);
+  let role = $state<AlbumUserRole.Editor | AlbumUserRole.Viewer>(AlbumUserRole.Editor);
 
   const handleToggle = (user: UserResponseDto) => {
     if (selectedUsers.has(user.id)) {
@@ -43,7 +44,7 @@
   };
 
   const onSubmit = async () => {
-    const success = await handleAddUsersToAlbum(album, [...selectedUsers.values()]);
+    const success = await handleAddUsersToAlbum(album, [...selectedUsers.values()], role);
     if (success) {
       onClose();
     }
@@ -75,6 +76,16 @@
         bind:value={search}
         use:initInput
       />
+      <Field label={$t('role')}>
+        <Select
+          value={role}
+          options={[
+            { label: $t('role_editor'), value: AlbumUserRole.Editor },
+            { label: $t('role_viewer'), value: AlbumUserRole.Viewer },
+          ] as SelectOption<AlbumUserRole.Editor | AlbumUserRole.Viewer>[]}
+          onChange={(value) => (role = value)}
+        />
+      </Field>
       {#each filteredUsers as user (user.id)}
         <ListButton selected={selectedUsers.has(user.id)} onclick={() => handleToggle(user)}>
           <UserAvatar {user} size="md" />
