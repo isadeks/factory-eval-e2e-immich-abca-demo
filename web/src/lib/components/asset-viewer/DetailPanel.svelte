@@ -13,7 +13,7 @@
   import { locale } from '$lib/stores/preferences.store';
   import { getAssetMediaUrl } from '$lib/utils';
   import { delay, getDimensions } from '$lib/utils/asset-utils';
-  import { getByteUnitString } from '$lib/utils/byte-units';
+  import { formatFileSize } from '$lib/utils/byte-units';
   import { handleError } from '$lib/utils/handle-error';
   import { getParentPath } from '$lib/utils/tree-utils';
   import {
@@ -203,7 +203,7 @@
                 <p>{width} x {height}</p>
               {/if}
               {#if asset.exifInfo?.fileSizeInByte}
-                <p data-testid="detail-panel-file-size">{getByteUnitString(asset.exifInfo.fileSizeInByte, $locale)}</p>
+                <p data-testid="detail-panel-file-size">{formatFileSize(asset.exifInfo.fileSizeInByte, $locale)}</p>
               {/if}
             </div>
           {/if}

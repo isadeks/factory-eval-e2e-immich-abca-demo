@@ -44,6 +44,20 @@ export function getByteUnitString(bytes: number, locale?: string, maxPrecision =
 }
 
 /**
+ * Localized, human readable size of a file, e.g. `3.5 MiB`.
+ *
+ * @param bytes file size in bytes, may be missing
+ * @param locale locale to use, default is `navigator.language`
+ * @returns localized size with unit, or `undefined` when the size is missing or not a positive number
+ */
+export function formatFileSize(bytes: number | null | undefined, locale?: string): string | undefined {
+  if (bytes === null || bytes === undefined || !Number.isFinite(bytes) || bytes <= 0) {
+    return undefined;
+  }
+  return getByteUnitString(bytes, locale);
+}
+
+/**
  * Convert to bytes from on a specified unit.
  *
  * * `1, 'GiB'`, returns `1073741824` bytes
