@@ -876,6 +876,7 @@
   "documentation": "Documentation",
   "done": "Done",
   "download": "Download",
+  "download_asset_filename": "Download {filename}",
   "download_canceled": "Download canceled",
   "download_complete": "Download complete",
   "download_enqueue": "Download enqueued",

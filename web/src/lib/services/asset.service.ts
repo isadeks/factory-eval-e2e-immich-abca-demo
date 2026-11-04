@@ -129,6 +129,7 @@ export const getAssetActions = ($t: MessageFormatter, asset: AssetResponseDto & 
 
   const SharedLinkDownload: ActionItem = {
     ...Download,
+    title: $t('download_asset_filename', { values: { filename: asset.originalFileName } }),
     $if: () => isOwner || !!sharedLink?.allowDownload,
   };
 
