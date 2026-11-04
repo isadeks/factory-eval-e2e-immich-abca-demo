@@ -43,6 +43,7 @@
     imageClass?: ClassValue;
     brokenAssetClass?: ClassValue;
     dimmed?: boolean;
+    dimArchived?: boolean;
     albumUsers?: UserResponseDto[];
     onClick?: (asset: TimelineAsset) => void;
     onPreview?: (asset: TimelineAsset) => void;
@@ -71,6 +72,7 @@
     imageClass = '',
     brokenAssetClass = '',
     dimmed = false,
+    dimArchived = false,
   }: Props = $props();
 
   let usingMobileDevice = $derived(mediaQueryManager.pointerCoarse);
@@ -329,6 +331,14 @@
           <div
             id="a"
             class={['absolute z-2 size-full bg-gray-700/40 group-focus-visible:rounded-lg', { 'rounded-xl': selected }]}
+          ></div>
+        {/if}
+
+        <!-- Archived assets are dimmed -->
+        {#if dimArchived && asset.visibility === AssetVisibility.Archive}
+          <div
+            data-testid="archived-dim"
+            class={['pointer-events-none absolute z-2 size-full bg-gray-700/40', { 'rounded-xl': selected }]}
           ></div>
         {/if}
 

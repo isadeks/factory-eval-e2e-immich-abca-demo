@@ -39,6 +39,7 @@
     assetInteraction: AssetMultiSelectManager;
     disableAssetSelect?: boolean;
     showArchiveIcon?: boolean;
+    dimArchived?: boolean;
     viewport: Viewport;
     onEndReached?: (() => void) | undefined;
     showAssetName?: boolean;
@@ -55,6 +56,7 @@
     assetInteraction,
     disableAssetSelect = false,
     showArchiveIcon = false,
+    dimArchived = false,
     viewport,
     onEndReached = undefined,
     showAssetName = false,
@@ -363,6 +365,7 @@
             onPreview={assetInteraction.selectionActive ? () => void navigateToAsset(asset) : undefined}
             onMouseEvent={() => assetMouseEventHandler(currentAsset)}
             {showArchiveIcon}
+            {dimArchived}
             asset={currentAsset}
             selected={assetInteraction.hasSelectedAsset(currentAsset.id)}
             selectionCandidate={assetInteraction.hasSelectionCandidate(currentAsset.id)}

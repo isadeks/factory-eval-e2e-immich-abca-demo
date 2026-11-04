@@ -315,6 +315,7 @@
         assetInteraction={assetMultiSelectManager}
         onEndReached={loadNextPage}
         showArchiveIcon={true}
+        dimArchived
         {viewport}
         onReload={onSearchQueryUpdate}
         slidingWindowOffset={searchResultsElement.offsetTop}
