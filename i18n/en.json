@@ -1573,6 +1573,7 @@
   "organize_your_library": "Organize your library",
   "orientation": "Orientation",
   "original": "original",
+  "original_albums": "{count, plural, one {Original album} other {Original albums}}",
   "other": "Other",
   "other_devices": "Other devices",
   "other_variables": "Other variables",
