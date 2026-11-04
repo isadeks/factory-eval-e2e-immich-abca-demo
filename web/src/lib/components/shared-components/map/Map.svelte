@@ -15,6 +15,7 @@
   import MapSettingsModal from '$lib/modals/MapSettingsModal.svelte';
   import { mapSettings } from '$lib/stores/preferences.store';
   import { getAssetMediaUrl, handlePromiseError } from '$lib/utils';
+  import { countMarkersInBounds, type ViewBounds } from '$lib/utils/map-utils';
   import { getMapMarkers, type MapMarkerResponseDto } from '@immich/sdk';
   import { Icon, modalManager, Theme, themeManager } from '@immich/ui';
   import { mdiCog, mdiMap, mdiMapMarker } from '@mdi/js';
@@ -65,6 +66,7 @@
     rounded?: boolean;
     showSimpleControls?: boolean;
     autoFitBounds?: boolean;
+    showViewCount?: boolean;
   }
 
   let {
@@ -84,6 +86,7 @@
     rounded = false,
     showSimpleControls = true,
     autoFitBounds = true,
+    showViewCount = false,
   }: Props = $props();
 
   // Calculate initial bounds from markers once during initialization
@@ -100,6 +103,16 @@
   })();
 
   let map: Map | undefined = $state();
+  let viewBounds = $state.raw<ViewBounds>();
+  const viewCount = $derived(viewBounds && mapMarkers ? countMarkersInBounds(mapMarkers, viewBounds) : 0);
+
+  const updateViewBounds = () => {
+    if (!map) {
+      return;
+    }
+    const bounds = map.getBounds();
+    viewBounds = { west: bounds.getWest(), south: bounds.getSouth(), east: bounds.getEast(), north: bounds.getNorth() };
+  };
   let marker: Marker | null = null;
   let abortController: AbortController;
 
@@ -309,6 +322,20 @@
   });
 
   $effect(() => {
+    if (!showViewCount || !map) {
+      return;
+    }
+
+    const currentMap = map;
+    currentMap.on('moveend', updateViewBounds);
+    updateViewBounds();
+
+    return () => {
+      currentMap.off('moveend', updateViewBounds);
+    };
+  });
+
+  $effect(() => {
     if (!center || !zoom) {
       return;
     }
@@ -361,6 +388,17 @@
             <Icon icon={mdiCog} size="100%" class="text-black/80" />
           </ControlButton>
         </ControlGroup>
+      </Control>
+    {/if}
+
+    {#if showViewCount && viewBounds}
+      <Control position="bottom-right">
+        <div
+          data-testid="map-view-count"
+          class="rounded-lg bg-white/90 px-3 py-1.5 text-sm font-medium text-black/80 shadow-md"
+        >
+          {$t('photos_in_view', { values: { count: viewCount } })}
+        </div>
       </Control>
     {/if}
 

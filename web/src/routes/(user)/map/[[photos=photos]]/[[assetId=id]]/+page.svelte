@@ -69,7 +69,7 @@
             </div>
           {/await}
         {:then { default: Map }}
-          <Map hash onSelect={onViewAssets} {onClusterSelect} />
+          <Map hash showViewCount onSelect={onViewAssets} {onClusterSelect} />
         {/await}
       </div>
 

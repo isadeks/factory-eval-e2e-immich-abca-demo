@@ -1628,6 +1628,7 @@
   "photos": "Photos",
   "photos_and_videos": "Photos & Videos",
   "photos_from_previous_years": "Photos from previous years",
+  "photos_in_view": "{count, plural, one {# photo} other {# photos}} in view",
   "pick_a_location": "Pick a location",
   "pick_custom_range": "Custom range",
   "pick_date_range": "Select a date range",
