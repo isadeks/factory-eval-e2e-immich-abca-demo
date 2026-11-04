@@ -1,6 +1,7 @@
 <script lang="ts">
   import ImageThumbnail from '$lib/components/assets/thumbnail/ImageThumbnail.svelte';
   import UserPageLayout from '$lib/components/layouts/UserPageLayout.svelte';
+  import ExplorePeopleHeading from '$lib/components/explore/ExplorePeopleHeading.svelte';
   import OnEvents from '$lib/components/OnEvents.svelte';
   import EmptyPlaceholder from '$lib/components/shared-components/EmptyPlaceholder.svelte';
   import SingleGridRow from '$lib/components/shared-components/SingleGridRow.svelte';
@@ -35,6 +36,7 @@
   let people = $state(data.response.people);
 
   let hasPeople = $derived(data.response.total > 0);
+  let peopleCount = $derived(data.response.total - data.response.hidden);
 
   const onPersonThumbnailReady = ({ id }: { id: string }) => {
     for (const person of people) {
@@ -60,7 +62,7 @@
   {#if hasPeople}
     <div class="mt-2 mb-6">
       <div class="flex justify-between">
-        <p class="mb-4 font-medium dark:text-immich-dark-fg">{$t('people')}</p>
+        <ExplorePeopleHeading count={peopleCount} />
         <a
           href={Route.people()}
           class="pe-4 text-sm font-medium hover:text-immich-primary dark:text-immich-dark-fg dark:hover:text-immich-dark-primary"
