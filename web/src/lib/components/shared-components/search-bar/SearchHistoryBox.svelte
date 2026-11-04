@@ -1,5 +1,6 @@
 <script lang="ts">
   import { searchStore } from '$lib/stores/search.svelte';
+  import { splitByMatch } from '$lib/utils/string-utils';
   import { Icon, IconButton, Text } from '@immich/ui';
   import { mdiClose, mdiMagnify } from '@mdi/js';
   import { t } from 'svelte-i18n';
@@ -130,7 +131,12 @@
               aria-label={savedSearchTerm}
             >
               <Icon icon={mdiMagnify} size="1.5em" aria-hidden />
-              {savedSearchTerm}
+              <span data-testid="recent-search-term"
+                >{#each splitByMatch(savedSearchTerm, searchQuery) as segment, segmentIndex (segmentIndex)}{#if segment.match}<mark
+                      class="rounded-sm bg-immich-primary/30 text-inherit dark:bg-immich-primary/40"
+                      >{segment.text}</mark
+                    >{:else}{segment.text}{/if}{/each}</span
+              >
             </div>
             <div aria-hidden={true} class="absolute inset-e-5 top-0 items-center justify-center py-3">
               <IconButton
