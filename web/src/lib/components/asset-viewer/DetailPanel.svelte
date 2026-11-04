@@ -1,5 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import EditedBadge from '$lib/components/asset-viewer/EditedBadge.svelte';
   import DetailPanelDate from '$lib/components/asset-viewer/DetailPanelDate.svelte';
   import DetailPanelDescription from '$lib/components/asset-viewer/DetailPanelDescription.svelte';
   import DetailPanelLocation from '$lib/components/asset-viewer/DetailPanelLocation.svelte';
@@ -126,6 +127,7 @@
         variant="ghost"
       />
       <p class="text-lg text-immich-fg dark:text-immich-dark-fg">{$t('info')}</p>
+      <EditedBadge {asset} />
     </div>
 
     {#if asset.isOffline}
