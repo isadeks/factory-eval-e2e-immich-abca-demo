@@ -135,6 +135,10 @@
   };
 
   const onSubmit = () => {
+    if (value.trim().length === 0) {
+      return;
+    }
+
     handlePromiseError(handleSearch(buildSearchPayload(value)));
     saveSearchTerm(value);
   };
