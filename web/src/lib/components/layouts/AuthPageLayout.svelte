@@ -6,9 +6,11 @@
     children?: Snippet;
     withHeader?: boolean;
     withBackdrop?: boolean;
+    /** `stacked` shows the logo above the product name (wordmark) instead of the icon followed by the title. */
+    logoVariant?: 'icon' | 'stacked';
   }
 
-  let { title, children, withHeader = true, withBackdrop = true }: Props = $props();
+  let { title, children, withHeader = true, withBackdrop = true, logoVariant = 'icon' }: Props = $props();
 </script>
 
 <section class="relative isolate flex min-h-dvh min-w-dvw items-center justify-center">
@@ -29,8 +31,13 @@
     {#if withHeader}
       <CardHeader class="mt-6">
         <VStack>
-          <Logo variant="icon" size="giant" />
-          <Heading size="large" class="font-semibold" color="primary" tag="h1">{title}</Heading>
+          {#if logoVariant === 'stacked'}
+            <Logo variant="stacked" size="landing" class="mx-auto" />
+            <Heading size="large" class="sr-only" tag="h1">{title}</Heading>
+          {:else}
+            <Logo variant="icon" size="giant" />
+            <Heading size="large" class="font-semibold" color="primary" tag="h1">{title}</Heading>
+          {/if}
         </VStack>
       </CardHeader>
     {/if}

@@ -126,7 +126,7 @@
   };
 </script>
 
-<AuthPageLayout title={data.meta.title}>
+<AuthPageLayout title={data.meta.title} logoVariant="stacked">
   <Stack gap={4}>
     {#if serverConfig.loginPageMessage}
       <Alert color="primary" class="mb-6">
