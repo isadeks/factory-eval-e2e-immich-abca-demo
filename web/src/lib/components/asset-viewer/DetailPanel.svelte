@@ -2,6 +2,7 @@
   import { goto } from '$app/navigation';
   import DetailPanelDate from '$lib/components/asset-viewer/DetailPanelDate.svelte';
   import DetailPanelDescription from '$lib/components/asset-viewer/DetailPanelDescription.svelte';
+  import DetailPanelOpenOriginal from '$lib/components/asset-viewer/DetailPanelOpenOriginal.svelte';
   import DetailPanelLocation from '$lib/components/asset-viewer/DetailPanelLocation.svelte';
   import DetailPanelRating from '$lib/components/asset-viewer/DetailPanelStarRating.svelte';
   import DetailPanelTags from '$lib/components/asset-viewer/DetailPanelTags.svelte';
@@ -183,6 +184,7 @@
               />
             {/if}
           </p>
+          <DetailPanelOpenOriginal {asset} {isOwner} />
           {#if assetViewerManager.isShowAssetPath}
             <p class="pb-2 text-xs break-all opacity-50 hover:text-primary" transition:slide={{ duration: 250 }}>
               <!-- eslint-disable-next-line svelte/no-navigation-without-resolve this is supposed to be treated as an absolute/external link -->
