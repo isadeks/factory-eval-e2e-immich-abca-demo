@@ -1,6 +1,8 @@
 <script lang="ts">
   import AlbumCover from '$lib/components/album-page/AlbumCover.svelte';
+  import { dateFormats } from '$lib/constants';
   import { authManager } from '$lib/managers/auth-manager.svelte';
+  import { locale } from '$lib/stores/preferences.store';
   import { getContextMenuPositionFromEvent, type ContextMenuPosition } from '$lib/utils/context-menu';
   import { getShortDateRange } from '$lib/utils/date-time';
   import { type AlbumResponseDto } from '@immich/sdk';
@@ -25,6 +27,8 @@
     preload = false,
     onShowContextMenu,
   }: Props = $props();
+
+  const createdDate = $derived(new Date(album.createdAt).toLocaleDateString($locale, dateFormats.album));
 
   const showAlbumContextMenu = (e: MouseEvent) => {
     e.stopPropagation();
@@ -65,6 +69,10 @@
       title={album.albumName}
     >
       {album.albumName}
+    </p>
+
+    <p class="text-sm text-gray-500 dark:text-gray-400" data-testid="album-created-date">
+      {createdDate}
     </p>
 
     {#if showDateRange && album.startDate && album.endDate}
