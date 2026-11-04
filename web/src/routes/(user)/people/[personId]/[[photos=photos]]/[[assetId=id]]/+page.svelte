@@ -298,6 +298,12 @@
     person = response;
   };
 
+  const onPersonDelete = async (response: PersonResponseDto) => {
+    if (response.id === person.id) {
+      await goto(previousRoute);
+    }
+  };
+
   const handlePersonAssetDelete = async ({ id, assetId }: { id: string; assetId: string }) => {
     if (id !== person.id) {
       return;
@@ -306,7 +312,7 @@
     await updateAssetCount();
   };
 
-  const { SetDateOfBirth, Favorite, Unfavorite, HidePerson, ShowPerson } = $derived(getPersonActions($t, person));
+  const { SetDateOfBirth, Favorite, Unfavorite, HidePerson, ShowPerson, DeletePerson } = $derived(getPersonActions($t, person));
   const SelectFeaturePhoto: ActionItem = {
     title: $t('select_featured_photo'),
     icon: mdiAccountBoxOutline,
@@ -326,6 +332,7 @@
 
 <OnEvents
   {onPersonUpdate}
+  {onPersonDelete}
   onPersonAssetDelete={handlePersonAssetDelete}
   onAssetsDelete={updateAssetCount}
   onAssetsArchive={updateAssetCount}
@@ -500,7 +507,7 @@
       <ControlAppBar backIcon={mdiArrowLeft} onClose={() => goto(previousRoute)}>
         {#snippet trailing()}
           <ContextMenuButton
-            items={[SelectFeaturePhoto, HidePerson, ShowPerson, SetDateOfBirth, Merge, Favorite, Unfavorite]}
+            items={[SelectFeaturePhoto, HidePerson, ShowPerson, SetDateOfBirth, Merge, Favorite, Unfavorite, DeletePerson]}
             aria-label={$t('open')}
           />
         {/snippet}

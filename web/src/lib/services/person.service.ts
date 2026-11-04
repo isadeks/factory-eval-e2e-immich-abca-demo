@@ -1,4 +1,4 @@
-import { updatePerson, type PersonResponseDto } from '@immich/sdk';
+import { deletePerson, updatePerson, type PersonResponseDto } from '@immich/sdk';
 import { modalManager, toastManager, type ActionItem } from '@immich/ui';
 import {
   mdiCalendarEditOutline,
@@ -6,6 +6,7 @@ import {
   mdiEyeOutline,
   mdiHeartMinusOutline,
   mdiHeartOutline,
+  mdiTrashCanOutline,
 } from '@mdi/js';
 import type { MessageFormatter } from 'svelte-i18n';
 import { eventManager } from '$lib/managers/event-manager.svelte';
@@ -48,7 +49,14 @@ export const getPersonActions = ($t: MessageFormatter, person: PersonResponseDto
     onAction: () => handleShowPerson(person),
   };
 
-  return { SetDateOfBirth, Favorite, Unfavorite, HidePerson, ShowPerson };
+  const DeletePerson: ActionItem = {
+    title: $t('delete_person'),
+    icon: mdiTrashCanOutline,
+    color: 'danger',
+    onAction: () => handleDeletePerson(person),
+  };
+
+  return { SetDateOfBirth, Favorite, Unfavorite, HidePerson, ShowPerson, DeletePerson };
 };
 
 const handleFavoritePerson = async (person: { id: string }) => {
@@ -96,6 +104,30 @@ const handleShowPerson = async (person: { id: string }) => {
     eventManager.emit('PersonUpdate', response);
   } catch (error) {
     handleError(error, $t('errors.something_went_wrong'));
+  }
+};
+
+export const handleDeletePerson = async (person: PersonResponseDto) => {
+  const $t = await getFormatter();
+
+  const confirmed = await modalManager.showDialog({
+    title: $t('delete_person'),
+    prompt: $t('delete_person_confirmation_prompt', { values: { name: person.name || $t('person') } }),
+    confirmText: $t('delete'),
+  });
+
+  if (!confirmed) {
+    return false;
+  }
+
+  try {
+    await deletePerson({ id: person.id });
+    eventManager.emit('PersonDelete', person);
+    toastManager.primary($t('deleted_person'));
+    return true;
+  } catch (error) {
+    handleError(error, $t('errors.unable_to_delete_person'));
+    return false;
   }
 };
 
