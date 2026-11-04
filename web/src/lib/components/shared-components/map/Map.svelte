@@ -46,6 +46,7 @@
     Popup,
     ScaleControl,
   } from 'svelte-maplibre';
+  import MapNoLocationData from './MapNoLocationData.svelte';
   import type { SelectionBBox } from './types';
 
   interface Props {
@@ -65,6 +66,7 @@
     rounded?: boolean;
     showSimpleControls?: boolean;
     autoFitBounds?: boolean;
+    showNoLocationData?: boolean;
   }
 
   let {
@@ -84,6 +86,7 @@
     rounded = false,
     showSimpleControls = true,
     autoFitBounds = true,
+    showNoLocationData = false,
   }: Props = $props();
 
   // Calculate initial bounds from markers once during initialization
@@ -372,6 +375,10 @@
           </ControlButton>
         </ControlGroup>
       </Control>
+    {/if}
+
+    {#if showNoLocationData && mapMarkers?.length === 0}
+      <MapNoLocationData />
     {/if}
 
     <GeoJSON
