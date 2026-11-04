@@ -46,7 +46,7 @@
 {:else if description}
   <p
     data-testid="album-description"
-    class="wrap-break-words w-full text-base whitespace-pre-line text-gray-600 dark:text-gray-400"
+    class="wrap-break-words w-full text-sm whitespace-pre-line dark:text-immich-dark-fg"
   >
     {description}
   </p>

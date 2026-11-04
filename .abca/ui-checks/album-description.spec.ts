@@ -43,7 +43,7 @@ test('album page shows the description in a muted paragraph under the title', as
 
   const paragraph = page.getByTestId('album-description');
   await expect(paragraph).toHaveText(description);
-  await expect(paragraph).toHaveClass(/text-gray-600/);
+  await expect(paragraph).toHaveClass(/text-sm/);
   await highlight(page, paragraph, 'New: muted description');
   await shot(page, 'Album description shown under the title', { focus: paragraph });
 });

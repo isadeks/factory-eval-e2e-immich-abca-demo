@@ -4,12 +4,12 @@ import { describe, expect, it } from 'vitest';
 import AlbumDescription from './AlbumDescription.svelte';
 
 describe('AlbumDescription read-only display', () => {
-  it('shows the description in a muted paragraph when not owned', () => {
+  it('shows the description in a secondary-text paragraph when not owned', () => {
     render(AlbumDescription, { isOwned: false, id: '', description: 'Summer trip 2024' });
     const paragraph = screen.getByTestId('album-description');
     expect(paragraph.tagName).toBe('P');
     expect(paragraph).toHaveTextContent('Summer trip 2024');
-    expect(paragraph).toHaveClass('text-gray-600');
+    expect(paragraph).toHaveClass('text-sm', 'dark:text-immich-dark-fg');
   });
 
   it('renders nothing when there is no description and not owned', () => {
