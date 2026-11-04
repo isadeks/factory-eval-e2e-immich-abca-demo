@@ -72,6 +72,6 @@
     <div class="w-full">
       <Combobox bind:selectedOption label={$t('timezone')} options={timezones} placeholder={$t('search_timezone')} />
     </div>
-    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400" data-testid="timezone-hint">{$t('timezone_hint')}</p>
+    <p class="mt-1 text-xs text-green-600 dark:text-green-400" data-testid="timezone-hint">{$t('timezone_hint')}</p>
   {/if}
 </FormModal>

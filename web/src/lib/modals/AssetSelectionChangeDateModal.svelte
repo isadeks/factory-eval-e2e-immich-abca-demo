@@ -91,7 +91,7 @@
       onSelect={(option) => (lastSelectedTimezone = option as ZoneOption)}
     ></Combobox>
   </div>
-  <p class="mt-1 text-xs text-gray-500 dark:text-gray-400" data-testid="timezone-hint">{$t('timezone_hint')}</p>
+  <p class="mt-1 text-xs text-green-600 dark:text-green-400" data-testid="timezone-hint">{$t('timezone_hint')}</p>
   <!-- <Card color="secondary" class={!showRelative || !currentInterval ? 'invisible' : ''}>
       <CardBody class="p-2">
         <div class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-3 items-center">

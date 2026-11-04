@@ -5,7 +5,7 @@ import { highlight, openInfoPanel, shot, signIn } from './feval-annotate';
 
 const apiUrl = process.env.PREVIEW_API_URL!;
 
-test('edit date dialog shows a muted hint under the timezone selector', async ({ page, request }) => {
+test('edit date dialog shows a green hint under the timezone selector', async ({ page, request }) => {
   const login = await request.post(`${apiUrl}/auth/login`, {
     data: { email: process.env.PREVIEW_ADMIN_EMAIL, password: process.env.PREVIEW_ADMIN_PASSWORD },
   });
@@ -38,6 +38,7 @@ test('edit date dialog shows a muted hint under the timezone selector', async ({
   const dialog = page.getByRole('dialog');
   const hint = dialog.getByTestId('timezone-hint');
   await expect(hint).toHaveText('Times are shown in the timezone you pick.');
+  await expect(hint).toHaveClass(/text-green-600/);
   const timezone = dialog.getByRole('combobox', { name: /timezone/i });
   await expect(timezone).toBeVisible();
 
