@@ -23,7 +23,7 @@ test('deleting an API key asks for confirmation first', async ({ page, request }
   // Cancelling keeps the key.
   await row.getByRole('button', { name: 'Delete key' }).click();
   const dialog = page.getByRole('dialog');
-  await expect(dialog).toContainText('Are you sure you want to delete this API key?');
+  await expect(dialog).toContainText(`Are you sure you want to delete the API key "${keyName}"?`);
   await highlight(page, dialog, 'New: confirmation before deleting');
   await shot(page, 'Deleting an API key asks for confirmation', { focus: dialog });
 

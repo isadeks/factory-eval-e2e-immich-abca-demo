@@ -27,7 +27,8 @@ describe('ApiKeyService', () => {
 
     beforeEach(() => {
       vi.resetAllMocks();
-      vi.mocked(getFormatter).mockResolvedValue(((key: string) => key) as never);
+      vi.mocked(getFormatter).mockResolvedValue(((key: string, options?: { values?: { name?: string } }) =>
+        options?.values?.name ? `${key}:${options.values.name}` : key) as never);
       vi.spyOn(eventManager, 'emit').mockImplementation(() => {});
     });
 
@@ -36,7 +37,7 @@ describe('ApiKeyService', () => {
 
       await handleDeleteApiKey(apiKey);
 
-      expect(modalManager.showDialog).toHaveBeenCalledWith({ prompt: 'delete_api_key_prompt' });
+      expect(modalManager.showDialog).toHaveBeenCalledWith({ prompt: 'delete_api_key_prompt:my key' });
       expect(deleteApiKey).toHaveBeenCalledWith({ id: 'key-id' });
       expect(eventManager.emit).toHaveBeenCalledWith('ApiKeyDelete', apiKey);
       expect(toastManager.primary).toHaveBeenCalled();

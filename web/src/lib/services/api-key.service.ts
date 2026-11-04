@@ -90,7 +90,9 @@ export const handleUpdateApiKey = async (apiKey: { id: string }, dto: ApiKeyUpda
 export const handleDeleteApiKey = async (apiKey: ApiKeyResponseDto) => {
   const $t = await getFormatter();
 
-  const confirmed = await modalManager.showDialog({ prompt: $t('delete_api_key_prompt') });
+  const confirmed = await modalManager.showDialog({
+    prompt: $t('delete_api_key_prompt', { values: { name: apiKey.name } }),
+  });
   if (!confirmed) {
     return;
   }

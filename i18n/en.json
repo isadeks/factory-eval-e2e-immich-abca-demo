@@ -836,7 +836,7 @@
   "delete_action_confirmation_message": "Are you sure you want to delete this asset? This action will move the asset to the server's trash and will prompt if you want to delete it locally",
   "delete_action_prompt": "{count} deleted",
   "delete_album": "Delete album",
-  "delete_api_key_prompt": "Are you sure you want to delete this API key?",
+  "delete_api_key_prompt": "Are you sure you want to delete the API key \"{name}\"?",
   "delete_dialog_alert": "These items will be permanently deleted from Immich and from your device",
   "delete_dialog_alert_local": "These items will be permanently removed from your device but still be available on the Immich server",
   "delete_dialog_alert_local_non_backed_up": "Some of the items aren't backed up to Immich and will be permanently removed from your device",
