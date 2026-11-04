@@ -95,6 +95,20 @@ export const findSortOptionMetadata = (sortBy: string) => {
   return sortOptionsMetadata.find(({ id }) => sortBy === id) ?? defaultSortOption;
 };
 
+/** Options of the quick Name / Date created sort toggle on the albums list */
+export const sortToggleOptions = [AlbumSortBy.Title, AlbumSortBy.DateCreated] as const;
+export type AlbumSortToggleOption = (typeof sortToggleOptions)[number];
+
+/** Returns the toggle option matching the current sort, or undefined when another sort is active */
+export const findSortToggleOption = (sortBy: string): AlbumSortToggleOption | undefined =>
+  sortToggleOptions.find((option) => option === sortBy);
+
+/** Returns the sort settings to apply when a toggle option is picked (uses that option's default order) */
+export const getSortToggleSettings = (option: AlbumSortToggleOption) => ({
+  sortBy: option,
+  sortOrder: findSortOptionMetadata(option).defaultOrder,
+});
+
 export const findFilterOption = (filter: string) => {
   // Default is All filter
   const defaultFilterOption = AlbumFilter.All;

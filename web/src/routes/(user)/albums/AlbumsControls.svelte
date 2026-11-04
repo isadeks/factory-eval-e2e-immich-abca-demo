@@ -13,15 +13,19 @@
   import {
     type AlbumGroupOptionMetadata,
     type AlbumSortOptionMetadata,
+    type AlbumSortToggleOption,
     collapseAllAlbumGroups,
     createAlbumAndRedirect,
     expandAllAlbumGroups,
     findFilterOption,
     findGroupOptionMetadata,
     findSortOptionMetadata,
+    findSortToggleOption,
     getSelectedAlbumGroupOption,
+    getSortToggleSettings,
     groupOptionsMetadata,
     sortOptionsMetadata,
+    sortToggleOptions,
   } from '$lib/utils/album-utils';
   import { Button, IconButton, Text } from '@immich/ui';
   import {
@@ -92,23 +96,19 @@
   });
 
   let selectedFilterOption = $derived(albumFilterNames[findFilterOption($albumViewSettings.filter)]);
-  const sortToggleOptions = [AlbumSortBy.Title, AlbumSortBy.DateCreated] as const;
-  type SortToggleOption = (typeof sortToggleOptions)[number];
-  let sortToggleNames: Record<SortToggleOption, string> = $derived({
+  let sortToggleNames: Record<AlbumSortToggleOption, string> = $derived({
     [AlbumSortBy.Title]: $t('name'),
     [AlbumSortBy.DateCreated]: $t('sort_created'),
   });
-  let selectedSortToggle = $derived(
-    (sortToggleOptions as readonly string[]).includes($albumViewSettings.sortBy)
-      ? sortToggleNames[$albumViewSettings.sortBy as SortToggleOption]
-      : '',
-  );
+  let selectedSortToggleOption = $derived(findSortToggleOption($albumViewSettings.sortBy));
+  let selectedSortToggle = $derived(selectedSortToggleOption ? sortToggleNames[selectedSortToggleOption] : '');
 
   const handleSortToggle = (selected: string) => {
-    const id = sortToggleOptions.find((option) => sortToggleNames[option] === selected);
-    if (id) {
-      $albumViewSettings.sortBy = id;
-      $albumViewSettings.sortOrder = findSortOptionMetadata(id).defaultOrder;
+    const option = sortToggleOptions.find((id) => sortToggleNames[id] === selected);
+    if (option) {
+      const { sortBy, sortOrder } = getSortToggleSettings(option);
+      $albumViewSettings.sortBy = sortBy;
+      $albumViewSettings.sortOrder = sortOrder;
     }
   };
 
