@@ -25,7 +25,8 @@ limit
 
 -- PersonRepository.getAllForUser
 select
-  "person".*
+  "person".*,
+  count(distinct ("asset"."id")) as "assetCount"
 from
   "person"
   inner join "asset_face" on "asset_face"."personId" = "person"."id"

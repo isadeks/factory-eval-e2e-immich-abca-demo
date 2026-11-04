@@ -17,7 +17,14 @@
   import { handlePromiseError } from '$lib/utils';
   import { handleError } from '$lib/utils/handle-error';
   import { clearQueryParam } from '$lib/utils/navigation';
-  import { getAllPeople, getPerson, searchPerson, updatePerson, type PersonResponseDto } from '@immich/sdk';
+  import {
+    getAllPeople,
+    getPerson,
+    getPersonStatistics,
+    searchPerson,
+    updatePerson,
+    type PersonResponseDto,
+  } from '@immich/sdk';
   import { Button, Icon, modalManager, toastManager } from '@immich/ui';
   import { mdiAccountOff, mdiEyeOutline } from '@mdi/js';
   import { onMount } from 'svelte';
@@ -133,7 +140,11 @@
 
     const [personToMerge, personToBeMergedInto] = response;
 
-    const mergedPerson = await getPerson({ id: personToBeMergedInto.id });
+    const [mergedPersonDetails, { assets: mergedAssetCount }] = await Promise.all([
+      getPerson({ id: personToBeMergedInto.id }),
+      getPersonStatistics({ id: personToBeMergedInto.id }),
+    ]);
+    const mergedPerson = { ...mergedPersonDetails, assetCount: mergedAssetCount };
 
     people = people.filter((person: PersonResponseDto) => person.id !== personToMerge.id);
     people = people.map((person: PersonResponseDto) => (person.id === personToBeMergedInto.id ? mergedPerson : person));
@@ -190,7 +201,7 @@
 
       people = people.map((person: PersonResponseDto) => {
         if (person.id === updatedPerson.id) {
-          return updatedPerson;
+          return { ...updatedPerson, assetCount: person.assetCount };
         }
         return person;
       });
@@ -214,6 +225,11 @@
   let visiblePeople = $derived(people.filter((people) => !people.isHidden));
   let countVisiblePeople = $derived(searchName ? searchedPeopleLocal.length : data.people.total - data.people.hidden);
   let showPeople = $derived(searchName ? searchedPeopleLocal : visiblePeople);
+  // Named people are listed first, faces that have no name yet are grouped separately below them.
+  let namedPeople = $derived(showPeople.filter((person) => !!person.name));
+  let unnamedPeople = $derived(showPeople.filter((person) => !person.name));
+  let showSectionHeadings = $derived(namedPeople.length > 0 && unnamedPeople.length > 0);
+  let hasMorePeople = $derived(!!nextPage && !searchName);
 
   const onNameChangeInputFocus = (person: PersonResponseDto) => {
     editingPerson = person;
@@ -279,7 +295,7 @@
   const onPersonUpdate = (response: PersonResponseDto) => {
     people = people.map((person: PersonResponseDto) => {
       if (person.id === response.id) {
-        return response;
+        return { ...response, assetCount: response.assetCount ?? person.assetCount };
       }
       return person;
     });
@@ -339,31 +355,68 @@
   {/snippet}
 
   {#if countVisiblePeople > 0 && (!searchName || searchedPeopleLocal.length > 0)}
-    <PeopleInfiniteScroll people={showPeople} hasNextPage={!!nextPage && !searchName} {loadNextPage}>
-      {#snippet children({ person })}
-        <div
-          class="rounded-xl border-2 border-transparent p-2 transition-all hover:border-immich-primary/50 hover:bg-gray-200 hover:shadow-sm hover:dark:border-immich-dark-primary/25 dark:hover:bg-immich-dark-primary/20"
-        >
-          <PeopleCard
-            {person}
-            onMergePeople={() => handleMergePeople(person)}
-            onHidePerson={() => handleHidePerson(person)}
-            onToggleFavorite={() => handleToggleFavorite(person)}
-          />
+    {#snippet personCard(person: PersonResponseDto)}
+      <div
+        class="rounded-xl border-2 border-transparent p-2 transition-all hover:border-immich-primary/50 hover:bg-gray-200 hover:shadow-sm hover:dark:border-immich-dark-primary/25 dark:hover:bg-immich-dark-primary/20"
+      >
+        <PeopleCard
+          {person}
+          onMergePeople={() => handleMergePeople(person)}
+          onHidePerson={() => handleHidePerson(person)}
+          onToggleFavorite={() => handleToggleFavorite(person)}
+        />
 
-          <input
-            type="text"
-            class="mt-2 w-full rounded-2xl border-gray-100 bg-white py-2 text-center text-sm text-primary placeholder-gray-400 dark:border-gray-900 dark:bg-immich-dark-gray"
-            value={person.name}
-            placeholder={$t('add_a_name')}
-            use:shortcut={{ shortcut: { key: 'Enter' }, onShortcut: (e) => e.currentTarget.blur() }}
-            onfocusin={() => onNameChangeInputFocus(person)}
-            onfocusout={() => onNameChangeSubmit(newName, person)}
-            oninput={(event) => onNameChangeInputUpdate(event)}
-          />
-        </div>
-      {/snippet}
-    </PeopleInfiniteScroll>
+        <input
+          type="text"
+          class="mt-2 w-full rounded-2xl border-gray-100 bg-white py-2 text-center text-sm text-primary placeholder-gray-400 dark:border-gray-900 dark:bg-immich-dark-gray"
+          value={person.name}
+          placeholder={$t('add_a_name')}
+          use:shortcut={{ shortcut: { key: 'Enter' }, onShortcut: (e) => e.currentTarget.blur() }}
+          onfocusin={() => onNameChangeInputFocus(person)}
+          onfocusout={() => onNameChangeSubmit(newName, person)}
+          oninput={(event) => onNameChangeInputUpdate(event)}
+        />
+        {#if person.assetCount !== undefined}
+          <p class="mt-1 text-center text-xs text-gray-600 dark:text-gray-400" data-testid="person-asset-count">
+            {$t('assets_count', { values: { count: person.assetCount } })}
+          </p>
+        {/if}
+      </div>
+    {/snippet}
+
+    {#if namedPeople.length > 0}
+      <section data-testid="named-people">
+        {#if showSectionHeadings}
+          <h2 class="mb-2 px-2 text-lg font-medium dark:text-white">
+            {$t('named_people')}
+          </h2>
+        {/if}
+        <PeopleInfiniteScroll
+          people={namedPeople}
+          hasNextPage={hasMorePeople && unnamedPeople.length === 0}
+          {loadNextPage}
+        >
+          {#snippet children({ person })}
+            {@render personCard(person)}
+          {/snippet}
+        </PeopleInfiniteScroll>
+      </section>
+    {/if}
+
+    {#if unnamedPeople.length > 0}
+      <section data-testid="unnamed-people" class={namedPeople.length > 0 ? 'mt-8' : ''}>
+        {#if showSectionHeadings}
+          <h2 class="mb-2 px-2 text-lg font-medium dark:text-white">
+            {$t('unnamed_people')}
+          </h2>
+        {/if}
+        <PeopleInfiniteScroll people={unnamedPeople} hasNextPage={hasMorePeople} {loadNextPage}>
+          {#snippet children({ person })}
+            {@render personCard(person)}
+          {/snippet}
+        </PeopleInfiniteScroll>
+      </section>
+    {/if}
   {:else}
     <div class="flex min-h-[calc(66vh-11rem)] w-full place-content-center items-center dark:text-white">
       <div class="flex flex-col content-center items-center text-center">

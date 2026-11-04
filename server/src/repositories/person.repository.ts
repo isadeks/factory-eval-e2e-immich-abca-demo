@@ -159,6 +159,7 @@ export class PersonRepository {
           .on('asset.visibility', '=', sql.lit(AssetVisibility.Timeline))
           .on('asset.deletedAt', 'is', null),
       )
+      .select((eb) => eb.fn.count<number>(eb.fn('distinct', ['asset.id'])).as('assetCount'))
       .where('person.ownerId', '=', userId)
       .where('asset_face.deletedAt', 'is', null)
       .where('asset_face.isVisible', 'is', true)
@@ -210,7 +211,12 @@ export class PersonRepository {
       .limit(pagination.take + 1)
       .execute();
 
-    return paginationHelper(items, pagination.take);
+    const page = paginationHelper(items, pagination.take);
+    // `assetCount` is the number of distinct visible timeline assets the person appears in
+    return page as {
+      hasNextPage: boolean;
+      items: Array<Omit<(typeof items)[number], 'assetCount'> & { assetCount?: number }>;
+    };
   }
 
   @GenerateSql()

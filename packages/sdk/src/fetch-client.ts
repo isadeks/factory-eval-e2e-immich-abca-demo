@@ -831,6 +831,8 @@ export type ExifResponseDto = {
     timeZone?: string | null;
 };
 export type PersonResponseDto = {
+    /** Number of assets this person appears in (only set when listing people) */
+    assetCount?: number;
     /** Person date of birth */
     birthDate: string | null;
     /** Person color (hex) */

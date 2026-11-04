@@ -70,7 +70,9 @@ export class PersonService extends BaseService {
     const { total, hidden } = await this.personRepository.getNumberOfPeople(auth.user.id);
 
     return {
-      people: items.map((person) => mapPerson(person)),
+      people: items.map(({ assetCount, ...person }) =>
+        mapPerson(person, assetCount === undefined ? undefined : Number(assetCount)),
+      ),
       hasNextPage,
       total,
       hidden,
