@@ -145,6 +145,8 @@
           <RestoreAction {asset} {onAction} />
         {/if}
 
+        <ActionMenuItem action={Actions.CopyFileName} />
+
         <ActionMenuItem action={Actions.AddToAlbum} />
         {#if album && (isOwner || isAlbumOwner)}
           <RemoveFromAlbumAction {album} onRemove={onRemoveFromAlbum} assetIds={[asset.id]} menuItem />

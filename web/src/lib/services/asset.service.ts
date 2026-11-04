@@ -50,7 +50,7 @@ import ProfileImageCropperModal from '$lib/modals/ProfileImageCropperModal.svelt
 import SharedLinkCreateModal from '$lib/modals/SharedLinkCreateModal.svelte';
 import { Route } from '$lib/route';
 import { SlideshowState, slideshowStore } from '$lib/stores/slideshow.store';
-import { getAssetMediaUrl, getSharedLink, sleep } from '$lib/utils';
+import { copyToClipboard, getAssetMediaUrl, getSharedLink, sleep } from '$lib/utils';
 import { downloadUrl } from '$lib/utils';
 import { handleError } from '$lib/utils/handle-error';
 import { getFormatter } from '$lib/utils/i18n';
@@ -210,6 +210,13 @@ export const getAssetActions = ($t: MessageFormatter, asset: AssetResponseDto & 
     onAction: () => assetViewerManager.emit('Copy'),
   };
 
+  const CopyFileName: ActionItem = {
+    title: $t('copy_file_name'),
+    icon: mdiContentCopy,
+    $if: () => !!asset.originalFileName,
+    onAction: () => copyToClipboard(asset.originalFileName),
+  };
+
   const Info: ActionItem = {
     title: $t('info'),
     icon: mdiInformationOutline,
@@ -313,6 +320,7 @@ export const getAssetActions = ($t: MessageFormatter, asset: AssetResponseDto & 
     ZoomIn,
     ZoomOut,
     Copy,
+    CopyFileName,
     Tag,
     TagPeople,
     Edit,
