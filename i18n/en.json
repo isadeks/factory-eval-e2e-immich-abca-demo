@@ -617,6 +617,7 @@
   "autoplay_slideshow": "Autoplay slideshow",
   "back": "Back",
   "back_close_deselect": "Back, close, or deselect",
+  "back_to_top": "Back to top",
   "background_location_permission": "Background location permission",
   "background_location_permission_content": "In order to switch networks when running in the background, Immich must *always* have precise location access so the app can read the Wi-Fi network's name",
   "background_options": "Background Options",

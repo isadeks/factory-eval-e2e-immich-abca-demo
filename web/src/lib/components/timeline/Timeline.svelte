@@ -2,6 +2,7 @@
   import { afterNavigate, beforeNavigate } from '$app/navigation';
   import { page } from '$app/state';
   import Thumbnail from '$lib/components/assets/thumbnail/Thumbnail.svelte';
+  import BackToTopButton from '$lib/components/timeline/BackToTopButton.svelte';
   import Month from '$lib/components/timeline/Month.svelte';
   import Scrubber from '$lib/components/timeline/Scrubber.svelte';
   import TimelineAssetViewer from '$lib/components/timeline/TimelineAssetViewer.svelte';
@@ -30,6 +31,8 @@
 
   interface Props {
     isSelectionMode?: boolean;
+    /** show a floating 'Back to top' button once scrolled down more than one screen */
+    showBackToTop?: boolean;
     singleSelect?: boolean;
     /** `true` if this asset grid is responds to navigation events; if `true`, then look at the
      `AssetViewingStore.gridScrollTarget` and load and scroll to the asset specified, and
@@ -65,6 +68,7 @@
 
   let {
     isSelectionMode = false,
+    showBackToTop = false,
     singleSelect = false,
     enableRouting,
     timelineManager = $bindable(),
@@ -100,6 +104,7 @@
   // Overall scroll percentage through the entire timeline (0-1)
   let timelineScrollPercent: number = $state(0);
   let scrubberWidth = $state(0);
+  let scrollTop = $state(0);
 
   const isEmpty = $derived(timelineManager.isInitialized && timelineManager.months.length === 0);
   const maxMd = $derived(mediaQueryManager.maxMd);
@@ -309,6 +314,8 @@
     if (!scrollableElement) {
       return;
     }
+
+    scrollTop = scrollableElement.scrollTop;
 
     if (timelineManager.limitedScroll) {
       // edge case - scroll limited due to size of content, must adjust -  use the overall percent instead
@@ -704,6 +711,14 @@
     ></div>
   </section>
 </section>
+
+{#if showBackToTop}
+  <BackToTopButton
+    {scrollTop}
+    viewportHeight={timelineManager.viewportHeight}
+    onclick={() => timelineManager.scrollTo(0)}
+  />
+{/if}
 
 <Portal target="body">
   {#if assetViewerManager.isViewing}
