@@ -4,8 +4,9 @@
   import { getSharedLinkActions } from '$lib/services/shared-link.service';
   import { locale } from '$lib/stores/preferences.store';
   import { SharedLinkType, type SharedLinkResponseDto } from '@immich/sdk';
-  import { ActionButton, ContextMenuButton, MenuItemType, Text } from '@immich/ui';
+  import { ActionButton, ContextMenuButton, MenuItemType, Text, type ActionItem } from '@immich/ui';
   import { DateTime, type ToRelativeUnit } from 'luxon';
+  import { onDestroy } from 'svelte';
   import { t } from 'svelte-i18n';
 
   interface Props {
@@ -13,6 +14,8 @@
   }
 
   let { sharedLink }: Props = $props();
+
+  const COPIED_FEEDBACK_DURATION_MS = 2000;
 
   let now = DateTime.now();
   let expiresAt = $derived(sharedLink.expiresAt ? DateTime.fromISO(sharedLink.expiresAt) : undefined);
@@ -31,6 +34,26 @@
   };
 
   const { Edit, Copy, Delete } = $derived(getSharedLinkActions($t, sharedLink));
+
+  let copied = $state(false);
+  let copiedTimeout: ReturnType<typeof setTimeout> | undefined;
+
+  onDestroy(() => clearTimeout(copiedTimeout));
+
+  const CopyWithFeedback = $derived<ActionItem>({
+    ...Copy,
+    title: copied ? $t('copied') : Copy.title,
+    onAction: async (item) => {
+      const success = await Copy.onAction(item);
+      if (success === false) {
+        return;
+      }
+
+      copied = true;
+      clearTimeout(copiedTimeout);
+      copiedTimeout = setTimeout(() => (copied = false), COPIED_FEEDBACK_DURATION_MS);
+    },
+  });
 
   const capabilities = $derived.by(() => {
     const items = [];
@@ -105,7 +128,7 @@
   <div class="ms-4 flex flex-auto flex-col place-content-center place-items-end text-end">
     <div class="hidden sm:flex">
       <ActionButton action={Edit} />
-      <ActionButton action={Copy} />
+      <ActionButton action={CopyWithFeedback} type="button" variant="ghost" />
       <ActionButton action={Delete} />
     </div>
 
@@ -113,7 +136,7 @@
       <ContextMenuButton
         aria-label={$t('shared_link_options')}
         position="top-right"
-        items={[Edit, Copy, MenuItemType.Divider, Delete]}
+        items={[Edit, CopyWithFeedback, MenuItemType.Divider, Delete]}
       />
     </div>
   </div>

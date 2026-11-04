@@ -264,8 +264,10 @@ export const copyToClipboard = async (secret: string | unknown) => {
     const value = typeof secret === 'string' ? secret : JSON.stringify(secret, jsonReplacer, 2);
     await navigator.clipboard.writeText(value);
     toastManager.info($t('copied_to_clipboard'));
+    return true;
   } catch (error) {
     handleError(error, $t('errors.unable_to_copy_to_clipboard'));
+    return false;
   }
 };
 
