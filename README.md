@@ -60,6 +60,7 @@
 - [Features](#features)
 - [Translations](https://docs.immich.app/developer/translations)
 - [Contributing](https://docs.immich.app/overview/support-the-project)
+- [Contributors](#contributors)
 
 ## Demo
 
