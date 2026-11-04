@@ -593,6 +593,7 @@
   "asset_troubleshoot": "Asset Troubleshoot",
   "asset_uploaded": "Uploaded",
   "asset_uploading": "Uploading…",
+  "asset_viewer_navigation_hint": "Use the left and right arrow keys to go to the previous or next asset",
   "asset_viewer_settings_subtitle": "Manage your gallery viewer settings",
   "asset_viewer_settings_title": "Asset Viewer",
   "assets": "Assets",

@@ -111,6 +111,13 @@
         {/snippet}
       </Tooltip>
     {/if}
+    <span
+      class="hidden text-xs font-medium tracking-widest text-white/70 select-none sm:inline"
+      data-testid="asset-viewer-navigation-hint"
+      title={$t('asset_viewer_navigation_hint')}
+      aria-label={$t('asset_viewer_navigation_hint')}
+      role="note">← →</span
+    >
     <ActionButton action={Cast} />
     <ActionButton action={Actions.Share} />
     <ActionButton action={Actions.Offline} />
