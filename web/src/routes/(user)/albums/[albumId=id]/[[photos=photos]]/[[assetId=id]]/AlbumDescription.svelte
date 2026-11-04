@@ -15,6 +15,18 @@
 
   let { id, description = $bindable(), isOwned }: Props = $props();
 
+  let paragraph = $state<HTMLParagraphElement>();
+  let expanded = $state(false);
+  let isClamped = $state(false);
+
+  // While collapsed the paragraph is line-clamped, so overflow means there is more text to reveal.
+  $effect(() => {
+    void description;
+    if (paragraph && !expanded) {
+      isClamped = paragraph.scrollHeight > paragraph.clientHeight;
+    }
+  });
+
   const handleFocusOut = async () => {
     try {
       const response = await updateAlbumInfo({
@@ -44,10 +56,25 @@
     }))}
   />
 {:else if description}
-  <p
-    data-testid="album-description"
-    class="wrap-break-words w-full text-sm whitespace-pre-line dark:text-immich-dark-fg"
-  >
-    {description}
-  </p>
+  <div class="w-full">
+    <p
+      bind:this={paragraph}
+      data-testid="album-description"
+      class="wrap-break-words w-full text-sm whitespace-pre-line dark:text-immich-dark-fg"
+      class:line-clamp-3={!expanded}
+    >
+      {description}
+    </p>
+    {#if isClamped || expanded}
+      <button
+        type="button"
+        data-testid="album-description-toggle"
+        class="text-sm font-medium text-primary hover:underline"
+        aria-expanded={expanded}
+        onclick={() => (expanded = !expanded)}
+      >
+        {expanded ? $t('show_less') : $t('show_more')}
+      </button>
+    {/if}
+  </div>
 {/if}

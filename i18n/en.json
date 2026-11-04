@@ -1996,6 +1996,7 @@
   "show_keyboard_shortcuts": "Show keyboard shortcuts",
   "show_less": "Show less",
   "show_metadata": "Show metadata",
+  "show_more": "Show more",
   "show_more_fields": "{count, plural, one {Show # more field} other {Show # more fields}}",
   "show_or_hide_info": "Show or hide info",
   "show_password": "Show password",
