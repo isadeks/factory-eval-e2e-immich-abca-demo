@@ -165,6 +165,14 @@
             hiddenIconClass="text-white group-hover:text-black transition-colors"
             preload={false}
           />
+          {#if hidden}
+            <span
+              data-testid="hidden-badge"
+              class="absolute inset-s-2 top-2 rounded-full bg-black/70 px-2 py-0.5 text-xs font-medium text-white"
+            >
+              {$t('hidden')}
+            </span>
+          {/if}
           {#if person.name}
             <span
               class="text-white-shadow absolute inset-s-0 bottom-2 w-full px-1 text-center font-medium text-white select-text"
