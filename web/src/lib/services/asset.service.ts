@@ -376,29 +376,32 @@ export const handleDownloadAsset = async (asset: AssetResponseDto, { edited }: {
   }
 };
 
-const handleFavorite = async (asset: AssetResponseDto) => {
+// Asset ids with a favorite update in flight. Holding down the `f` shortcut (key repeat) or pressing it again before the
+// server answered would otherwise send duplicate updates and show duplicate toasts for the same asset.
+const pendingFavoriteUpdates = new Set<string>();
+
+const setFavorite = async (asset: AssetResponseDto, isFavorite: boolean) => {
+  if (pendingFavoriteUpdates.has(asset.id)) {
+    return;
+  }
+
+  pendingFavoriteUpdates.add(asset.id);
   const $t = await getFormatter();
 
   try {
-    const response = await updateAsset({ id: asset.id, updateAssetDto: { isFavorite: true } });
-    toastManager.primary($t('added_to_favorites'));
+    const response = await updateAsset({ id: asset.id, updateAssetDto: { isFavorite } });
+    toastManager.primary($t(isFavorite ? 'added_to_favorites' : 'removed_from_favorites'));
     eventManager.emit('AssetUpdate', response);
   } catch (error) {
     handleError(error, $t('errors.unable_to_add_remove_favorites', { values: { favorite: asset.isFavorite } }));
+  } finally {
+    pendingFavoriteUpdates.delete(asset.id);
   }
 };
 
-const handleUnfavorite = async (asset: AssetResponseDto) => {
-  const $t = await getFormatter();
+const handleFavorite = (asset: AssetResponseDto) => setFavorite(asset, true);
 
-  try {
-    const response = await updateAsset({ id: asset.id, updateAssetDto: { isFavorite: false } });
-    toastManager.primary($t('removed_from_favorites'));
-    eventManager.emit('AssetUpdate', response);
-  } catch (error) {
-    handleError(error, $t('errors.unable_to_add_remove_favorites', { values: { favorite: asset.isFavorite } }));
-  }
-};
+const handleUnfavorite = (asset: AssetResponseDto) => setFavorite(asset, false);
 
 const getAssetJobMessage = ($t: MessageFormatter, job: AssetJobName) => {
   const messages: Record<AssetJobName, string> = {

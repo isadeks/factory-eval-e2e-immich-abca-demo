@@ -92,6 +92,32 @@ describe('AssetViewerNavBar favorite shortcut', () => {
     expect(updateAsset).toHaveBeenCalledTimes(1);
   });
 
+  it('sends a single update when "f" is pressed again before the server answered', async () => {
+    const asset = assetFactory.build({ ownerId, isFavorite: false, isTrashed: false });
+    let resolveUpdate!: (value: typeof asset) => void;
+    vi.mocked(updateAsset).mockReturnValue(
+      new Promise((resolve) => {
+        resolveUpdate = resolve;
+      }),
+    );
+
+    renderWithTooltips(AssetViewerNavBar, { asset, ...additionalProps });
+
+    await fireEvent.keyDown(document.body, { key: 'f' });
+    await waitFor(() => expect(updateAsset).toHaveBeenCalledTimes(1));
+    await fireEvent.keyDown(document.body, { key: 'f', repeat: true });
+    await fireEvent.keyDown(document.body, { key: 'f', repeat: true });
+    await new Promise((resolve) => setTimeout(resolve, 20));
+
+    expect(updateAsset).toHaveBeenCalledTimes(1);
+
+    resolveUpdate({ ...asset, isFavorite: true });
+    await new Promise((resolve) => setTimeout(resolve, 20));
+
+    await fireEvent.keyDown(document.body, { key: 'f' });
+    await waitFor(() => expect(updateAsset).toHaveBeenCalledTimes(2));
+  });
+
   it('does not toggle favorite when the user does not own the asset', async () => {
     const asset = assetFactory.build({ ownerId: 'someone-else', isFavorite: false, isTrashed: false });
 
