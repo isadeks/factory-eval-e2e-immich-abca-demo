@@ -1,7 +1,7 @@
 <script lang="ts">
+  import AlbumCover from '$lib/components/album-page/AlbumCover.svelte';
   import { SCROLL_PROPERTIES } from '$lib/components/shared-components/album-selection/album-selection-utils';
   import { mediaQueryManager } from '$lib/stores/media-query-manager.svelte';
-  import { getAssetMediaUrl } from '$lib/utils';
   import { normalizeSearchString } from '$lib/utils/string-utils.js';
   import { type AlbumResponseDto } from '@immich/sdk';
   import { Icon } from '@immich/ui';
@@ -132,15 +132,7 @@
     use:longPress={{ onLongPress: () => handleMultiSelectClicked() }}
   >
     <span class="size-16 shrink-0 rounded-xl bg-slate-300">
-      {#if album.albumThumbnailAssetId}
-        <img
-          src={getAssetMediaUrl({ id: album.albumThumbnailAssetId })}
-          alt={album.albumName}
-          class={['size-full rounded-xl object-cover transition-all duration-300 hover:shadow-lg']}
-          data-testid="album-image"
-          draggable="false"
-        />
-      {/if}
+      <AlbumCover {album} class="transition-all duration-300 hover:shadow-lg" />
     </span>
     <span class="flex h-full flex-col items-start justify-center overflow-hidden">
       <span class="w-full shrink truncate">{albumNameArray[0]}<b>{albumNameArray[1]}</b>{albumNameArray[2]}</span>
