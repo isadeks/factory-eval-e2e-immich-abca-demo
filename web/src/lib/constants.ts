@@ -40,6 +40,10 @@ export const dateFormats = {
     day: 'numeric',
     year: 'numeric',
   } satisfies Intl.DateTimeFormatOptions,
+  settingsWithTime: {
+    dateStyle: 'long',
+    timeStyle: 'medium',
+  } satisfies Intl.DateTimeFormatOptions,
 };
 
 export enum QueryParameter {

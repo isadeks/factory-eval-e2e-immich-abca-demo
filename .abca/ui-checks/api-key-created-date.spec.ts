@@ -34,6 +34,9 @@ test('account settings list the creation date of an API key', async ({ page, req
   await expect(page.getByRole('columnheader', { name: 'Created' })).toBeVisible();
   await expect(row.getByRole('cell', { name: expectedDate })).toBeVisible();
 
+  // hovering text of the date cell carries the full timestamp
+  await expect(row.getByRole('cell', { name: expectedDate })).toHaveAttribute('title', /\d{1,2}:\d{2}:\d{2}/);
+
   await highlight(page, row.getByRole('cell', { name: expectedDate }), 'API key creation date');
   await shot(page, 'API key row shows its creation date', { focus: row });
 });

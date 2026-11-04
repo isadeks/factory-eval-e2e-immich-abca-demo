@@ -61,7 +61,9 @@
                   title={JSON.stringify(key.permissions, null, 2)}>{key.permissions}</Text
                 >
               </TableCell>
-              <TableCell>{new Date(key.createdAt).toLocaleDateString($locale, dateFormats.settings)}</TableCell>
+              <TableCell title={new Date(key.createdAt).toLocaleString($locale, dateFormats.settingsWithTime)}>
+                {new Date(key.createdAt).toLocaleDateString($locale, dateFormats.settings)}
+              </TableCell>
               <TableCell class="flex flex-row flex-wrap justify-center gap-x-2 gap-y-1">
                 <TableButton action={Update} size="small" />
                 <TableButton action={Delete} size="small" />
