@@ -57,6 +57,11 @@
       >
         <div class="place-item-center mb-4 flex justify-between">
           <div class="flex flex-col gap-1">
+            <p class="text-xm immich-form-label" data-testid="upload-n-of-m">
+              {$t('upload_n_of_m_uploaded', {
+                values: { uploaded: $stats.success, total: $stats.total },
+              })}
+            </p>
             <p class="text-xm immich-form-label">
               {$t('upload_progress', {
                 values: {
