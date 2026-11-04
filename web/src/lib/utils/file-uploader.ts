@@ -16,6 +16,7 @@ import { addAssetsToAlbums } from '$lib/services/album.service';
 import { uploadAssetsStore } from '$lib/stores/upload';
 import { UploadState } from '$lib/types';
 import { uploadRequest } from '$lib/utils';
+import { getByteUnitString } from '$lib/utils/byte-units';
 import { ExecutorQueue } from '$lib/utils/executor-queue';
 import { asQueryString } from '$lib/utils/shared-links';
 import { handleError } from './handle-error';
@@ -40,6 +41,8 @@ export const addDummyItems = () => {
 };
 
 // addDummyItems();
+
+export const LARGE_FILE_WARNING_THRESHOLD = 1024 ** 3; // 1 GiB
 
 export const uploadExecutionQueue = new ExecutorQueue({ concurrency: 2 });
 
@@ -114,6 +117,14 @@ export const fileUploadHandler = async ({
   for (const file of files) {
     const name = file.name.toLowerCase();
     if (extensions.some((extension) => name.endsWith(extension))) {
+      if (file.size > LARGE_FILE_WARNING_THRESHOLD) {
+        // non-blocking: the upload still proceeds
+        toastManager.warning(
+          get(t)('upload_large_file_warning', { values: { file: file.name, size: getByteUnitString(file.size) } }),
+          { timeout: 10_000 },
+        );
+      }
+
       const deviceAssetId = getDeviceAssetId(file);
       uploadAssetsStore.addItem({ id: deviceAssetId, file, albumId });
       promises.push(
