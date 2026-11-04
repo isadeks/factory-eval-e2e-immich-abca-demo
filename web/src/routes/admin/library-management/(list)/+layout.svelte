@@ -1,6 +1,7 @@
 <script lang="ts">
   import { goto, invalidate } from '$app/navigation';
   import AdminPageLayout from '$lib/components/layouts/AdminPageLayout.svelte';
+  import LibraryLastScanned from '$lib/components/LibraryLastScanned.svelte';
   import OnEvents from '$lib/components/OnEvents.svelte';
   import EmptyPlaceholder from '$lib/components/shared-components/EmptyPlaceholder.svelte';
   import { Route } from '$lib/route';
@@ -83,6 +84,10 @@
               <TableRow>
                 <TableCell class={classes.column1}>
                   <Link href={Route.viewLibrary(library)}>{library.name}</Link>
+                  <LibraryLastScanned
+                    refreshedAt={library.refreshedAt}
+                    class="block text-xs text-gray-500 dark:text-gray-400"
+                  />
                 </TableCell>
                 <TableCell class={classes.column2}>
                   <Link href={Route.viewUser(owner)}>{owner.name}</Link>

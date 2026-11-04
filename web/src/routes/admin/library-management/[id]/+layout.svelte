@@ -3,6 +3,7 @@
   import emptyFoldersUrl from '$lib/assets/empty-folders.svg';
   import AdminCard from '$lib/components/AdminCard.svelte';
   import AdminPageLayout from '$lib/components/layouts/AdminPageLayout.svelte';
+  import LibraryLastScanned from '$lib/components/LibraryLastScanned.svelte';
   import OnEvents from '$lib/components/OnEvents.svelte';
   import ServerStatisticsCard from '$lib/components/server-statistics/ServerStatisticsCard.svelte';
   import EmptyPlaceholder from '$lib/components/shared-components/EmptyPlaceholder.svelte';
@@ -63,6 +64,10 @@
   <Container size="large" center>
     <div class="grid w-full grid-cols-1 gap-4 lg:grid-cols-2">
       <Heading tag="h1" size="large" class="col-span-full my-4">{library.name}</Heading>
+      <LibraryLastScanned
+        refreshedAt={library.refreshedAt}
+        class="col-span-full -mt-2 text-sm text-gray-500 dark:text-gray-400"
+      />
       <div class="col-span-full flex flex-col gap-4 lg:flex-row">
         <ServerStatisticsCard icon={mdiCameraIris} title={$t('photos')} valuePromise={photosPromise} />
         <ServerStatisticsCard icon={mdiPlayCircle} title={$t('videos')} valuePromise={videosPromise} />
