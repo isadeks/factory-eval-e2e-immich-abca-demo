@@ -19,7 +19,7 @@ describe('AssetSelectControlBar component', () => {
   it('shows "Selected: 1" with a single selected asset', () => {
     assetMultiSelectManager.selectAsset(timelineAssetFactory.build());
 
-    renderWithTooltips(AssetSelectControlBar);
+    renderWithTooltips(AssetSelectControlBar, {});
 
     expect(screen.getByText('Selected: 1')).toBeInTheDocument();
   });
@@ -28,7 +28,7 @@ describe('AssetSelectControlBar component', () => {
     const assets = timelineAssetFactory.buildList(3);
     assetMultiSelectManager.selectAssets(assets);
 
-    renderWithTooltips(AssetSelectControlBar);
+    renderWithTooltips(AssetSelectControlBar, {});
     expect(screen.getByText('Selected: 3')).toBeInTheDocument();
 
     assetMultiSelectManager.removeAssetFromMultiselectGroup(assets[0].id);
