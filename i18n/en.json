@@ -898,6 +898,7 @@
   "duplicate": "Duplicate",
   "duplicate_workflow": "Duplicate workflow",
   "duplicates": "Duplicates",
+  "duplicates_count": "{count, plural, one {# duplicate} other {# duplicates}}",
   "duplicates_description": "Resolve each group by indicating which, if any, are duplicates.",
   "duration": "Duration",
   "edit": "Edit",
