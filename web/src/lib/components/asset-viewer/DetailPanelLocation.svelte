@@ -1,9 +1,10 @@
 <script lang="ts">
   import GeolocationPointPickerModal from '$lib/modals/GeolocationPointPickerModal.svelte';
+  import { copyToClipboard } from '$lib/utils';
   import { handleError } from '$lib/utils/handle-error';
   import { updateAsset, type AssetResponseDto } from '@immich/sdk';
-  import { Icon, modalManager } from '@immich/ui';
-  import { mdiMapMarkerOutline, mdiPencil } from '@mdi/js';
+  import { Icon, IconButton, modalManager } from '@immich/ui';
+  import { mdiContentCopy, mdiCrosshairsGps, mdiMapMarkerOutline, mdiPencil } from '@mdi/js';
   import { t } from 'svelte-i18n';
 
   type Props = {
@@ -12,6 +13,14 @@
   };
 
   let { isOwner, asset = $bindable() }: Props = $props();
+
+  const latitude = $derived(asset.exifInfo?.latitude);
+  const longitude = $derived(asset.exifInfo?.longitude);
+  const coordinates = $derived(
+    latitude !== null && latitude !== undefined && longitude !== null && longitude !== undefined
+      ? `${Number(latitude.toFixed(7))}, ${Number(longitude.toFixed(7))}`
+      : undefined,
+  );
 
   const onAction = async () => {
     const point = await modalManager.show(GeolocationPointPickerModal, { asset });
@@ -79,4 +88,24 @@
       <Icon icon={mdiPencil} size="20" />
     </div>
   </button>
+{/if}
+
+{#if coordinates}
+  <div class="flex w-full place-items-center justify-between gap-4 pb-4" data-testid="detail-panel-coordinates">
+    <div class="flex gap-4">
+      <div><Icon icon={mdiCrosshairsGps} size="24" /></div>
+      <p class="text-sm" data-testid="detail-panel-coordinates-text">{coordinates}</p>
+    </div>
+    <IconButton
+      shape="round"
+      color="secondary"
+      variant="ghost"
+      size="small"
+      icon={mdiContentCopy}
+      aria-label={$t('copy_coordinates')}
+      title={$t('copy_coordinates')}
+      data-testid="detail-panel-coordinates-copy"
+      onclick={() => copyToClipboard(coordinates)}
+    />
+  </div>
 {/if}
