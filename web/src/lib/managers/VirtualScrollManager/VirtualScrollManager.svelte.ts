@@ -1,5 +1,8 @@
 import { debounce } from 'lodash-es';
 
+/** Space in pixels between neighbouring thumbnails in the timeline grid. */
+export const TIMELINE_GRID_GAP = 2;
+
 type LayoutOptions = {
   headerHeight: number;
   rowHeight: number;
@@ -27,7 +30,7 @@ export abstract class VirtualScrollManager {
   #resetScrolling = debounce(() => (this.#scrolling = false), 1000);
   #resetSuspendTransitions = debounce(() => (this.suspendTransitions = false), 1000);
   #justifiedLayoutOptions = $derived({
-    spacing: 2,
+    spacing: TIMELINE_GRID_GAP,
     heightTolerance: 0.5,
     rowHeight: this.#rowHeight,
     rowWidth: Math.floor(this.viewportWidth),

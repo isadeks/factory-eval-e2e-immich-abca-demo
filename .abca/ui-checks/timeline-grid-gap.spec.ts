@@ -32,11 +32,32 @@ test('timeline thumbnails are separated by a 2px gap', async ({ page, request })
     expect(response.ok()).toBeTruthy();
   }
 
+  // Wait until the server has indexed all four uploads before opening the timeline.
+  await expect
+    .poll(
+      async () => {
+        const res = await request.get(`${API}/timeline/buckets`, { headers: { Authorization: `Bearer ${accessToken}` } });
+        if (!res.ok()) return 0;
+        const buckets: { count: number }[] = await res.json();
+        return buckets.reduce((sum, bucket) => sum + bucket.count, 0);
+      },
+      { timeout: 60_000 },
+    )
+    .toBe(4);
+
   await signIn(page);
   await page.goto('/photos');
 
   const thumbnails = page.locator('[data-asset-id]');
-  await expect(thumbnails).toHaveCount(4, { timeout: 90_000 });
+  await expect
+    .poll(
+      async () => {
+        if ((await thumbnails.count()) < 4) await page.reload();
+        return thumbnails.count();
+      },
+      { timeout: 90_000, intervals: [2_000] },
+    )
+    .toBe(4);
 
   // Measure the distance between neighbouring thumbnails: horizontally within a row and vertically between rows.
   const gaps = async () => {
