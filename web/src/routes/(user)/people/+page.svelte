@@ -2,9 +2,9 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import { scrollMemory } from '$lib/actions/scroll-memory';
-  import { shortcut } from '$lib/actions/shortcut';
   import PeopleCard from './PeopleCard.svelte';
   import PeopleInfiniteScroll from './PeopleInfiniteScroll.svelte';
+  import PersonNameInput from './PersonNameInput.svelte';
   import SearchPeople from '$lib/components/faces-page/PeopleSearch.svelte';
   import UserPageLayout from '$lib/components/layouts/UserPageLayout.svelte';
   import OnEvents from '$lib/components/OnEvents.svelte';
@@ -351,15 +351,11 @@
             onToggleFavorite={() => handleToggleFavorite(person)}
           />
 
-          <input
-            type="text"
-            class="mt-2 w-full rounded-2xl border-gray-100 bg-white py-2 text-center text-sm text-primary placeholder-gray-400 dark:border-gray-900 dark:bg-immich-dark-gray"
-            value={person.name}
-            placeholder={$t('add_a_name')}
-            use:shortcut={{ shortcut: { key: 'Enter' }, onShortcut: (e) => e.currentTarget.blur() }}
-            onfocusin={() => onNameChangeInputFocus(person)}
-            onfocusout={() => onNameChangeSubmit(newName, person)}
-            oninput={(event) => onNameChangeInputUpdate(event)}
+          <PersonNameInput
+            {person}
+            onFocus={() => onNameChangeInputFocus(person)}
+            onBlur={() => onNameChangeSubmit(newName, person)}
+            onInput={(event) => onNameChangeInputUpdate(event)}
           />
         </div>
       {/snippet}
