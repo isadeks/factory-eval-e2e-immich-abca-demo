@@ -24,6 +24,7 @@
   import { onMount } from 'svelte';
   import type { ClassValue } from 'svelte/elements';
   import { fade } from 'svelte/transition';
+  import TrashRetentionBadge from '$lib/components/assets/thumbnail/TrashRetentionBadge.svelte';
   import Thumbhash from '$lib/components/Thumbhash.svelte';
   import ImageThumbnail from './ImageThumbnail.svelte';
   import VideoThumbnail from './VideoThumbnail.svelte';
@@ -330,6 +331,10 @@
             id="a"
             class={['absolute z-2 size-full bg-gray-700/40 group-focus-visible:rounded-lg', { 'rounded-xl': selected }]}
           ></div>
+        {/if}
+
+        {#if !authManager.isSharedLink && asset.isTrashed}
+          <TrashRetentionBadge assetId={asset.id} />
         {/if}
 
         <!-- Favorite asset star -->

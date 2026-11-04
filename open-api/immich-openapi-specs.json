@@ -17865,6 +17865,11 @@
             "format": "date-time",
             "type": "string"
           },
+          "deletedAt": {
+            "description": "The UTC timestamp when the asset was moved to the trash. Only set for trashed assets.",
+            "format": "date-time",
+            "type": "string"
+          },
           "duplicateId": {
             "description": "Duplicate group ID",
             "format": "uuid",

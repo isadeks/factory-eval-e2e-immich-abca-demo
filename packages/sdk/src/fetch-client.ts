@@ -877,6 +877,8 @@ export type AssetResponseDto = {
     checksum: string;
     /** The UTC timestamp when the asset was originally uploaded to Immich. */
     createdAt: string;
+    /** The UTC timestamp when the asset was moved to the trash. Only set for trashed assets. */
+    deletedAt?: string;
     /** Duplicate group ID */
     duplicateId?: string | null;
     /** Video/gif duration in milliseconds (null for static images) */

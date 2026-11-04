@@ -15,6 +15,7 @@ class AssetResponseDto {
   AssetResponseDto({
     required this.checksum,
     required this.createdAt,
+    this.deletedAt = const Optional.absent(),
     this.duplicateId = const Optional.absent(),
     required this.duration,
     this.exifInfo = const Optional.absent(),
@@ -52,6 +53,9 @@ class AssetResponseDto {
 
   /// The UTC timestamp when the asset was originally uploaded to Immich.
   DateTime createdAt;
+
+  /// The UTC timestamp when the asset was moved to the trash. Only set for trashed assets.
+  Optional<DateTime?> deletedAt;
 
   /// Duplicate group ID
   Optional<String?> duplicateId;
@@ -173,6 +177,7 @@ class AssetResponseDto {
   bool operator ==(Object other) => identical(this, other) || other is AssetResponseDto &&
     other.checksum == checksum &&
     other.createdAt == createdAt &&
+    other.deletedAt == deletedAt &&
     other.duplicateId == duplicateId &&
     other.duration == duration &&
     other.exifInfo == exifInfo &&
@@ -209,6 +214,7 @@ class AssetResponseDto {
     // ignore: unnecessary_parenthesis
     (checksum.hashCode) +
     (createdAt.hashCode) +
+    (deletedAt == null ? 0 : deletedAt!.hashCode) +
     (duplicateId == null ? 0 : duplicateId!.hashCode) +
     (duration == null ? 0 : duration!.hashCode) +
     (exifInfo == null ? 0 : exifInfo!.hashCode) +
@@ -241,12 +247,16 @@ class AssetResponseDto {
     (width == null ? 0 : width!.hashCode);
 
   @override
-  String toString() => 'AssetResponseDto[checksum=$checksum, createdAt=$createdAt, duplicateId=$duplicateId, duration=$duration, exifInfo=$exifInfo, fileCreatedAt=$fileCreatedAt, fileModifiedAt=$fileModifiedAt, hasMetadata=$hasMetadata, height=$height, id=$id, isArchived=$isArchived, isEdited=$isEdited, isFavorite=$isFavorite, isOffline=$isOffline, isTrashed=$isTrashed, libraryId=$libraryId, livePhotoVideoId=$livePhotoVideoId, localDateTime=$localDateTime, originalFileName=$originalFileName, originalMimeType=$originalMimeType, originalPath=$originalPath, owner=$owner, ownerId=$ownerId, people=$people, resized=$resized, stack=$stack, tags=$tags, thumbhash=$thumbhash, type=$type, updatedAt=$updatedAt, visibility=$visibility, width=$width]';
+  String toString() => 'AssetResponseDto[checksum=$checksum, createdAt=$createdAt, deletedAt=$deletedAt, duplicateId=$duplicateId, duration=$duration, exifInfo=$exifInfo, fileCreatedAt=$fileCreatedAt, fileModifiedAt=$fileModifiedAt, hasMetadata=$hasMetadata, height=$height, id=$id, isArchived=$isArchived, isEdited=$isEdited, isFavorite=$isFavorite, isOffline=$isOffline, isTrashed=$isTrashed, libraryId=$libraryId, livePhotoVideoId=$livePhotoVideoId, localDateTime=$localDateTime, originalFileName=$originalFileName, originalMimeType=$originalMimeType, originalPath=$originalPath, owner=$owner, ownerId=$ownerId, people=$people, resized=$resized, stack=$stack, tags=$tags, thumbhash=$thumbhash, type=$type, updatedAt=$updatedAt, visibility=$visibility, width=$width]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
       json[r'checksum'] = this.checksum;
       json[r'createdAt'] = this.createdAt.toUtc().toIso8601String();
+    if (this.deletedAt.isPresent) {
+      final value = this.deletedAt.value;
+      json[r'deletedAt'] = value?.toUtc().toIso8601String();
+    }
     if (this.duplicateId.isPresent) {
       final value = this.duplicateId.value;
       json[r'duplicateId'] = value;
@@ -337,6 +347,7 @@ class AssetResponseDto {
       return AssetResponseDto(
         checksum: mapValueOfType<String>(json, r'checksum')!,
         createdAt: mapDateTime(json, r'createdAt', r'')!,
+        deletedAt: json.containsKey(r'deletedAt') ? Optional.present(mapDateTime(json, r'deletedAt', r'')) : const Optional.absent(),
         duplicateId: json.containsKey(r'duplicateId') ? Optional.present(mapValueOfType<String>(json, r'duplicateId')) : const Optional.absent(),
         duration: mapValueOfType<int>(json, r'duration'),
         exifInfo: json.containsKey(r'exifInfo') ? Optional.present(ExifResponseDto.fromJson(json[r'exifInfo'])) : const Optional.absent(),

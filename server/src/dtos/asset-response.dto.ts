@@ -96,6 +96,12 @@ export const AssetResponseSchema = SanitizedAssetResponseSchema.extend(
     isFavorite: z.boolean().describe('Is favorite'),
     isArchived: z.boolean().describe('Is archived'),
     isTrashed: z.boolean().describe('Is trashed'),
+    // TODO: use `isoDatetimeToDate` when using `ZodSerializerDto` on the controllers.
+    deletedAt: z
+      .string()
+      .meta({ format: 'date-time' })
+      .optional()
+      .describe('The UTC timestamp when the asset was moved to the trash. Only set for trashed assets.'),
     isOffline: z.boolean().describe('Is offline'),
     visibility: AssetVisibilitySchema,
     exifInfo: ExifResponseSchema.optional(),
@@ -227,6 +233,7 @@ export function mapAsset(entity: MaybeDehydrated<MapAsset>, options: AssetMapOpt
     isFavorite: options.auth?.user.id === entity.ownerId && entity.isFavorite,
     isArchived: entity.visibility === AssetVisibility.Archive,
     isTrashed: !!entity.deletedAt,
+    deletedAt: entity.deletedAt ? asDateTimeString(entity.deletedAt) : undefined,
     visibility: entity.visibility,
     duration: entity.duration,
     exifInfo: entity.exifInfo ? mapExif(entity.exifInfo) : undefined,

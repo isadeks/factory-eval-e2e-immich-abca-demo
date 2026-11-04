@@ -858,6 +858,7 @@
   "delete_tag_confirmation_prompt": "Are you sure you want to delete {tagName} tag?",
   "delete_user": "Delete user",
   "deleted_shared_link": "Deleted shared link",
+  "deletes_in_days": "Deletes in {days, plural, one {# day} other {# days}}",
   "description": "Description",
   "deselect_all": "Deselect All",
   "details": "Details",
