@@ -44,26 +44,34 @@ test('album page shows the month range of the album photos under the title', asy
   });
   const album = await albumRes.json();
 
-  // Metadata extraction rewrites asset dates from the file; wait for it, then set the dates explicitly.
+  // Metadata extraction (and the jobs an edit queues) can rewrite asset dates from the file after the upload.
+  // Wait for the job queues to drain, set the dates, drain again, and repeat until the album reports them.
   const dates = ['2024-01-15T10:00:00.000Z', '2024-03-20T10:00:00.000Z'];
-  for (const [i, id] of assetIds.entries()) {
-    await expect
-      .poll(async () => (await (await request.get(`${api}/assets/${id}`, { headers })).json()).exifInfo?.fileSizeInByte ?? 0, {
-        timeout: 60_000,
-      })
-      .toBeGreaterThan(0);
-    const upd = await request.put(`${api}/assets/${id}`, { headers, data: { dateTimeOriginal: dates[i] } });
-    expect(upd.ok()).toBeTruthy();
-  }
-
   const expected = 'Jan 2024 – Mar 2024';
+  const jobsIdle = async () => {
+    const jobs = (await (await request.get(`${api}/jobs`, { headers })).json()) as Record<
+      string,
+      { jobCounts: { active: number; waiting: number; delayed: number } }
+    >;
+    return Object.values(jobs).every((q) => q.jobCounts.active + q.jobCounts.waiting + q.jobCounts.delayed === 0);
+  };
+  const albumRange = async () => {
+    const info = await (await request.get(`${api}/albums/${album.id}`, { headers })).json();
+    return `${monthYear(info.startDate ?? '2000-01-01T00:00:00Z')} – ${monthYear(info.endDate ?? '2000-01-01T00:00:00Z')}`;
+  };
+
   await expect
     .poll(
       async () => {
-        const info = await (await request.get(`${api}/albums/${album.id}`, { headers })).json();
-        return `${monthYear(info.startDate ?? '2000-01-01T00:00:00Z')} – ${monthYear(info.endDate ?? '2000-01-01T00:00:00Z')}`;
+        await expect.poll(jobsIdle, { timeout: 30_000 }).toBe(true);
+        for (const [i, id] of assetIds.entries()) {
+          const upd = await request.put(`${api}/assets/${id}`, { headers, data: { dateTimeOriginal: dates[i] } });
+          expect(upd.ok()).toBeTruthy();
+        }
+        await expect.poll(jobsIdle, { timeout: 30_000 }).toBe(true);
+        return albumRange();
       },
-      { timeout: 60_000 },
+      { timeout: 90_000, intervals: [1000] },
     )
     .toBe(expected);
 
