@@ -103,6 +103,12 @@ const ServerStatsResponseSchema = z
   })
   .meta({ id: 'ServerStatsResponseDto' });
 
+const ServerUptimeResponseSchema = z
+  .object({
+    uptimeSeconds: z.int().min(0).describe('Server uptime in seconds'),
+  })
+  .meta({ id: 'ServerUptimeResponseDto' });
+
 const ServerMediaTypesResponseSchema = z
   .object({
     video: z.array(z.string()).describe('Supported video MIME types'),
@@ -188,6 +194,7 @@ export class ServerVersionResponseDto extends createZodDto(ServerVersionResponse
 export class ServerVersionHistoryResponseDto extends createZodDto(ServerVersionHistoryResponseSchema) {}
 export class UsageByUserDto extends createZodDto(UsageByUserSchema) {}
 export class ServerStatsResponseDto extends createZodDto(ServerStatsResponseSchema) {}
+export class ServerUptimeResponseDto extends createZodDto(ServerUptimeResponseSchema) {}
 export class ServerMediaTypesResponseDto extends createZodDto(ServerMediaTypesResponseSchema) {}
 export class ServerConfigDto extends createZodDto(ServerConfigSchema) {}
 export class ServerFeaturesDto extends createZodDto(ServerFeaturesSchema) {}

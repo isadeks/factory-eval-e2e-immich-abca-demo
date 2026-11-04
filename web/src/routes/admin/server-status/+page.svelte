@@ -1,7 +1,8 @@
 <script lang="ts">
   import AdminPageLayout from '$lib/components/layouts/AdminPageLayout.svelte';
   import ServerStatisticsPanel from './ServerStatisticsPanel.svelte';
-  import { getServerStatistics, type ServerStatsResponseDto } from '@immich/sdk';
+  import ServerUptime from './ServerUptime.svelte';
+  import { getServerStatistics, getServerUptime, type ServerStatsResponseDto } from '@immich/sdk';
   import { Container } from '@immich/ui';
   import { onMount } from 'svelte';
   import type { PageData } from './$types';
@@ -21,8 +22,14 @@
     return data.statsPromise;
   });
 
+  let uptimeSeconds = $state<number | undefined>(undefined);
+
+  const currentUptimeSeconds = $derived(uptimeSeconds ?? data.uptimeSeconds);
+
   const updateStatistics = async () => {
-    stats = await getServerStatistics();
+    const [newStats, uptime] = await Promise.all([getServerStatistics(), getServerUptime()]);
+    stats = newStats;
+    uptimeSeconds = uptime.uptimeSeconds;
   };
 
   onMount(() => {
@@ -34,6 +41,7 @@
 
 <AdminPageLayout breadcrumbs={[{ title: data.meta.title }]}>
   <Container size="large" center>
+    <ServerUptime uptimeSeconds={currentUptimeSeconds} />
     <ServerStatisticsPanel {statsPromise} users={data.users} />
   </Container>
 </AdminPageLayout>

@@ -11596,6 +11596,48 @@
         "x-immich-state": "Stable"
       }
     },
+    "/server/uptime": {
+      "get": {
+        "description": "Retrieve how long the server process has been running, in seconds.",
+        "operationId": "getServerUptime",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerUptimeResponseDto"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          },
+          {
+            "cookie": []
+          },
+          {
+            "api_key": []
+          }
+        ],
+        "summary": "Get uptime",
+        "tags": [
+          "Server"
+        ],
+        "x-immich-admin-only": true,
+        "x-immich-history": [
+          {
+            "version": "v3.0.4",
+            "state": "Added"
+          }
+        ],
+        "x-immich-permission": "server.statistics"
+      }
+    },
     "/server/version": {
       "get": {
         "description": "Retrieve the current server version in semantic versioning (semver) format.",
@@ -22757,6 +22799,20 @@
           "diskUsagePercentage",
           "diskUse",
           "diskUseRaw"
+        ],
+        "type": "object"
+      },
+      "ServerUptimeResponseDto": {
+        "properties": {
+          "uptimeSeconds": {
+            "description": "Server uptime in seconds",
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "uptimeSeconds"
         ],
         "type": "object"
       },

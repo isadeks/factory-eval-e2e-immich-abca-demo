@@ -12,6 +12,7 @@ import {
   ServerPingResponse,
   ServerStatsResponseDto,
   ServerStorageResponseDto,
+  ServerUptimeResponseDto,
   UsageByUserDto,
 } from 'src/dtos/server.dto';
 import { StorageFolder, SystemMetadataKey } from 'src/enum';
@@ -130,6 +131,10 @@ export class ServerService extends BaseService {
       maintenanceMode: false,
       minFaces: config.machineLearning.facialRecognition.minFaces,
     };
+  }
+
+  getUptime(): ServerUptimeResponseDto {
+    return { uptimeSeconds: Math.floor(process.uptime()) };
   }
 
   async getStatistics(): Promise<ServerStatsResponseDto> {

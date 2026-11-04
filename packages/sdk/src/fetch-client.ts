@@ -2117,6 +2117,10 @@ export type ServerStorageResponseDto = {
     /** Used disk space in bytes */
     diskUseRaw: number;
 };
+export type ServerUptimeResponseDto = {
+    /** Server uptime in seconds */
+    uptimeSeconds: number;
+};
 export type ServerVersionResponseDto = {
     /** Major version number */
     major: number;
@@ -6007,6 +6011,17 @@ export function getStorage(opts?: Oazapfts.RequestOpts) {
         status: 200;
         data: ServerStorageResponseDto;
     }>("/server/storage", {
+        ...opts
+    }));
+}
+/**
+ * Get uptime
+ */
+export function getServerUptime(opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: ServerUptimeResponseDto;
+    }>("/server/uptime", {
         ...opts
     }));
 }

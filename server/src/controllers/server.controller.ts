@@ -11,6 +11,7 @@ import {
   ServerPingResponse,
   ServerStatsResponseDto,
   ServerStorageResponseDto,
+  ServerUptimeResponseDto,
   ServerVersionHistoryResponseDto,
   ServerVersionResponseDto,
 } from 'src/dtos/server.dto';
@@ -122,6 +123,17 @@ export class ServerController {
   })
   getServerStatistics(): Promise<ServerStatsResponseDto> {
     return this.service.getStatistics();
+  }
+
+  @Get('uptime')
+  @Authenticated({ permission: Permission.ServerStatistics, admin: true })
+  @Endpoint({
+    summary: 'Get uptime',
+    description: 'Retrieve how long the server process has been running, in seconds.',
+    history: new HistoryBuilder().added('v3.0.4'),
+  })
+  getServerUptime(): ServerUptimeResponseDto {
+    return this.service.getUptime();
   }
 
   @Get('media-types')
