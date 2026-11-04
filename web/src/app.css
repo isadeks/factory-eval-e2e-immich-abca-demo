@@ -67,15 +67,43 @@
 @layer base {
   :root {
     /* light */
-    --immich-primary: 66 80 175;
+    --immich-primary: 126 34 206;
     --immich-bg: 255 255 255;
     --immich-fg: 0 0 0;
 
     /* dark */
-    --immich-dark-primary: 172 203 250;
+    --immich-dark-primary: 216 180 254;
     --immich-dark-bg: 10 10 10;
     --immich-dark-fg: 229 231 235;
     --immich-dark-gray: 33 33 33;
+
+    /* purple theme: @immich/ui primary scale (light) */
+    --immich-ui-primary-50: oklch(0.977 0.014 308.3);
+    --immich-ui-primary-100: oklch(0.946 0.033 307.2);
+    --immich-ui-primary-200: oklch(0.902 0.063 306.7);
+    --immich-ui-primary-300: oklch(0.827 0.119 306.4);
+    --immich-ui-primary-400: oklch(0.714 0.203 305.5);
+    --immich-ui-primary-500: oklch(0.496 0.265 301.9);
+    --immich-ui-primary-600: oklch(0.438 0.218 303.7);
+    --immich-ui-primary-700: oklch(0.381 0.176 304.9);
+    --immich-ui-primary-800: oklch(0.291 0.149 302.7);
+    --immich-ui-primary-900: oklch(0.24 0.12 303);
+    --immich-ui-primary-950: oklch(0.18 0.09 303);
+  }
+
+  .dark {
+    /* purple theme: @immich/ui primary scale (dark) */
+    --immich-ui-primary-950: oklch(0.977 0.014 308.3);
+    --immich-ui-primary-900: oklch(0.946 0.033 307.2);
+    --immich-ui-primary-800: oklch(0.902 0.063 306.7);
+    --immich-ui-primary-700: oklch(0.827 0.119 306.4);
+    --immich-ui-primary-600: oklch(0.761 0.16 305.9);
+    --immich-ui-primary-500: oklch(0.714 0.203 305.5);
+    --immich-ui-primary-400: oklch(0.45 0.13 304);
+    --immich-ui-primary-300: oklch(0.38 0.11 304);
+    --immich-ui-primary-200: oklch(0.31 0.09 304);
+    --immich-ui-primary-100: oklch(0.25 0.07 304);
+    --immich-ui-primary-50: oklch(0.19 0.05 304);
   }
 
   button:not(:disabled),
