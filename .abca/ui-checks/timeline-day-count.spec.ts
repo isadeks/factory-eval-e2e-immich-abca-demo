@@ -14,6 +14,7 @@ test('timeline day headers show the number of photos', async ({ page, request })
   const { accessToken } = await login.json();
 
   const total = 3;
+  const assetIds: string[] = [];
   for (let i = 1; i <= total; i++) {
     const now = new Date().toISOString();
     const response = await request.post(`${apiUrl}/assets`, {
@@ -27,6 +28,21 @@ test('timeline day headers show the number of photos', async ({ page, request })
       },
     });
     expect(response.ok()).toBeTruthy();
+    assetIds.push((await response.json()).id);
+  }
+
+  // Metadata extraction moves an asset to the day of its EXIF date; open the timeline only after that has happened,
+  // otherwise it can load while the assets are still in their upload-time bucket.
+  for (const id of assetIds) {
+    await expect
+      .poll(
+        async () => {
+          const asset = await request.get(`${apiUrl}/assets/${id}`, { headers: { Authorization: `Bearer ${accessToken}` } });
+          return (await asset.json()).exifInfo?.dateTimeOriginal ?? null;
+        },
+        { timeout: 60_000 },
+      )
+      .not.toBeNull();
   }
 
   await signIn(page);
@@ -38,7 +54,18 @@ test('timeline day headers show the number of photos', async ({ page, request })
     const texts = await counts.allTextContents();
     return texts.reduce((sum, text) => sum + Number(/(\d+) photos?/.exec(text)?.[1] ?? 0), 0);
   };
-  await expect.poll(readTotal, { timeout: 60_000 }).toBe(total);
+  await expect
+    .poll(
+      async () => {
+        const value = await readTotal();
+        if (value !== total) {
+          await page.reload();
+        }
+        return value;
+      },
+      { timeout: 60_000, intervals: [1000, 2000, 3000] },
+    )
+    .toBe(total);
 
   for (const text of await counts.allTextContents()) {
     expect(text.trim()).toMatch(/^· (1 photo|\d+ photos)$/);
