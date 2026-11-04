@@ -23211,8 +23211,7 @@
           "showMetadata",
           "slug",
           "type",
-          "userId",
-          "viewCount"
+          "userId"
         ],
         "type": "object"
       },

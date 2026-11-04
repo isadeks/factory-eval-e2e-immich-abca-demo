@@ -90,7 +90,7 @@
         {/if}
 
         <Text size="small" color="muted" data-testid="shared-link-view-count">
-          {$t('shared_link_view_count', { values: { count: sharedLink.viewCount } })}
+          {$t('shared_link_view_count', { values: { count: sharedLink.viewCount ?? 0 } })}
         </Text>
       </div>
 

@@ -2202,7 +2202,7 @@ export type SharedLinkResponseDto = {
     /** Owner user ID */
     userId: string;
     /** Number of times the shared link has been viewed */
-    viewCount: number;
+    viewCount?: number;
 };
 export type SharedLinkCreateDto = {
     /** Album ID (for album sharing) */

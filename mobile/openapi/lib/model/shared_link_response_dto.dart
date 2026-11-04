@@ -27,7 +27,7 @@ class SharedLinkResponseDto {
     required this.slug,
     required this.type,
     required this.userId,
-    required this.viewCount,
+    this.viewCount = const Optional.absent(),
   });
 
   ///
@@ -79,7 +79,13 @@ class SharedLinkResponseDto {
   ///
   /// Minimum value: 0
   /// Maximum value: 9007199254740991
-  int viewCount;
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  Optional<int?> viewCount;
 
   @override
   bool operator ==(Object other) => identical(this, other) || other is SharedLinkResponseDto &&
@@ -116,7 +122,7 @@ class SharedLinkResponseDto {
     (slug == null ? 0 : slug!.hashCode) +
     (type.hashCode) +
     (userId.hashCode) +
-    (viewCount.hashCode);
+    (viewCount == null ? 0 : viewCount!.hashCode);
 
   @override
   String toString() => 'SharedLinkResponseDto[album=$album, allowDownload=$allowDownload, allowUpload=$allowUpload, assets=$assets, createdAt=$createdAt, description=$description, expiresAt=$expiresAt, id=$id, key=$key, password=$password, showMetadata=$showMetadata, slug=$slug, type=$type, userId=$userId, viewCount=$viewCount]';
@@ -160,7 +166,10 @@ class SharedLinkResponseDto {
     }
       json[r'type'] = this.type;
       json[r'userId'] = this.userId;
-      json[r'viewCount'] = this.viewCount;
+    if (this.viewCount.isPresent) {
+      final value = this.viewCount.value;
+      json[r'viewCount'] = value;
+    }
     return json;
   }
 
@@ -187,7 +196,7 @@ class SharedLinkResponseDto {
         slug: mapValueOfType<String>(json, r'slug'),
         type: SharedLinkType.fromJson(json[r'type'])!,
         userId: mapValueOfType<String>(json, r'userId')!,
-        viewCount: mapValueOfType<int>(json, r'viewCount')!,
+        viewCount: json.containsKey(r'viewCount') ? Optional.present(json[r'viewCount'] == null ? null : int.parse('${json[r'viewCount']}')) : const Optional.absent(),
       );
     }
     return null;
@@ -248,7 +257,6 @@ class SharedLinkResponseDto {
     'slug',
     'type',
     'userId',
-    'viewCount',
   };
 }
 

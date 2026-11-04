@@ -67,7 +67,7 @@ const SharedLinkResponseSchema = z
     allowDownload: z.boolean().describe('Allow downloads'),
     showMetadata: z.boolean().describe('Show metadata'),
     slug: z.string().nullable().describe('Custom URL slug'),
-    viewCount: z.int().min(0).describe('Number of times the shared link has been viewed'),
+    viewCount: z.int().min(0).optional().describe('Number of times the shared link has been viewed'),
   })
   .describe('Shared link response')
   .meta({ id: 'SharedLinkResponseDto' });
