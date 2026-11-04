@@ -1252,6 +1252,7 @@
   "language_setting_description": "Select your preferred language",
   "large_files": "Large Files",
   "last": "Last",
+  "last_login": "Last login",
   "last_months": "{count, plural, one {Last month} other {Last # months}}",
   "last_seen": "Last seen",
   "latest_version": "Latest Version",

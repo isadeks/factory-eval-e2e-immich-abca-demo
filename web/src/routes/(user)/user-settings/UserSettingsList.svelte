@@ -56,7 +56,7 @@
 </SettingAccordion>
 
 <SettingAccordion icon={mdiAccountOutline} key="account" title={$t('account')} subtitle={$t('manage_your_account')}>
-  <UserProfileSettings />
+  <UserProfileSettings {sessions} />
 </SettingAccordion>
 
 <SettingAccordion

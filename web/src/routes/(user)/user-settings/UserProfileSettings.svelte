@@ -1,12 +1,19 @@
 <script lang="ts">
   import { authManager } from '$lib/managers/auth-manager.svelte';
   import { handleError } from '$lib/utils/handle-error';
-  import { updateMyUser } from '@immich/sdk';
+  import LastLogin from '$lib/components/user-settings-page/LastLogin.svelte';
+  import { updateMyUser, type SessionResponseDto } from '@immich/sdk';
   import { Button, Field, Input, toastManager } from '@immich/ui';
   import { cloneDeep } from 'lodash-es';
   import { t } from 'svelte-i18n';
   import { createBubbler, preventDefault } from 'svelte/legacy';
   import { fade } from 'svelte/transition';
+
+  interface Props {
+    sessions?: SessionResponseDto[];
+  }
+
+  let { sessions = [] }: Props = $props();
 
   let editedUser = $state(cloneDeep(authManager.user));
   const bubble = createBubbler();
@@ -49,6 +56,8 @@
         <Field label={$t('storage_label')} disabled>
           <Input value={editedUser.storageLabel || ''} />
         </Field>
+
+        <LastLogin {sessions} />
 
         <div class="flex justify-end">
           <Button shape="round" type="submit" size="small" onclick={() => handleSaveProfile()}>{$t('save')}</Button>
