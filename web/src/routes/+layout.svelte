@@ -17,6 +17,8 @@
   import { sidebarStore } from '$lib/stores/sidebar.svelte';
   import { closeWebsocketConnection, openWebsocketConnection, websocketStore } from '$lib/stores/websocket';
   import { maintenanceShouldRedirect } from '$lib/utils/maintenance';
+  import { getPageTitle } from '$lib/utils/page-title';
+  import { assetMultiSelectManager } from '$lib/managers/asset-multi-select-manager.svelte';
   import { getServerConfig } from '@immich/sdk';
   import {
     CommandPaletteProvider,
@@ -228,6 +230,15 @@
       }
     }
   };
+
+  const pageTitle = $derived(
+    getPageTitle(
+      page.data.meta?.title,
+      assetMultiSelectManager.selectionActive
+        ? $t('selected_count', { values: { count: assetMultiSelectManager.assets.length } })
+        : undefined,
+    ),
+  );
 </script>
 
 <OnEvents {onWebsocketConnect} />
@@ -235,7 +246,7 @@
 <VersionAnnouncement />
 
 <svelte:head>
-  <title>{page.data.meta?.title || 'Web'} - Immich</title>
+  <title>{pageTitle}</title>
   <link rel="manifest" href="/manifest.json" crossorigin="use-credentials" />
   <meta name="theme-color" content="white" media="(prefers-color-scheme: light)" />
   <meta name="theme-color" content="black" media="(prefers-color-scheme: dark)" />
