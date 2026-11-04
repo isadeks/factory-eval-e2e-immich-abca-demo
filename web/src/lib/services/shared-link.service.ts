@@ -10,12 +10,15 @@ import {
 } from '@immich/sdk';
 import { modalManager, toastManager, type ActionItem } from '@immich/ui';
 import { mdiContentCopy, mdiLink, mdiPencilOutline, mdiQrcode, mdiTrashCanOutline } from '@mdi/js';
+import { DateTime } from 'luxon';
 import type { MessageFormatter } from 'svelte-i18n';
+import { get } from 'svelte/store';
 import { goto } from '$app/navigation';
 import { eventManager } from '$lib/managers/event-manager.svelte';
 import { serverConfigManager } from '$lib/managers/server-config-manager.svelte';
 import QrCodeModal from '$lib/modals/QrCodeModal.svelte';
 import { Route } from '$lib/route';
+import { locale } from '$lib/stores/preferences.store';
 import { copyToClipboard } from '$lib/utils';
 import { handleError } from '$lib/utils/handle-error';
 import { getFormatter } from '$lib/utils/i18n';
@@ -102,12 +105,21 @@ export const handleUpdateSharedLink = async (sharedLink: SharedLinkResponseDto, 
   }
 };
 
-const handleDeleteSharedLink = async (sharedLink: SharedLinkResponseDto) => {
+export const getRevokeSharedLinkPrompt = ($t: MessageFormatter, sharedLink: SharedLinkResponseDto) => {
+  if (!sharedLink.expiresAt) {
+    return $t('confirm_revoke_shared_link_never_expires');
+  }
+
+  const date = DateTime.fromISO(sharedLink.expiresAt).toLocaleString(DateTime.DATETIME_MED, { locale: get(locale) });
+  return $t('confirm_revoke_shared_link_expires', { values: { date } });
+};
+
+export const handleDeleteSharedLink = async (sharedLink: SharedLinkResponseDto) => {
   const $t = await getFormatter();
   const success = await modalManager.showDialog({
-    title: $t('delete_shared_link'),
-    prompt: $t('confirm_delete_shared_link'),
-    confirmText: $t('delete'),
+    title: $t('revoke_shared_link'),
+    prompt: getRevokeSharedLinkPrompt($t, sharedLink),
+    confirmText: $t('revoke'),
   });
   if (!success) {
     return;
