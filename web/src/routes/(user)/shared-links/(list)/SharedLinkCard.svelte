@@ -17,6 +17,9 @@
   let now = DateTime.now();
   let expiresAt = $derived(sharedLink.expiresAt ? DateTime.fromISO(sharedLink.expiresAt) : undefined);
   let isExpired = $derived(expiresAt ? now > expiresAt : false);
+  let expiryDateLabel = $derived(
+    expiresAt ? expiresAt.setLocale($locale).toLocaleString(DateTime.DATETIME_MED) : $t('never'),
+  );
 
   const getCountDownExpirationDate = (expiresAtDate: DateTime, now: DateTime) => {
     const relativeUnits: ToRelativeUnit[] = ['days', 'hours', 'minutes', 'seconds'];
@@ -102,6 +105,9 @@
       </div>
     </div>
   </svelte:element>
+  <div class="ms-4 flex shrink-0 flex-col place-content-center whitespace-nowrap" data-testid="shared-link-expiry-date">
+    <Text size="small" color={isExpired ? 'danger' : 'muted'} fontWeight="medium">{expiryDateLabel}</Text>
+  </div>
   <div class="ms-4 flex flex-auto flex-col place-content-center place-items-end text-end">
     <div class="hidden sm:flex">
       <ActionButton action={Edit} />
