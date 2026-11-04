@@ -21,6 +21,7 @@
   import { assetsSnapshot } from '$lib/managers/timeline-manager/utils.svelte';
   import { keyboardManager } from '$lib/stores/keyboard-manager.svelte';
   import { mediaQueryManager } from '$lib/stores/media-query-manager.svelte';
+  import { getTimelineRowHeight, timelineGridSize } from '$lib/stores/preferences.store';
   import { isAssetViewerRoute, navigate } from '$lib/utils/navigation';
   import { getTimes, type ScrubberListener } from '$lib/utils/timeline-util';
   import { type AlbumResponseDto, type PersonResponseDto, type UserResponseDto } from '@immich/sdk';
@@ -108,11 +109,11 @@
   $effect(() => {
     const layoutOptions = maxMd
       ? {
-          rowHeight: 100,
+          rowHeight: getTimelineRowHeight($timelineGridSize, true),
           headerHeight: 32,
         }
       : {
-          rowHeight: 235,
+          rowHeight: getTimelineRowHeight($timelineGridSize, false),
           headerHeight: 48,
         };
     timelineManager.setLayoutOptions(layoutOptions);

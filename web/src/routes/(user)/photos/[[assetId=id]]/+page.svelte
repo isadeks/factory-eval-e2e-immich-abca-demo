@@ -18,6 +18,7 @@
   import TagAction from '$lib/components/timeline/actions/TagAction.svelte';
   import AssetSelectControlBar from '$lib/components/timeline/AssetSelectControlBar.svelte';
   import Timeline from '$lib/components/timeline/Timeline.svelte';
+  import TimelineGridSizeSelector from '$lib/components/timeline/TimelineGridSizeSelector.svelte';
   import { AssetAction } from '$lib/constants';
   import { assetMultiSelectManager } from '$lib/managers/asset-multi-select-manager.svelte';
   import { assetViewerManager } from '$lib/managers/asset-viewer-manager.svelte';
@@ -102,6 +103,7 @@
     onEscape={handleEscape}
     withStacked
   >
+    <TimelineGridSizeSelector />
     {#if authManager.preferences.memories.enabled}
       <ImageCarousel {items} />
     {/if}

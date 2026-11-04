@@ -139,3 +139,35 @@ export const autoPlayVideo = persisted<boolean>('auto-play-video', true, {});
 export const alwaysLoadOriginalVideo = persisted<boolean>('always-load-original-video', false, {});
 
 export const recentAlbumsDropdown = persisted<boolean>('recent-albums-open', true, {});
+
+export enum TimelineGridSize {
+  Small = 'small',
+  Medium = 'medium',
+  Large = 'large',
+}
+
+export const defaultTimelineGridSize = TimelineGridSize.Medium;
+
+const timelineGridSizes = new Set<string>(Object.values(TimelineGridSize));
+
+export const parseTimelineGridSize = (value: unknown): TimelineGridSize =>
+  typeof value === 'string' && timelineGridSizes.has(value) ? (value as TimelineGridSize) : defaultTimelineGridSize;
+
+// Row heights (in px) of the timeline grid, for compact (mobile) and regular viewports
+const timelineRowHeights: Record<TimelineGridSize, { compact: number; regular: number }> = {
+  [TimelineGridSize.Small]: { compact: 70, regular: 165 },
+  [TimelineGridSize.Medium]: { compact: 100, regular: 235 },
+  [TimelineGridSize.Large]: { compact: 140, regular: 330 },
+};
+
+export const getTimelineRowHeight = (size: TimelineGridSize, compact: boolean) => {
+  const heights = timelineRowHeights[parseTimelineGridSize(size)];
+  return compact ? heights.compact : heights.regular;
+};
+
+export const timelineGridSize = persisted<TimelineGridSize>('timeline-grid-size', defaultTimelineGridSize, {
+  serializer: {
+    parse: (text) => parseTimelineGridSize(text),
+    stringify: (object) => parseTimelineGridSize(object),
+  },
+});
