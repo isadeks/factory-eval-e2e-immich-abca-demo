@@ -6,21 +6,23 @@ import { highlight, openInfoPanel, shot, signIn } from './feval-annotate';
 const API = process.env.PREVIEW_API_URL!;
 
 // Build a TIFF/EXIF block (little endian) with Make, Model and DateTimeOriginal.
-function buildExif(make: string, model: string, taken: string): Buffer {
+function buildExif(make: string, model: string, lens: string, taken: string): Buffer {
   const ascii = (s: string) => Buffer.from(`${s}\0`, 'latin1');
   const makeB = ascii(make);
   const modelB = ascii(model);
+  const lensB = ascii(lens);
   const takenB = ascii(taken);
   const ifd0Entries = 3;
   const ifd0Size = 2 + ifd0Entries * 12 + 4;
-  const exifIfdSize = 2 + 12 + 4;
+  const exifIfdSize = 2 + 2 * 12 + 4;
   const ifd0Off = 8;
   const exifIfdOff = ifd0Off + ifd0Size;
   const dataOff = exifIfdOff + exifIfdSize;
   const makeOff = dataOff;
   const modelOff = makeOff + makeB.length;
   const takenOff = modelOff + modelB.length;
-  const buf = Buffer.alloc(takenOff + takenB.length);
+  const lensOff = takenOff + takenB.length;
+  const buf = Buffer.alloc(lensOff + lensB.length);
   buf.write('II', 0, 'latin1');
   buf.writeUInt16LE(42, 2);
   buf.writeUInt32LE(ifd0Off, 4);
@@ -34,17 +36,19 @@ function buildExif(make: string, model: string, taken: string): Buffer {
   entry(ifd0Off + 2, 0x01_0f, 2, makeB.length, makeOff);
   entry(ifd0Off + 14, 0x01_10, 2, modelB.length, modelOff);
   entry(ifd0Off + 26, 0x87_69, 4, 1, exifIfdOff);
-  buf.writeUInt16LE(1, exifIfdOff);
+  buf.writeUInt16LE(2, exifIfdOff);
   entry(exifIfdOff + 2, 0x90_03, 2, takenB.length, takenOff);
+  entry(exifIfdOff + 14, 0xa4_34, 2, lensB.length, lensOff);
   makeB.copy(buf, makeOff);
   modelB.copy(buf, modelOff);
   takenB.copy(buf, takenOff);
+  lensB.copy(buf, lensOff);
   return buf;
 }
 
 // Replace the APP1 (EXIF) segment of a sample JPEG with ours.
-function withCamera(jpeg: Buffer, make: string, model: string, taken: string): Buffer {
-  const exif = Buffer.concat([Buffer.from('Exif\0\0', 'latin1'), buildExif(make, model, taken)]);
+function withCamera(jpeg: Buffer, make: string, model: string, lens: string, taken: string): Buffer {
+  const exif = Buffer.concat([Buffer.from('Exif\0\0', 'latin1'), buildExif(make, model, lens, taken)]);
   const app1 = Buffer.alloc(4);
   app1.writeUInt16BE(0xff_e1, 0);
   app1.writeUInt16BE(exif.length + 2, 2);
@@ -61,7 +65,7 @@ function withCamera(jpeg: Buffer, make: string, model: string, taken: string): B
   return Buffer.concat(parts);
 }
 
-test('info panel shows the camera make and model from EXIF', async ({ page, request }) => {
+test('info panel shows the camera and lens on one line from EXIF', async ({ page, request }) => {
   const login = await request.post(`${API}/auth/login`, {
     data: { email: process.env.PREVIEW_ADMIN_EMAIL, password: process.env.PREVIEW_ADMIN_PASSWORD },
   });
@@ -81,7 +85,7 @@ test('info panel shows the camera make and model from EXIF', async ({ page, requ
       assetData: {
         name: 'camera.jpg',
         mimeType: 'image/jpeg',
-        buffer: withCamera(sample, 'Canon', 'EOS R5 Mark II', '2026:02:03 04:05:06'),
+        buffer: withCamera(sample, 'Canon', 'EOS R5 Mark II', 'RF24-70mm F2.8 L IS USM', '2026:02:03 04:05:06'),
       },
     },
   });
@@ -94,6 +98,11 @@ test('info panel shows the camera make and model from EXIF', async ({ page, requ
       timeout: 60_000,
     })
     .toBe('EOS R5 Mark II');
+  await expect
+    .poll(async () => (await (await request.get(`${API}/assets/${id}`, { headers })).json()).exifInfo?.lensModel, {
+      timeout: 60_000,
+    })
+    .toBe('RF24-70mm F2.8 L IS USM');
 
   await signIn(page);
   await page.goto(`/photos/${id}`);
@@ -102,7 +111,9 @@ test('info panel shows the camera make and model from EXIF', async ({ page, requ
   const camera = panel.getByTestId('detail-panel-camera');
   await expect(camera).toContainText('Canon');
   await expect(camera).toContainText('EOS R5 Mark II');
+  await expect(camera).toContainText('RF24-70mm F2.8 L IS USM');
+  await expect(camera).toHaveText(/Canon\s+EOS R5 Mark II\s+·\s+RF24-70mm F2\.8 L IS USM/);
 
-  await highlight(page, camera, 'Camera make and model');
-  await shot(page, 'Info panel shows the camera make and model', { focus: camera });
+  await highlight(page, camera, 'Camera · lens');
+  await shot(page, 'Info panel shows camera and lens on one line', { focus: camera });
 });

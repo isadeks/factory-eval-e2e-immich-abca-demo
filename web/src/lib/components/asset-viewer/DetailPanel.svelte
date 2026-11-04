@@ -210,24 +210,38 @@
         </div>
       </div>
 
-      {#if asset.exifInfo?.make || asset.exifInfo?.model || asset.exifInfo?.exposureTime || asset.exifInfo?.iso}
+      {#if asset.exifInfo?.make || asset.exifInfo?.model || asset.exifInfo?.lensModel || asset.exifInfo?.exposureTime || asset.exifInfo?.iso}
         <div class="flex gap-4 py-4">
           <div><Icon icon={mdiCamera} size="24" /></div>
 
           <div>
-            {#if asset.exifInfo?.make || asset.exifInfo?.model}
+            {#if asset.exifInfo?.make || asset.exifInfo?.model || asset.exifInfo?.lensModel}
               <p data-testid="detail-panel-camera">
-                <a
-                  href={Route.search({
-                    make: asset.exifInfo?.make ?? undefined,
-                    model: asset.exifInfo?.model ?? undefined,
-                  })}
-                  title="{$t('search_for')} {asset.exifInfo.make || ''} {asset.exifInfo.model || ''}"
-                  class="hover:text-primary"
-                >
-                  {asset.exifInfo.make || ''}
-                  {asset.exifInfo.model || ''}
-                </a>
+                {#if asset.exifInfo.make || asset.exifInfo.model}
+                  <a
+                    href={Route.search({
+                      make: asset.exifInfo.make ?? undefined,
+                      model: asset.exifInfo.model ?? undefined,
+                    })}
+                    title="{$t('search_for')} {asset.exifInfo.make || ''} {asset.exifInfo.model || ''}"
+                    class="hover:text-primary"
+                  >
+                    {asset.exifInfo.make || ''}
+                    {asset.exifInfo.model || ''}
+                  </a>
+                {/if}
+                {#if (asset.exifInfo.make || asset.exifInfo.model) && asset.exifInfo.lensModel}
+                  <span aria-hidden="true">·</span>
+                {/if}
+                {#if asset.exifInfo.lensModel}
+                  <a
+                    href={Route.search({ lensModel: asset.exifInfo.lensModel })}
+                    title="{$t('search_for')} {asset.exifInfo.lensModel}"
+                    class="hover:text-primary"
+                  >
+                    {asset.exifInfo.lensModel}
+                  </a>
+                {/if}
               </p>
             {/if}
 
@@ -244,23 +258,11 @@
         </div>
       {/if}
 
-      {#if asset.exifInfo?.lensModel || asset.exifInfo?.fNumber || asset.exifInfo?.focalLength}
+      {#if asset.exifInfo?.fNumber || asset.exifInfo?.focalLength}
         <div class="flex gap-4 py-4">
           <div><Icon icon={mdiCameraIris} size="24" /></div>
 
           <div>
-            {#if asset.exifInfo?.lensModel}
-              <p>
-                <a
-                  href={Route.search({ lensModel: asset.exifInfo.lensModel })}
-                  title="{$t('search_for')} {asset.exifInfo.lensModel}"
-                  class="line-clamp-1 hover:text-primary"
-                >
-                  {asset.exifInfo.lensModel}
-                </a>
-              </p>
-            {/if}
-
             <div class="flex gap-2 text-sm">
               {#if asset.exifInfo?.fNumber}
                 <p>ƒ/{asset.exifInfo.fNumber.toLocaleString($locale)}</p>
