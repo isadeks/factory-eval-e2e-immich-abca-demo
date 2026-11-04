@@ -67,6 +67,17 @@
       {album.albumName}
     </p>
 
+    {#if showOwner}
+      {@const owner = album.albumUsers[0]?.user}
+      {#if owner}
+        <p class="text-sm dark:text-immich-dark-fg" data-testid="album-shared-by">
+          {owner.id === authManager.user.id
+            ? $t('shared_by_you')
+            : $t('shared_by_user', { values: { user: owner.name } })}
+        </p>
+      {/if}
+    {/if}
+
     {#if showDateRange && album.startDate && album.endDate}
       <p class="flex text-sm capitalize dark:text-immich-dark-fg">
         {getShortDateRange(album.startDate, album.endDate)}
@@ -80,20 +91,11 @@
         </p>
       {/if}
 
-      {#if (showOwner || album.shared) && showItemCount}
+      {#if !showOwner && album.shared && showItemCount}
         <p>•</p>
       {/if}
 
-      {#if showOwner}
-        {@const owner = album.albumUsers[0].user}
-        {#if owner.id === authManager.user.id}
-          <p>{$t('owned')}</p>
-        {:else}
-          <p>
-            {$t('shared_by_user', { values: { user: owner.name } })}
-          </p>
-        {/if}
-      {:else if album.shared}
+      {#if !showOwner && album.shared}
         <p>{$t('shared')}</p>
       {/if}
     </span>
