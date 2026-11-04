@@ -5,7 +5,8 @@
   import { getPreferredTimeZone, getTimezones, toIsoDate } from '$lib/modals/timezone-utils';
   import { handleError } from '$lib/utils/handle-error';
   import { updateAsset } from '@immich/sdk';
-  import { FormModal, Label } from '@immich/ui';
+  import { Label } from '@immich/ui';
+  import EditDateFormModal from '$lib/modals/EditDateFormModal.svelte';
   import { mdiCalendarEdit } from '@mdi/js';
   import { DateTime } from 'luxon';
   import { t } from 'svelte-i18n';
@@ -52,7 +53,7 @@
   const date = $derived(DateTime.fromISO(selectedDate, { zone: selectedOption?.value, setZone: true }));
 </script>
 
-<FormModal
+<EditDateFormModal
   title={$t('edit_date_and_time')}
   icon={mdiCalendarEdit}
   onClose={() => onClose(false)}
@@ -73,4 +74,4 @@
       <Combobox bind:selectedOption label={$t('timezone')} options={timezones} placeholder={$t('search_timezone')} />
     </div>
   {/if}
-</FormModal>
+</EditDateFormModal>
