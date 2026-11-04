@@ -45,4 +45,17 @@ describe('SearchBar clear button', () => {
     expect(input).toHaveFocus();
     expect(screen.queryByRole('button', { name: 'clear' })).not.toBeInTheDocument();
   });
+
+  it('keeps focus in the input while the button is pressed', async () => {
+    const user = userEvent.setup();
+    renderWithTooltips(SearchBar, { value: 'sunset', grayTheme: false });
+
+    const input = screen.getByRole('combobox');
+    await user.click(input);
+    expect(input).toHaveFocus();
+
+    await user.pointer({ keys: '[MouseLeft>]', target: screen.getByRole('button', { name: 'clear' }) });
+
+    expect(input).toHaveFocus();
+  });
 });

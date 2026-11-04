@@ -144,6 +144,11 @@
     input?.focus();
   };
 
+  // keep focus (and the open suggestions) in the input while the clear button is pressed
+  const keepInputFocus = (event: MouseEvent) => {
+    event.preventDefault();
+  };
+
   const onEscape = () => {
     closeDropdown();
     closeSearchTypeDropdown();
@@ -363,6 +368,7 @@
       <div class="absolute inset-y-0 inset-e-0 flex items-center pe-2">
         <IconButton
           onclick={onClear}
+          onmousedown={keepInputFocus}
           icon={mdiClose}
           aria-label={$t('clear')}
           size="medium"
