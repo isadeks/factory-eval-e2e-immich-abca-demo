@@ -72,6 +72,36 @@ export const getAlbumDateRange = (album: { startDate?: string; endDate?: string 
 };
 
 /**
+ * Month-level range of an album's photos, e.g. "Jan 2024 – Mar 2024".
+ * Collapses to a single "Jan 2024" when both ends fall in the same month.
+ */
+export const getAlbumMonthRange = (album: { startDate?: string; endDate?: string }) => {
+  const userLocale = get(locale);
+  const format = (date?: string) => {
+    if (!date) {
+      return;
+    }
+    let parsed = DateTime.fromISO(date, { zone: 'UTC' });
+    if (!parsed.isValid) {
+      return;
+    }
+    if (userLocale) {
+      parsed = parsed.setLocale(userLocale);
+    }
+    return { label: parsed.toLocaleString({ month: 'short', year: 'numeric' }), key: parsed.toFormat('yyyy-MM') };
+  };
+
+  const start = format(album.startDate);
+  const end = format(album.endDate);
+
+  if (start && end && start.key !== end.key) {
+    return `${start.label} \u{2013} ${end.label}`;
+  }
+
+  return (start ?? end)?.label ?? '';
+};
+
+/**
  * Use this to convert from "5pm EST" to "5pm UTC"
  *
  * Useful with some APIs where you want to query by "today", but the values in the database are stored as UTC
