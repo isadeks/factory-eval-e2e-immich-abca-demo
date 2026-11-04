@@ -21,23 +21,12 @@ test('video tiles in the asset grid show an m:ss duration badge', async ({ page,
       deviceId: 'ui-check',
       fileCreatedAt: now,
       fileModifiedAt: now,
+      // sent explicitly so the check does not depend on when background metadata extraction runs
+      duration: '5000',
       assetData: { name: 'sample-5s.mp4', mimeType: 'video/mp4', buffer: readFileSync(join(__dirname, 'sample-5s.mp4')) },
     },
   });
   expect(upload.ok()).toBeTruthy();
-  const { id } = await upload.json();
-
-  // wait for metadata extraction to record the duration (milliseconds)
-  await expect
-    .poll(
-      async () => {
-        const response = await request.get(`${API}/assets/${id}`, { headers });
-        return (await response.json()).duration ?? 0;
-      },
-      { timeout: 60_000 },
-    )
-    .toBeGreaterThan(0);
-
   await signIn(page);
   await page.goto('/photos');
 
