@@ -6,6 +6,7 @@
   import SingleGridRow from '$lib/components/shared-components/SingleGridRow.svelte';
   import { assetViewerManager } from '$lib/managers/asset-viewer-manager.svelte';
   import { Route } from '$lib/route';
+  import ExplorePlacesHeader from './ExplorePlacesHeader.svelte';
   import { getAssetMediaUrl, getPeopleThumbnailUrl } from '$lib/utils';
   import { getAssetInfo, AssetMediaSize, type SearchExploreResponseDto } from '@immich/sdk';
   import { authManager } from '$lib/managers/auth-manager.svelte';
@@ -93,14 +94,7 @@
 
   {#if places.length > 0}
     <div class="mt-2 mb-6">
-      <div class="flex justify-between">
-        <p class="mb-4 font-medium dark:text-immich-dark-fg">{$t('places')}</p>
-        <a
-          href={Route.places()}
-          class="pe-4 text-sm font-medium hover:text-immich-primary dark:text-immich-dark-fg dark:hover:text-immich-dark-primary"
-          draggable="false">{$t('view_all')}</a
-        >
-      </div>
+      <ExplorePlacesHeader count={places.length} />
       <SingleGridRow class="grid grid-flow-col grid-auto-fill-28 gap-x-4 md:grid-auto-fill-36">
         {#snippet children({ itemCount })}
           {#each places.slice(0, itemCount) as item (item.data.id)}
