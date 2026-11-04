@@ -32,7 +32,7 @@
     type PersonResponseDto,
     type StackResponseDto,
   } from '@immich/sdk';
-  import { ActionButton, CommandPaletteDefaultProvider, Tooltip, type ActionItem } from '@immich/ui';
+  import { ActionButton, Button, CommandPaletteDefaultProvider, Tooltip, type ActionItem } from '@immich/ui';
   import { mdiArrowLeft, mdiArrowRight, mdiDotsVertical, mdiVideoOutline } from '@mdi/js';
   import { t } from 'svelte-i18n';
 
@@ -95,7 +95,20 @@
   class="flex h-16 place-items-center justify-between bg-linear-to-b from-black/40 px-3 drop-shadow-[0_0_1px_rgba(0,0,0,0.4)] transition-transform duration-200"
 >
   <div class="dark">
-    <ActionButton action={Close} />
+    {#if Close.$if?.() ?? true}
+      <Button
+        variant="ghost"
+        color="secondary"
+        size="small"
+        shape="round"
+        leadingIcon={Close.icon}
+        aria-label={$t('go_back')}
+        data-testid="asset-viewer-back-button"
+        onclick={() => Close.onAction(Close)}
+      >
+        {$t('back')}
+      </Button>
+    {/if}
   </div>
 
   <div
