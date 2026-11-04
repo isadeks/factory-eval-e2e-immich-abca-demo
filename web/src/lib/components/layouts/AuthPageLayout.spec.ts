@@ -19,6 +19,9 @@ describe('AuthPageLayout', () => {
     expect(logo.getAttribute('src')).toBe(logoManager.getLogo('stacked', Theme.Light));
     expect(logo.getAttribute('src')).not.toBe(logoManager.getLogo('icon', Theme.Light));
     expect(logo.className).toContain('mx-auto');
+    // 20% smaller than the stock landing size (h-64)
+    expect(logo.className).toContain('h-[12.8rem]');
+    expect(logo.className).not.toContain('h-64');
     // the title stays available to assistive technology, but the wordmark is the visible product name
     expect(screen.getByRole('heading', { level: 1, name: 'Login' }).className).toContain('sr-only');
   });

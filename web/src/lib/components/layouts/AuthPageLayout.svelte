@@ -32,7 +32,7 @@
       <CardHeader class="mt-6">
         <VStack>
           {#if logoVariant === 'stacked'}
-            <Logo variant="stacked" size="landing" class="mx-auto" />
+            <Logo variant="stacked" size="landing" class="mx-auto h-[12.8rem]" />
             <Heading size="large" class="sr-only" tag="h1">{title}</Heading>
           {:else}
             <Logo variant="icon" size="giant" />
