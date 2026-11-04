@@ -1525,6 +1525,7 @@
   "not_in_any_album": "Not in any album",
   "not_selected": "Not selected",
   "notes": "Notes",
+  "nothing_archived_yet": "Nothing archived yet",
   "nothing_here_yet": "Nothing here yet",
   "notification_backup_reliability": "Enable notifications to improve background backup reliability",
   "notification_enabled_list_tile_content": "Immich uses notifications for background backup. Manage them in your device settings.",
