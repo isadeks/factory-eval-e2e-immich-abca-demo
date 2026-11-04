@@ -940,7 +940,7 @@
   "email_notifications": "Email notifications",
   "empty_folder": "This folder is empty",
   "empty_trash": "Empty trash",
-  "empty_trash_confirmation": "Are you sure you want to empty the trash? This will remove all the assets in trash permanently from Immich.\nYou cannot undo this action!",
+  "empty_trash_confirmation": "Are you sure you want to empty the trash? This will permanently remove {count, plural, one {# asset} other {# assets}} in trash from Immich.\nYou cannot undo this action!",
   "enable": "Enable",
   "enable_backup": "Enable Backup",
   "enable_biometric_auth_description": "Enter your PIN code to enable biometric authentication",

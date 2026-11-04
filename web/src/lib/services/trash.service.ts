@@ -1,4 +1,4 @@
-import { emptyTrash, restoreTrash } from '@immich/sdk';
+import { emptyTrash, getAssetStatistics, restoreTrash } from '@immich/sdk';
 import { modalManager, toastManager, type ActionItem } from '@immich/ui';
 import { mdiDeleteForeverOutline, mdiHistory } from '@mdi/js';
 import type { MessageFormatter } from 'svelte-i18n';
@@ -24,7 +24,17 @@ export const getTrashActions = ($t: MessageFormatter) => {
 export const handleEmptyTrash = async () => {
   const $t = await getFormatter();
 
-  const confirmed = await modalManager.showDialog({ prompt: $t('empty_trash_confirmation') });
+  let trashedCount: number;
+  try {
+    ({ total: trashedCount } = await getAssetStatistics({ isTrashed: true }));
+  } catch (error) {
+    handleError(error, $t('errors.unable_to_empty_trash'));
+    return;
+  }
+
+  const confirmed = await modalManager.showDialog({
+    prompt: $t('empty_trash_confirmation', { values: { count: trashedCount } }),
+  });
   if (!confirmed) {
     return;
   }
