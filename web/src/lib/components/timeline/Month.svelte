@@ -1,5 +1,6 @@
 <script lang="ts">
   import AssetLayout from '$lib/components/timeline/AssetLayout.svelte';
+  import TimelineDayCount from '$lib/components/timeline/TimelineDayCount.svelte';
   import type { AssetMultiSelectManager } from '$lib/managers/asset-multi-select-manager.svelte';
   import { TimelineDay } from '$lib/managers/timeline-manager/timeline-day.svelte';
   import type { TimelineMonth } from '$lib/managers/timeline-manager/timeline-month.svelte';
@@ -30,6 +31,7 @@
     timelineMonth: TimelineMonth;
     manager: VirtualScrollManager;
     onTimelineDaySelect: (timelineDay: TimelineDay, assets: TimelineAsset[]) => void;
+    showDayAssetCount?: boolean;
   };
   let {
     thumbnail: thumbnailWithGroup,
@@ -39,6 +41,7 @@
     timelineMonth,
     manager,
     onTimelineDaySelect,
+    showDayAssetCount = false,
   }: Props = $props();
 
   let { isUploading } = uploadAssetsStore;
@@ -95,6 +98,9 @@
 
       <span class="w-full truncate first-letter:capitalize" title={getTimelineDayFullDate(timelineDay)}>
         {timelineDay.groupTitle}
+        {#if showDayAssetCount}
+          <TimelineDayCount count={timelineDay.viewerAssets.length} />
+        {/if}
       </span>
     </div>
 

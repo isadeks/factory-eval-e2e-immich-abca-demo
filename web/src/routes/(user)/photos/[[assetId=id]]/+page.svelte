@@ -101,6 +101,7 @@
     removeAction={AssetAction.ARCHIVE}
     onEscape={handleEscape}
     withStacked
+    showDayAssetCount
   >
     {#if authManager.preferences.memories.enabled}
       <ImageCarousel {items} />
