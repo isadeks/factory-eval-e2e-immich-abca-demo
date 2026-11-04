@@ -24,6 +24,7 @@
   import type { Snippet } from 'svelte';
   import { t } from 'svelte-i18n';
   import type { LayoutData } from './$types';
+  import UserStorageUsage from './UserStorageUsage.svelte';
 
   type Props = {
     children?: Snippet;
@@ -55,10 +56,11 @@
   };
 
   const classes = {
-    column1: 'w-8/12 md:w-5/12 lg:w-4/12',
-    column2: 'hidden md:block md:w-5/12 lg:w-4/12',
+    column1: 'w-8/12 md:w-4/12 lg:w-3/12',
+    column2: 'hidden md:block md:w-4/12 lg:w-3/12',
     column3: 'hidden lg:block lg:w-2/12',
-    column4: 'w-4/12 md:w-2/12 flex justify-end',
+    column4: 'hidden md:block md:w-2/12',
+    column5: 'w-4/12 md:w-2/12 flex justify-end',
   };
 </script>
 
@@ -79,6 +81,7 @@
         <TableHeading class={classes.column1}>{$t('name')}</TableHeading>
         <TableHeading class={classes.column2}>{$t('email')}</TableHeading>
         <TableHeading class={classes.column3}>{$t('has_quota')}</TableHeading>
+        <TableHeading class={classes.column4}>{$t('storage')}</TableHeading>
       </TableHeader>
 
       <TableBody>
@@ -98,6 +101,9 @@
               </div>
             </TableCell>
             <TableCell class={classes.column4}>
+              <UserStorageUsage {user} />
+            </TableCell>
+            <TableCell class={classes.column5}>
               <ContextMenuButton color="primary" aria-label={$t('open')} items={getActionsForUser(user)} />
             </TableCell>
           </TableRow>
