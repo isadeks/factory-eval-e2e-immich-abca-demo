@@ -1884,6 +1884,7 @@
   "selected": "Selected",
   "selected_count": "{count, plural, other {# selected}}",
   "selected_gps_coordinates": "Selected GPS Coordinates",
+  "send_feedback": "Send feedback",
   "send_message": "Send message",
   "send_welcome_email": "Send welcome email",
   "server_endpoint": "Server Endpoint",
