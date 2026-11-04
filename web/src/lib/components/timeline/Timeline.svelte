@@ -2,6 +2,7 @@
   import { afterNavigate, beforeNavigate } from '$app/navigation';
   import { page } from '$app/state';
   import Thumbnail from '$lib/components/assets/thumbnail/Thumbnail.svelte';
+  import JumpToDate from '$lib/components/timeline/JumpToDate.svelte';
   import Month from '$lib/components/timeline/Month.svelte';
   import Scrubber from '$lib/components/timeline/Scrubber.svelte';
   import TimelineAssetViewer from '$lib/components/timeline/TimelineAssetViewer.svelte';
@@ -22,7 +23,8 @@
   import { keyboardManager } from '$lib/stores/keyboard-manager.svelte';
   import { mediaQueryManager } from '$lib/stores/media-query-manager.svelte';
   import { isAssetViewerRoute, navigate } from '$lib/utils/navigation';
-  import { getTimes, type ScrubberListener } from '$lib/utils/timeline-util';
+  import { findClosestMonth } from '$lib/utils/timeline-jump';
+  import { getTimes, type ScrubberListener, type TimelineYearMonth } from '$lib/utils/timeline-util';
   import { type AlbumResponseDto, type PersonResponseDto, type UserResponseDto } from '@immich/sdk';
   import { DateTime } from 'luxon';
   import { onDestroy, onMount, tick, type Snippet } from 'svelte';
@@ -269,6 +271,13 @@
     const scrollToTop = (topOffset + delta) * maxScrollPercent;
 
     timelineManager.scrollTo(scrollToTop);
+  };
+
+  const onJumpToDate = (yearMonth: TimelineYearMonth) => {
+    const timelineMonth = findClosestMonth(timelineManager.months, yearMonth);
+    if (timelineMonth) {
+      timelineManager.scrollTo(timelineMonth.top);
+    }
   };
 
   // note: don't throttle, debounce, or otherwise make this function async - it causes flicker
@@ -569,6 +578,7 @@
 />
 
 {#if timelineManager.months.length > 0}
+  <JumpToDate onJump={onJumpToDate} />
   <Scrubber
     {timelineManager}
     height={timelineManager.viewportHeight}
