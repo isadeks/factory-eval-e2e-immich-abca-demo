@@ -1,6 +1,7 @@
 <script lang="ts">
   import { goto, invalidate } from '$app/navigation';
   import AdminPageLayout from '$lib/components/layouts/AdminPageLayout.svelte';
+  import LibraryAssetCount from '$lib/components/admin-settings/LibraryAssetCount.svelte';
   import OnEvents from '$lib/components/OnEvents.svelte';
   import EmptyPlaceholder from '$lib/components/shared-components/EmptyPlaceholder.svelte';
   import { Route } from '$lib/route';
@@ -51,12 +52,13 @@
   };
 
   const classes = {
-    column1: 'w-4/12',
-    column2: 'w-4/12',
+    column1: 'w-3/12',
+    column2: 'w-3/12',
     column3: 'w-1/12',
     column4: 'w-1/12',
     column5: 'w-1/12',
-    column6: 'w-1/12 flex justify-end',
+    column6: 'w-1/12',
+    column7: 'w-1/12 flex justify-end',
   };
 </script>
 
@@ -72,10 +74,11 @@
           <TableHeader>
             <TableHeading class={classes.column1}>{$t('name')}</TableHeading>
             <TableHeading class={classes.column2}>{$t('owner')}</TableHeading>
-            <TableHeading class={classes.column3}>{$t('photos')}</TableHeading>
-            <TableHeading class={classes.column4}>{$t('videos')}</TableHeading>
-            <TableHeading class={classes.column5}>{$t('size')}</TableHeading>
-            <TableHeading class={classes.column6}></TableHeading>
+            <TableHeading class={classes.column3}>{$t('assets')}</TableHeading>
+            <TableHeading class={classes.column4}>{$t('photos')}</TableHeading>
+            <TableHeading class={classes.column5}>{$t('videos')}</TableHeading>
+            <TableHeading class={classes.column6}>{$t('size')}</TableHeading>
+            <TableHeading class={classes.column7}></TableHeading>
           </TableHeader>
           <TableBody>
             {#each libraries as library (library.id + library.name)}
@@ -95,17 +98,23 @@
                     <span class="skeleton-loader inline-block h-4 w-14"></span>
                   </TableCell>
                   <TableCell class={classes.column5}>
+                    <span class="skeleton-loader inline-block h-4 w-14"></span>
+                  </TableCell>
+                  <TableCell class={classes.column6}>
                     <span class="skeleton-loader inline-block h-4 w-20"></span>
                   </TableCell>
                 {:then loadedStats}
                   {@const stats = loadedStats[library.id]}
                   <TableCell class={classes.column3}>
-                    {stats.photos.toLocaleString($locale)}
+                    <LibraryAssetCount count={stats.total} />
                   </TableCell>
                   <TableCell class={classes.column4}>
-                    {stats.videos.toLocaleString($locale)}
+                    {stats.photos.toLocaleString($locale)}
                   </TableCell>
                   <TableCell class={classes.column5}>
+                    {stats.videos.toLocaleString($locale)}
+                  </TableCell>
+                  <TableCell class={classes.column6}>
                     {@const [diskUsage, diskUsageUnit] = getBytesWithUnit(stats.usage, 0)}
                     {diskUsage}
                     {diskUsageUnit}
@@ -118,10 +127,13 @@
                     <span class="skeleton-loader inline-block h-4 w-14"></span>
                   </TableCell>
                   <TableCell class={classes.column5}>
+                    <span class="skeleton-loader inline-block h-4 w-14"></span>
+                  </TableCell>
+                  <TableCell class={classes.column6}>
                     <span class="skeleton-loader inline-block h-4 w-20"></span>
                   </TableCell>
                 {/await}
-                <TableCell class={classes.column6}>
+                <TableCell class={classes.column7}>
                   <ContextMenuButton color="primary" aria-label={$t('open')} items={getActionsForLibrary(library)} />
                 </TableCell>
               </TableRow>
