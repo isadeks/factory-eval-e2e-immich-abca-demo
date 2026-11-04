@@ -203,7 +203,7 @@
                 <p>{width} x {height}</p>
               {/if}
               {#if asset.exifInfo?.fileSizeInByte}
-                <p>{getByteUnitString(asset.exifInfo.fileSizeInByte, $locale)}</p>
+                <p data-testid="detail-panel-file-size">{getByteUnitString(asset.exifInfo.fileSizeInByte, $locale)}</p>
               {/if}
             </div>
           {/if}
