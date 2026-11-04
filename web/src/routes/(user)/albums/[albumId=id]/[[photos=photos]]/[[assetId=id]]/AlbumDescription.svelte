@@ -44,7 +44,10 @@
     }))}
   />
 {:else if description}
-  <p class="wrap-break-words w-full text-base whitespace-pre-line text-black dark:text-white">
+  <p
+    data-testid="album-description"
+    class="wrap-break-words w-full text-base whitespace-pre-line text-gray-600 dark:text-gray-400"
+  >
     {description}
   </p>
 {/if}
