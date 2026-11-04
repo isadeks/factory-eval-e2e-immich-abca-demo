@@ -106,10 +106,10 @@
           {#each places.slice(0, itemCount) as item (item.data.id)}
             <a class="relative" href={Route.search({ city: item.value })} draggable="false">
               <div class="flex justify-center overflow-hidden rounded-xl brightness-75 filter">
-                <img
-                  src={getAssetMediaUrl({ id: item.data.id, size: AssetMediaSize.Thumbnail })}
-                  alt={item.value}
-                  class="aspect-square w-full object-cover"
+                <ImageThumbnail
+                  url={getAssetMediaUrl({ id: item.data.id, size: AssetMediaSize.Thumbnail })}
+                  altText={item.value}
+                  widthStyle="100%"
                 />
               </div>
               <span
@@ -142,10 +142,14 @@
             onclick={() => onViewAsset(item.data.id)}
             draggable="false"
           >
-            <img
-              src={getAssetMediaUrl({ id: item.data.id, size: AssetMediaSize.Thumbnail })}
-              alt={$getAltText(toTimelineAsset(item.data))}
-              class="size-full min-w-max rounded-xl object-cover"
+            <ImageThumbnail
+              url={getAssetMediaUrl({ id: item.data.id, size: AssetMediaSize.Thumbnail })}
+              altText={$getAltText(toTimelineAsset(item.data))}
+              widthStyle="100%"
+              heightStyle="100%"
+              curve
+              class="min-w-max"
+              brokenAssetClass="min-w-max"
             />
           </button>
         {/each}

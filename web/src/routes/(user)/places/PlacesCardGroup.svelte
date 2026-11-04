@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ImageThumbnail from '$lib/components/assets/thumbnail/ImageThumbnail.svelte';
   import { Route } from '$lib/route';
   import { placesViewSettings } from '$lib/stores/preferences.store';
   import { getAssetMediaUrl } from '$lib/utils';
@@ -44,11 +45,12 @@
           <div
             class="flex w-[calc((100vw-(72px+5rem))/2)] max-w-39 justify-center overflow-hidden rounded-xl brightness-75 filter"
           >
-            <img
-              src={getAssetMediaUrl({ id: item.id, size: AssetMediaSize.Thumbnail })}
-              alt={city}
-              class="size-39 object-cover"
-              loading="lazy"
+            <ImageThumbnail
+              url={getAssetMediaUrl({ id: item.id, size: AssetMediaSize.Thumbnail })}
+              altText={city ?? undefined}
+              widthStyle="9.75rem"
+              heightStyle="9.75rem"
+              preload={false}
             />
           </div>
           <span
