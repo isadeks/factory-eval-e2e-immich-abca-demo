@@ -46,6 +46,7 @@ test('asset viewer shows a heart badge only for favorited assets', async ({ page
   const box = await badge.boundingBox();
   expect(box!.x).toBeLessThan(100);
   expect(box!.y).toBeLessThan(120);
+  await expect(badge).toHaveCSS('color', 'rgb(255, 105, 180)');
   await highlight(page, badge, 'New: Favorite badge');
   await shot(page, 'A favorited asset shows a heart badge top-left', { focus: badge });
 });

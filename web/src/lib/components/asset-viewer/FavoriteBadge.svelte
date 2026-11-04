@@ -5,7 +5,7 @@
 </script>
 
 <div
-  class="dark pointer-events-none absolute inset-s-3 top-16 z-1 flex size-8 items-center justify-center rounded-full bg-black/40 text-white drop-shadow-[0_0_1px_rgba(0,0,0,0.4)]"
+  class="dark pointer-events-none absolute inset-s-3 top-16 z-1 flex size-8 items-center justify-center rounded-full bg-black/40 text-[#ff69b4] drop-shadow-[0_0_1px_rgba(0,0,0,0.4)]"
   data-testid="asset-viewer-favorite-badge"
   role="img"
   aria-label={$t('favorite')}
