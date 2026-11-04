@@ -36,6 +36,7 @@
   import { getPeopleThumbnailUrl } from '$lib/utils';
   import { handleError } from '$lib/utils/handle-error';
   import { isExternalUrl } from '$lib/utils/navigation';
+  import { getPersonAge } from '$lib/utils/person';
   import { normalizeSearchString } from '$lib/utils/string-utils';
   import { AssetVisibility, searchPerson, updatePerson, type PersonResponseDto } from '@immich/sdk';
   import {
@@ -65,6 +66,7 @@
   let numberOfAssets = $derived(data.statistics.assets);
   let person = $derived(data.person);
   let thumbnailData = $derived(getPeopleThumbnailUrl(person));
+  let personAge = $derived(getPersonAge(person.birthDate));
 
   let timelineManager = $state<TimelineManager>() as TimelineManager;
   const options = $derived({ visibility: AssetVisibility.Timeline, personId: data.person.id });
@@ -408,6 +410,11 @@
                             ),
                           },
                         })}
+                      </p>
+                    {/if}
+                    {#if personAge}
+                      <p class="text-sm text-gray-500 dark:text-gray-400" data-testid="person-age">
+                        {$t(personAge.key, { values: personAge.values })}
                       </p>
                     {/if}
                   </div>
