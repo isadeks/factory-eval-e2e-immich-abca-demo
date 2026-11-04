@@ -229,9 +229,9 @@ const sortOptions: AlbumSortOption = {
     return albums.slice().sort((a, b) => a.albumName.localeCompare(b.albumName, get(locale)) * sortSign);
   },
 
-  /** Sort by asset count */
+  /** Sort by asset count (albums with the same count are ordered by title) */
   [AlbumSortBy.ItemCount]: (order, albums) => {
-    return orderBy(albums, 'assetCount', [order]);
+    return orderBy(albums, ['assetCount', ({ albumName }) => albumName.toLowerCase()], [order, SortOrder.Asc]);
   },
 
   /** Sort by last modified */
