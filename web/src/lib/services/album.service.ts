@@ -5,6 +5,7 @@ import {
   AlbumUserRole,
   BulkIdErrorReason,
   deleteAlbum,
+  getAllSharedLinks,
   removeUserFromAlbum,
   updateAlbumInfo,
   updateAlbumUser,
@@ -16,7 +17,15 @@ import {
   type UserResponseDto,
 } from '@immich/sdk';
 import { modalManager, toastManager, type ActionItem } from '@immich/ui';
-import { mdiImageOutline, mdiLink, mdiPlus, mdiPlusBoxOutline, mdiShareVariantOutline, mdiUpload } from '@mdi/js';
+import {
+  mdiContentCopy,
+  mdiImageOutline,
+  mdiLink,
+  mdiPlus,
+  mdiPlusBoxOutline,
+  mdiShareVariantOutline,
+  mdiUpload,
+} from '@mdi/js';
 import { type MessageFormatter } from 'svelte-i18n';
 import { goto } from '$app/navigation';
 import { authManager } from '$lib/managers/auth-manager.svelte';
@@ -26,6 +35,8 @@ import AlbumAddUsersModal from '$lib/modals/AlbumAddUsersModal.svelte';
 import AlbumOptionsModal from '$lib/modals/AlbumOptionsModal.svelte';
 import SharedLinkCreateModal from '$lib/modals/SharedLinkCreateModal.svelte';
 import { Route } from '$lib/route';
+import { asUrl } from '$lib/services/shared-link.service';
+import { copyToClipboard } from '$lib/utils';
 import { createAlbumAndRedirect } from '$lib/utils/album-utils';
 import { downloadArchive } from '$lib/utils/asset-utils';
 import { openFileUploadDialog } from '$lib/utils/file-uploader';
@@ -42,6 +53,21 @@ export const getAlbumsActions = ($t: MessageFormatter) => {
   return { Create };
 };
 
+export const handleCopyAlbumSharedLink = async (album: AlbumResponseDto) => {
+  const $t = await getFormatter();
+
+  try {
+    const [sharedLink] = await getAllSharedLinks({ albumId: album.id });
+    if (!sharedLink) {
+      return;
+    }
+
+    await copyToClipboard(asUrl(sharedLink));
+  } catch (error) {
+    handleError(error, $t('errors.unable_to_copy_to_clipboard'));
+  }
+};
+
 export const getAlbumActions = ($t: MessageFormatter, album: AlbumResponseDto) => {
   const isOwned = album.albumUsers[0].user.id === authManager.user.id;
 
@@ -50,6 +76,13 @@ export const getAlbumActions = ($t: MessageFormatter, album: AlbumResponseDto) =
     icon: mdiShareVariantOutline,
     $if: () => isOwned,
     onAction: () => modalManager.show(AlbumOptionsModal, { album }),
+  };
+
+  const CopyLink: ActionItem = {
+    title: $t('copy_link'),
+    icon: mdiContentCopy,
+    $if: () => isOwned && album.hasSharedLink,
+    onAction: () => handleCopyAlbumSharedLink(album),
   };
 
   const AddUsers: ActionItem = {
@@ -66,7 +99,7 @@ export const getAlbumActions = ($t: MessageFormatter, album: AlbumResponseDto) =
     onAction: () => modalManager.show(SharedLinkCreateModal, { albumId: album.id }),
   };
 
-  return { Share, AddUsers, CreateSharedLink };
+  return { Share, CopyLink, AddUsers, CreateSharedLink };
 };
 
 export const getAlbumAssetActions = ($t: MessageFormatter, album: AlbumResponseDto, asset: AssetResponseDto) => {

@@ -317,7 +317,7 @@
   };
 
   const { Cast } = $derived(getGlobalActions($t));
-  const { Share } = $derived(getAlbumActions($t, album));
+  const { Share, CopyLink } = $derived(getAlbumActions($t, album));
   const { AddAssets, Upload } = $derived(getAlbumAssetsActions($t, album, timelineMultiSelectManager.assets));
 
   const Close = $derived({
@@ -411,6 +411,7 @@
 
                   {#if isOwned}
                     <ActionButton action={Share} />
+                    <ActionButton action={CopyLink} />
                   {/if}
                 </div>
               {/if}
@@ -527,6 +528,7 @@
             {/if}
 
             <ActionButton action={Share} />
+            <ActionButton action={CopyLink} />
 
             {#if featureFlagsManager.value.map}
               <AlbumMap {album} />
