@@ -35,7 +35,7 @@
     bind:value={description}
     variant="ghost"
     onfocusout={handleFocusOut}
-    placeholder={$t('add_a_description')}
+    placeholder={$t('no_description')}
     data-testid="autogrow-textarea"
     class="max-h-32"
     {@attach fromAction(shortcut, () => ({
