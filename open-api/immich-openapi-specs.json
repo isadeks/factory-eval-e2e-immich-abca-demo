@@ -17882,6 +17882,12 @@
           "exifInfo": {
             "$ref": "#/components/schemas/ExifResponseDto"
           },
+          "favoritedAt": {
+            "description": "The UTC timestamp when the asset was marked as favorite (null if not a favorite)",
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
           "fileCreatedAt": {
             "description": "The actual UTC timestamp when the file was created/captured, preserving timezone information. This is the authoritative timestamp for chronological sorting within timeline groups. Combined with timezone data, this can be used to determine the exact moment the photo was taken.",
             "format": "date-time",

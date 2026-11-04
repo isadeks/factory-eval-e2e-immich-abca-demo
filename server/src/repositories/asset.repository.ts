@@ -64,6 +64,12 @@ export interface BoundingBox {
   north: number;
 }
 
+/** Keeps `favoritedAt` in sync with `isFavorite` whenever the latter is written. */
+const withFavoritedAt = <T extends { isFavorite?: boolean }>(values: T): T =>
+  values.isFavorite === undefined || 'favoritedAt' in values
+    ? values
+    : ({ ...values, favoritedAt: values.isFavorite ? new Date() : null } as T);
+
 interface AssetStatsOptions {
   isFavorite?: boolean;
   isTrashed?: boolean;
@@ -443,7 +449,7 @@ export class AssetRepository {
   }
 
   create(asset: Insertable<AssetTable>) {
-    return this.db.insertInto('asset').values(asset).returningAll().executeTakeFirstOrThrow();
+    return this.db.insertInto('asset').values(withFavoritedAt(asset)).returningAll().executeTakeFirstOrThrow();
   }
 
   @ChunkedArray({ chunkSize: 4000 })
@@ -620,7 +626,7 @@ export class AssetRepository {
     if (ids.length === 0) {
       return;
     }
-    await this.db.updateTable('asset').set(options).where('id', '=', anyUuid(ids)).execute();
+    await this.db.updateTable('asset').set(withFavoritedAt(options)).where('id', '=', anyUuid(ids)).execute();
   }
 
   async updateByLibraryId(libraryId: string, options: Updateable<AssetTable>): Promise<void> {
@@ -632,7 +638,9 @@ export class AssetRepository {
     delete value.id;
     if (!isEmpty(value)) {
       return this.db
-        .with('asset', (qb) => qb.updateTable('asset').set(asset).where('id', '=', asUuid(asset.id)).returningAll())
+        .with('asset', (qb) =>
+          qb.updateTable('asset').set(withFavoritedAt(asset)).where('id', '=', asUuid(asset.id)).returningAll(),
+        )
         .selectFrom('asset')
         .selectAll('asset')
         .$call(withExif)

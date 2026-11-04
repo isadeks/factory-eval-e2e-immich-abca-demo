@@ -11,6 +11,7 @@ import {
   Timestamp,
   UpdateDateColumn,
 } from '@immich/sql-tools';
+import { ColumnType } from 'kysely';
 import { UpdatedAtTrigger, UpdateIdColumn } from 'src/decorators';
 import { AssetStatus, AssetType, AssetVisibility, ChecksumAlgorithm } from 'src/enum';
 import { asset_checksum_algorithm_enum, asset_visibility_enum, assets_status_enum } from 'src/schema/enums';
@@ -82,6 +83,11 @@ export class AssetTable {
 
   @Column({ type: 'boolean', default: false })
   isFavorite!: Generated<boolean>;
+
+  @Column({ type: 'timestamp with time zone', nullable: true })
+  // Write-only in the typed schema (select type `never`): the value is still returned at runtime by `selectAll` and
+  // read by `mapAsset`, but it stays out of `Selectable<AssetTable>` so existing row types do not have to carry it.
+  favoritedAt!: ColumnType<never, Timestamp | null | undefined, Timestamp | null>;
 
   @Column({ type: 'integer', nullable: true })
   duration!: number | null;

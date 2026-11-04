@@ -94,6 +94,11 @@ export const AssetResponseSchema = SanitizedAssetResponseSchema.extend(
         'The UTC timestamp when the asset record was last updated in the database. This is automatically maintained by the database and reflects when any field in the asset was last modified.',
       ),
     isFavorite: z.boolean().describe('Is favorite'),
+    favoritedAt: z
+      .string()
+      .meta({ format: 'date-time' })
+      .nullish()
+      .describe('The UTC timestamp when the asset was marked as favorite (null if not a favorite)'),
     isArchived: z.boolean().describe('Is archived'),
     isTrashed: z.boolean().describe('Is trashed'),
     isOffline: z.boolean().describe('Is offline'),
@@ -137,6 +142,7 @@ export type MapAsset = {
   files?: ShallowDehydrateObject<AssetFile>[];
   isExternal: boolean;
   isFavorite: boolean;
+  favoritedAt?: Date | null;
   isOffline: boolean;
   visibility: AssetVisibility;
   libraryId: string | null;
@@ -225,6 +231,10 @@ export function mapAsset(entity: MaybeDehydrated<MapAsset>, options: AssetMapOpt
     localDateTime: asDateTimeString(entity.localDateTime),
     updatedAt: asDateTimeString(entity.updatedAt),
     isFavorite: options.auth?.user.id === entity.ownerId && entity.isFavorite,
+    favoritedAt:
+      options.auth?.user.id === entity.ownerId && entity.isFavorite && entity.favoritedAt
+        ? asDateTimeString(entity.favoritedAt)
+        : null,
     isArchived: entity.visibility === AssetVisibility.Archive,
     isTrashed: !!entity.deletedAt,
     visibility: entity.visibility,

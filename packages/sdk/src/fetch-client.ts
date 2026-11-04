@@ -882,6 +882,8 @@ export type AssetResponseDto = {
     /** Video/gif duration in milliseconds (null for static images) */
     duration: number | null;
     exifInfo?: ExifResponseDto;
+    /** The UTC timestamp when the asset was marked as favorite (null if not a favorite) */
+    favoritedAt?: string | null;
     /** The actual UTC timestamp when the file was created/captured, preserving timezone information. This is the authoritative timestamp for chronological sorting within timeline groups. Combined with timezone data, this can be used to determine the exact moment the photo was taken. */
     fileCreatedAt: string;
     /** The UTC timestamp when the file was last modified on the filesystem. This reflects the last time the physical file was changed, which may be different from when the photo was originally taken. */
