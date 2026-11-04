@@ -35,9 +35,8 @@ describe('AssetViewerNavBar favorite shortcut', () => {
   const additionalProps = {
     preAction: () => {},
     onAction: () => {},
-    onPlaySlideshow: () => {},
     onClose: () => {},
-    playOriginalVideo: false,
+    isPlayingOriginalVideo: false,
     setPlayOriginalVideo: () => Promise.resolve(),
   };
 
