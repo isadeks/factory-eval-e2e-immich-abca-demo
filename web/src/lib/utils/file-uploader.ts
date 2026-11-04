@@ -266,7 +266,10 @@ async function fileUploader({
       return;
     }
 
-    const errorMessage = handleError(error, $t('errors.unable_to_upload_file'));
+    const errorMessage = handleError(error, $t('errors.unable_to_upload_file'), { notify: false });
+    if (errorMessage) {
+      toastManager.danger(`${assetFile.name}: ${errorMessage}`);
+    }
     uploadAssetsStore.track('error');
     uploadAssetsStore.updateItem(deviceAssetId, { state: UploadState.ERROR, error: errorMessage });
     return;
