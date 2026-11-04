@@ -18,6 +18,7 @@
   import TagAction from '$lib/components/timeline/actions/TagAction.svelte';
   import AssetSelectControlBar from '$lib/components/timeline/AssetSelectControlBar.svelte';
   import Timeline from '$lib/components/timeline/Timeline.svelte';
+  import TimelineAssetCount from '$lib/components/timeline/TimelineAssetCount.svelte';
   import { AssetAction } from '$lib/constants';
   import { assetMultiSelectManager } from '$lib/managers/asset-multi-select-manager.svelte';
   import { assetViewerManager } from '$lib/managers/asset-viewer-manager.svelte';
@@ -92,7 +93,12 @@
   );
 </script>
 
-<UserPageLayout hideNavbar={assetMultiSelectManager.selectionActive} scrollbar={false}>
+<UserPageLayout hideNavbar={assetMultiSelectManager.selectionActive} title={$t('photos')} scrollbar={false}>
+  {#snippet buttons()}
+    {#if timelineManager?.isInitialized}
+      <TimelineAssetCount count={timelineManager.assetCount} />
+    {/if}
+  {/snippet}
   <Timeline
     enableRouting={true}
     bind:timelineManager
