@@ -36,6 +36,14 @@
   };
 
   const textClasses = 'text-2xl lg:text-6xl text-primary';
+
+  // Only show the full name as a tooltip when the visible title is actually cut off.
+  let truncatedTitle = $state<string>();
+
+  const updateTooltip = (event: MouseEvent) => {
+    const element = event.currentTarget as HTMLElement;
+    truncatedTitle = element.scrollWidth > element.clientWidth ? newAlbumName : undefined;
+  };
 </script>
 
 <div class="mb-2">
@@ -53,6 +61,14 @@
       }))}
     />
   {:else}
-    <div class={textClasses}>{newAlbumName}</div>
+    <div
+      class="{textClasses} truncate"
+      data-testid="album-title"
+      title={truncatedTitle}
+      role="presentation"
+      onmouseenter={updateTooltip}
+    >
+      {newAlbumName}
+    </div>
   {/if}
 </div>
