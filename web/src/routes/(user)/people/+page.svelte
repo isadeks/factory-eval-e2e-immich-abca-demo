@@ -15,6 +15,7 @@
   import { websocketEvents } from '$lib/stores/websocket';
   import { normalizeSearchString } from '$lib/utils/string-utils';
   import { handlePromiseError } from '$lib/utils';
+  import { sortPeopleByName } from '$lib/utils/people-sort';
   import { handleError } from '$lib/utils/handle-error';
   import { clearQueryParam } from '$lib/utils/navigation';
   import { getAllPeople, getPerson, searchPerson, updatePerson, type PersonResponseDto } from '@immich/sdk';
@@ -213,7 +214,7 @@
 
   let visiblePeople = $derived(people.filter((people) => !people.isHidden));
   let countVisiblePeople = $derived(searchName ? searchedPeopleLocal.length : data.people.total - data.people.hidden);
-  let showPeople = $derived(searchName ? searchedPeopleLocal : visiblePeople);
+  let showPeople = $derived(sortPeopleByName(searchName ? searchedPeopleLocal : visiblePeople, $locale));
 
   const onNameChangeInputFocus = (person: PersonResponseDto) => {
     editingPerson = person;
