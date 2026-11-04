@@ -374,6 +374,17 @@ export const memoryLaneTitle = derived(t, ($t) => {
   };
 });
 
+export const memoryLaneCardTitle = derived([t, memoryLaneTitle], ([$t, $memoryLaneTitle]) => {
+  return (memory: MemoryResponseDto) => {
+    const title = $memoryLaneTitle(memory);
+    if (memory.type === MemoryType.OnThisDay) {
+      return $t('memory_lane_card_title', { values: { title, year: memory.data.year } });
+    }
+
+    return title;
+  };
+});
+
 export const withError = async <T>(fn: () => Promise<T>): Promise<[undefined, T] | [unknown, undefined]> => {
   try {
     const result = await fn();

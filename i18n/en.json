@@ -1433,6 +1433,7 @@
   "memories_start_over": "Start Over",
   "memories_swipe_to_close": "Swipe up to close",
   "memory": "Memory",
+  "memory_lane_card_title": "{title} ({year})",
   "memory_lane_title": "Memory Lane {title}",
   "menu": "Menu",
   "merge": "Merge",

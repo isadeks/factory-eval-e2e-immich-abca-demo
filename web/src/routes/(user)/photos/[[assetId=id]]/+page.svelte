@@ -26,7 +26,7 @@
   import { TimelineManager } from '$lib/managers/timeline-manager/timeline-manager.svelte';
   import { Route } from '$lib/route';
   import { getAssetBulkActions } from '$lib/services/asset.service';
-  import { getAssetMediaUrl, memoryLaneTitle } from '$lib/utils';
+  import { getAssetMediaUrl, memoryLaneCardTitle } from '$lib/utils';
   import {
     updateStackedAssetInTimeline,
     updateUnstackedAssetInTimeline,
@@ -84,7 +84,7 @@
   const items = $derived(
     memoryManager.memories.map((memory) => ({
       id: memory.id,
-      title: $memoryLaneTitle(memory),
+      title: $memoryLaneCardTitle(memory),
       href: Route.memories({ id: memory.assets[0].id }),
       alt: $t('memory_lane_title', { values: { title: $getAltText(toTimelineAsset(memory.assets[0])) } }),
       src: getAssetMediaUrl({ id: memory.assets[0].id }),
