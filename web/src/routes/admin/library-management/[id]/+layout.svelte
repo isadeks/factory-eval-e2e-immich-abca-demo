@@ -8,6 +8,7 @@
   import EmptyPlaceholder from '$lib/components/shared-components/EmptyPlaceholder.svelte';
   import TableButton from '$lib/components/TableButton.svelte';
   import LibraryFolderAddModal from '$lib/modals/LibraryFolderAddModal.svelte';
+  import { libraryScanManager } from '$lib/managers/library-scan-manager.svelte';
   import { Route } from '$lib/route';
   import {
     getLibraryActions,
@@ -15,7 +16,7 @@
     getLibraryFolderActions,
   } from '$lib/services/library.service';
   import { getBytesWithUnit } from '$lib/utils/byte-units';
-  import { Code, CommandPaletteDefaultProvider, Container, Heading, modalManager } from '@immich/ui';
+  import { Code, CommandPaletteDefaultProvider, Container, Heading, LoadingSpinner, modalManager } from '@immich/ui';
   import { mdiCameraIris, mdiChartPie, mdiFilterMinusOutline, mdiFolderOutline, mdiPlayCircle } from '@mdi/js';
   import type { Snippet } from 'svelte';
   import { t } from 'svelte-i18n';
@@ -62,7 +63,14 @@
 >
   <Container size="large" center>
     <div class="grid w-full grid-cols-1 gap-4 lg:grid-cols-2">
-      <Heading tag="h1" size="large" class="col-span-full my-4">{library.name}</Heading>
+      <div class="col-span-full my-4 flex items-center gap-3">
+        <Heading tag="h1" size="large">{library.name}</Heading>
+        {#if libraryScanManager.isScanning(library.id)}
+          <span data-testid="library-scan-spinner" title={$t('admin.scanning_library')}>
+            <LoadingSpinner />
+          </span>
+        {/if}
+      </div>
       <div class="col-span-full flex flex-col gap-4 lg:flex-row">
         <ServerStatisticsCard icon={mdiCameraIris} title={$t('photos')} valuePromise={photosPromise} />
         <ServerStatisticsCard icon={mdiPlayCircle} title={$t('videos')} valuePromise={videosPromise} />

@@ -15,6 +15,7 @@ import { mdiInformationOutline, mdiPencilOutline, mdiPlusBoxOutline, mdiSync, md
 import type { MessageFormatter } from 'svelte-i18n';
 import { goto } from '$app/navigation';
 import { eventManager } from '$lib/managers/event-manager.svelte';
+import { libraryScanManager } from '$lib/managers/library-scan-manager.svelte';
 import LibraryExclusionPatternAddModal from '$lib/modals/LibraryExclusionPatternAddModal.svelte';
 import LibraryExclusionPatternEditModal from '$lib/modals/LibraryExclusionPatternEditModal.svelte';
 import LibraryFolderAddModal from '$lib/modals/LibraryFolderAddModal.svelte';
@@ -127,6 +128,7 @@ const handleScanAllLibraries = async () => {
 
   try {
     await runQueueCommandLegacy({ name: QueueName.Library, queueCommandDto: { command: QueueCommand.Start } });
+    libraryScanManager.start();
     toastManager.info($t('admin.refreshing_all_libraries'));
   } catch (error) {
     handleError(error, $t('errors.unable_to_scan_libraries'));
@@ -137,6 +139,7 @@ const handleScanLibrary = async (library: LibraryResponseDto) => {
   const $t = await getFormatter();
   try {
     await scanLibrary({ id: library.id });
+    libraryScanManager.start(library.id);
     toastManager.info($t('admin.scanning_library'));
   } catch (error) {
     handleError(error, $t('errors.unable_to_scan_library'));

@@ -3,6 +3,7 @@
   import AdminPageLayout from '$lib/components/layouts/AdminPageLayout.svelte';
   import OnEvents from '$lib/components/OnEvents.svelte';
   import EmptyPlaceholder from '$lib/components/shared-components/EmptyPlaceholder.svelte';
+  import { libraryScanManager } from '$lib/managers/library-scan-manager.svelte';
   import { Route } from '$lib/route';
   import { getLibrariesActions, getLibraryActions } from '$lib/services/library.service';
   import { locale } from '$lib/stores/preferences.store';
@@ -13,6 +14,7 @@
     Container,
     ContextMenuButton,
     Link,
+    LoadingSpinner,
     MenuItemType,
     Table,
     TableBody,
@@ -82,7 +84,14 @@
               {@const owner = owners[library.id]}
               <TableRow>
                 <TableCell class={classes.column1}>
-                  <Link href={Route.viewLibrary(library)}>{library.name}</Link>
+                  <div class="flex items-center gap-2">
+                    <Link href={Route.viewLibrary(library)}>{library.name}</Link>
+                    {#if libraryScanManager.isScanning(library.id)}
+                      <span data-testid="library-scan-spinner" title={$t('admin.scanning_library')}>
+                        <LoadingSpinner size="small" />
+                      </span>
+                    {/if}
+                  </div>
                 </TableCell>
                 <TableCell class={classes.column2}>
                   <Link href={Route.viewUser(owner)}>{owner.name}</Link>
