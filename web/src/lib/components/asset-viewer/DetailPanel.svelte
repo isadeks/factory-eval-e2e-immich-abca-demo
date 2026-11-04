@@ -233,11 +233,11 @@
 
             <div class="flex gap-2 text-sm">
               {#if asset.exifInfo.exposureTime}
-                <p>{`${asset.exifInfo.exposureTime} s`}</p>
+                <p title={$t('exposure_time')}>{`${asset.exifInfo.exposureTime} s`}</p>
               {/if}
 
               {#if asset.exifInfo.iso}
-                <p>{`ISO ${asset.exifInfo.iso}`}</p>
+                <p title={$t('iso')}>{`ISO ${asset.exifInfo.iso}`}</p>
               {/if}
             </div>
           </div>

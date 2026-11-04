@@ -21,6 +21,8 @@ describe('DetailPanel camera info', () => {
 
     expect(screen.getByText('1/250 s')).toBeInTheDocument();
     expect(screen.getByText('ISO 800')).toBeInTheDocument();
+    expect(screen.getByTitle('exposure_time')).toHaveTextContent('1/250 s');
+    expect(screen.getByTitle('iso')).toHaveTextContent('ISO 800');
   });
 
   it('shows only ISO when exposure time is missing', () => {
