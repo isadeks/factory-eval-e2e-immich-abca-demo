@@ -83,6 +83,15 @@ test('people page separates named from unnamed people and shows photo counts', a
   await expect(named.getByRole('heading', { name: 'Named people' })).toBeVisible();
   await expect(unnamedSection.getByRole('heading', { name: 'Unnamed people' })).toBeVisible();
 
+  // the unnamed group starts collapsed; expanding it reveals the cards
+  const toggle = unnamedSection.getByTestId('unnamed-people-toggle');
+  await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+  await expect(unnamedSection.getByTestId('person-asset-count')).toHaveCount(0);
+  await expect(named.getByTestId('person-asset-count')).toHaveText('2 assets');
+  await shot(page, 'Unnamed people start collapsed', { focus: unnamedSection });
+  await toggle.click();
+  await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+
   // Alice is in the named section, the person without a name is not
   await expect(named.locator('input[type="text"]').first()).toHaveValue('Alice Counted');
   await expect(unnamedSection.locator('input[type="text"]').first()).toHaveValue('');

@@ -26,7 +26,7 @@
     type PersonResponseDto,
   } from '@immich/sdk';
   import { Button, Icon, modalManager, toastManager } from '@immich/ui';
-  import { mdiAccountOff, mdiEyeOutline } from '@mdi/js';
+  import { mdiAccountOff, mdiChevronDown, mdiChevronRight, mdiEyeOutline } from '@mdi/js';
   import { onMount } from 'svelte';
   import { t } from 'svelte-i18n';
   import type { PageData } from './$types';
@@ -229,6 +229,9 @@
   let namedPeople = $derived(showPeople.filter((person) => !!person.name));
   let unnamedPeople = $derived(showPeople.filter((person) => !person.name));
   let showSectionHeadings = $derived(namedPeople.length > 0 && unnamedPeople.length > 0);
+  let unnamedCollapsed = $state(true);
+  // the unnamed group is only collapsible when it has a heading to toggle it with
+  let showUnnamedPeople = $derived(!showSectionHeadings || !unnamedCollapsed);
   let hasMorePeople = $derived(!!nextPage && !searchName);
 
   const onNameChangeInputFocus = (person: PersonResponseDto) => {
@@ -407,14 +410,28 @@
       <section data-testid="unnamed-people" class={namedPeople.length > 0 ? 'mt-8' : ''}>
         {#if showSectionHeadings}
           <h2 class="mb-2 px-2 text-lg font-medium dark:text-white">
-            {$t('unnamed_people')}
+            <button
+              type="button"
+              class="flex items-center gap-1"
+              aria-expanded={showUnnamedPeople}
+              aria-controls="unnamed-people-list"
+              data-testid="unnamed-people-toggle"
+              onclick={() => (unnamedCollapsed = !unnamedCollapsed)}
+            >
+              <Icon icon={showUnnamedPeople ? mdiChevronDown : mdiChevronRight} size="1.25em" aria-hidden />
+              {$t('unnamed_people')}
+            </button>
           </h2>
         {/if}
-        <PeopleInfiniteScroll people={unnamedPeople} hasNextPage={hasMorePeople} {loadNextPage}>
-          {#snippet children({ person })}
-            {@render personCard(person)}
-          {/snippet}
-        </PeopleInfiniteScroll>
+        {#if showUnnamedPeople}
+          <div id="unnamed-people-list">
+            <PeopleInfiniteScroll people={unnamedPeople} hasNextPage={hasMorePeople} {loadNextPage}>
+              {#snippet children({ person })}
+                {@render personCard(person)}
+              {/snippet}
+            </PeopleInfiniteScroll>
+          </div>
+        {/if}
       </section>
     {/if}
   {:else}
