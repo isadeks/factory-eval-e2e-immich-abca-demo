@@ -24,7 +24,7 @@
     type AssetResponseDto,
   } from '@immich/sdk';
   import { Icon, IconButton, Link, LoadingSpinner, Text } from '@immich/ui';
-  import { mdiCamera, mdiCameraIris, mdiClose, mdiImageOutline, mdiInformationOutline } from '@mdi/js';
+  import { mdiCamera, mdiCameraIris, mdiClose, mdiImageOutline, mdiInformationOutline, mdiOpenInNew } from '@mdi/js';
   import { onDestroy } from 'svelte';
   import { t } from 'svelte-i18n';
   import { slide } from 'svelte/transition';
@@ -206,6 +206,18 @@
                 <p>{getByteUnitString(asset.exifInfo.fileSizeInByte, $locale)}</p>
               {/if}
             </div>
+          {/if}
+          {#if isOwner}
+            <Link
+              href={getAssetMediaUrl({ id: asset.id, size: AssetMediaSize.Original })}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="mt-1 inline-flex items-center gap-1 text-sm"
+              data-testid="detail-panel-open-original"
+            >
+              <Icon icon={mdiOpenInNew} size="16" aria-hidden />
+              {$t('open_original')}
+            </Link>
           {/if}
         </div>
       </div>
