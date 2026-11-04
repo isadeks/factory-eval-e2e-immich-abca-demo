@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { SearchDateFilter } from '$lib/types';
-  import { DatePicker, Text } from '@immich/ui';
+  import { Button, DatePicker, Text } from '@immich/ui';
   import { t } from 'svelte-i18n';
 
   type Props = {
@@ -10,6 +10,13 @@
   let { filters = $bindable() }: Props = $props();
 
   let invalid = $derived(filters.takenAfter && filters.takenBefore && filters.takenAfter > filters.takenBefore);
+
+  const hasDates = $derived(!!filters.takenAfter || !!filters.takenBefore);
+
+  const clear = () => {
+    filters.takenAfter = undefined;
+    filters.takenBefore = undefined;
+  };
 </script>
 
 <div class="flex flex-col gap-1">
@@ -24,6 +31,13 @@
       <DatePicker bind:value={filters.takenBefore} />
     </div>
   </div>
+  {#if hasDates}
+    <div class="flex justify-end">
+      <Button data-testid="clear-date-filter" size="small" shape="round" color="secondary" onclick={clear}
+        >{$t('clear')}</Button
+      >
+    </div>
+  {/if}
   {#if invalid}
     <Text color="danger">{$t('start_date_before_end_date')}</Text>
   {/if}
