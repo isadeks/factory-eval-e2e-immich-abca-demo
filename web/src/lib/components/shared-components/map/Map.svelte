@@ -15,6 +15,7 @@
   import MapSettingsModal from '$lib/modals/MapSettingsModal.svelte';
   import { mapSettings } from '$lib/stores/preferences.store';
   import { getAssetMediaUrl, handlePromiseError } from '$lib/utils';
+  import { loadMapView, saveMapView } from '$lib/utils/map-view';
   import { getMapMarkers, type MapMarkerResponseDto } from '@immich/sdk';
   import { Icon, modalManager, Theme, themeManager } from '@immich/ui';
   import { mdiCog, mdiMap, mdiMapMarker } from '@mdi/js';
@@ -65,6 +66,7 @@
     rounded?: boolean;
     showSimpleControls?: boolean;
     autoFitBounds?: boolean;
+    rememberView?: boolean;
   }
 
   let {
@@ -84,11 +86,22 @@
     rounded = false,
     showSimpleControls = true,
     autoFitBounds = true,
+    rememberView = false,
   }: Props = $props();
+
+  // Restore the last zoom/center unless the caller or the URL hash already decides the view
+  const restoredView = (() => {
+    if (!rememberView || center || zoom !== undefined || (hash && location.hash)) {
+      return undefined;
+    }
+    return loadMapView();
+  })();
+  const initialZoom = restoredView?.zoom ?? zoom;
+  const initialCenter = restoredView?.center ?? center;
 
   // Calculate initial bounds from markers once during initialization
   const initialBounds = (() => {
-    if (!autoFitBounds || center || zoom !== undefined || !mapMarkers || mapMarkers.length === 0) {
+    if (!autoFitBounds || initialCenter || initialZoom !== undefined || !mapMarkers || mapMarkers.length === 0) {
       return undefined;
     }
 
@@ -328,8 +341,8 @@
   {hash}
   style=""
   class="h-full {rounded ? 'rounded-2xl' : 'rounded-none'}"
-  {zoom}
-  {center}
+  zoom={initialZoom}
+  center={initialCenter}
   bounds={initialBounds}
   fitBoundsOptions={{ padding: 50, maxZoom: 15 }}
   attributionControl={false}
@@ -337,6 +350,12 @@
   onload={(event: Map) => {
     event.setMaxZoom(18);
     event.on('click', handleMapClick);
+    if (rememberView) {
+      event.on('moveend', () => {
+        const { lng, lat } = event.getCenter();
+        saveMapView({ zoom: event.getZoom(), center: { lng, lat } });
+      });
+    }
     if (!simplified) {
       event.addControl(new GlobeControl(), 'top-left');
     }
