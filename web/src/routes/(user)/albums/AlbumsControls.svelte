@@ -92,6 +92,26 @@
   });
 
   let selectedFilterOption = $derived(albumFilterNames[findFilterOption($albumViewSettings.filter)]);
+  const sortToggleOptions = [AlbumSortBy.Title, AlbumSortBy.DateCreated] as const;
+  type SortToggleOption = (typeof sortToggleOptions)[number];
+  let sortToggleNames: Record<SortToggleOption, string> = $derived({
+    [AlbumSortBy.Title]: $t('name'),
+    [AlbumSortBy.DateCreated]: $t('sort_created'),
+  });
+  let selectedSortToggle = $derived(
+    (sortToggleOptions as readonly string[]).includes($albumViewSettings.sortBy)
+      ? sortToggleNames[$albumViewSettings.sortBy as SortToggleOption]
+      : '',
+  );
+
+  const handleSortToggle = (selected: string) => {
+    const id = sortToggleOptions.find((option) => sortToggleNames[option] === selected);
+    if (id) {
+      $albumViewSettings.sortBy = id;
+      $albumViewSettings.sortOrder = findSortOptionMetadata(id).defaultOrder;
+    }
+  };
+
   let selectedSortOption = $derived(findSortOptionMetadata($albumViewSettings.sortBy));
   let selectedGroupOption = $derived(findGroupOptionMetadata($albumViewSettings.groupBy));
   let sortIcon = $derived($albumViewSettings.sortOrder === SortOrder.Desc ? mdiArrowDownThin : mdiArrowUpThin);
@@ -137,6 +157,16 @@
 >
   <p class="hidden md:block">{$t('create_album')}</p>
 </Button>
+
+<!-- Sort Toggle (Name / Date created) -->
+<div class="hidden h-10 md:block">
+  <GroupTab
+    label={$t('sort_albums_by')}
+    filters={sortToggleOptions.map((id) => sortToggleNames[id])}
+    selected={selectedSortToggle}
+    onSelect={handleSortToggle}
+  />
+</div>
 
 <!-- Sort Albums -->
 <Dropdown
