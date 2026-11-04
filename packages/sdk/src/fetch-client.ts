@@ -2201,6 +2201,8 @@ export type SharedLinkResponseDto = {
     "type": SharedLinkType;
     /** Owner user ID */
     userId: string;
+    /** Number of times the shared link has been viewed */
+    viewCount: number;
 };
 export type SharedLinkCreateDto = {
     /** Album ID (for album sharing) */

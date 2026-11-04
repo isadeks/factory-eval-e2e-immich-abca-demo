@@ -67,6 +67,7 @@ const SharedLinkResponseSchema = z
     allowDownload: z.boolean().describe('Allow downloads'),
     showMetadata: z.boolean().describe('Show metadata'),
     slug: z.string().nullable().describe('Custom URL slug'),
+    viewCount: z.int().min(0).describe('Number of times the shared link has been viewed'),
   })
   .describe('Shared link response')
   .meta({ id: 'SharedLinkResponseDto' });
@@ -95,6 +96,7 @@ export function mapSharedLink(sharedLink: SharedLink, options: { stripAssetMetad
     allowDownload: sharedLink.allowDownload,
     showMetadata: sharedLink.showExif,
     slug: sharedLink.slug,
+    viewCount: sharedLink.viewCount ?? 0,
   };
 
   // unless we select sharedLink.album.sharedLinks this will be wrong

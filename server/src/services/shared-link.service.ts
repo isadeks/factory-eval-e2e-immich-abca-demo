@@ -61,6 +61,14 @@ export class SharedLinkService extends BaseService {
     return mapSharedLink(sharedLink, { stripAssetMetadata: !sharedLink.showExif });
   }
 
+  async recordView(auth: AuthDto) {
+    if (!auth.sharedLink) {
+      throw new ForbiddenException();
+    }
+
+    await this.sharedLinkRepository.incrementViewCount(auth.sharedLink.id);
+  }
+
   async get(auth: AuthDto, id: string): Promise<SharedLinkResponseDto> {
     const sharedLink = await this.findOrFail(auth.user.id, id);
     return mapSharedLink(sharedLink, { stripAssetMetadata: false });

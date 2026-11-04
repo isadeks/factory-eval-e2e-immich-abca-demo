@@ -17,6 +17,23 @@ export type SharedLinkSearchOptions = {
   albumId?: string;
 };
 
+// The view count is always selected, but kept optional on the result type so that callers
+// building a shared link by hand (e.g. test fixtures) do not have to provide one.
+type OptionalViewCount<T> = T extends (infer U)[]
+  ? OptionalViewCount<U>[]
+  : T extends { viewCount: number | null }
+    ? Omit<T, 'viewCount'> & { viewCount?: number | null }
+    : T;
+const optionalViewCount = <T>(value: T) => value as OptionalViewCount<T>;
+
+const withViewCount = (eb: ExpressionBuilder<DB, 'shared_link'>) => {
+  return eb
+    .selectFrom('shared_link_view_count')
+    .select('shared_link_view_count.viewCount')
+    .whereRef('shared_link_view_count.sharedLinkId', '=', 'shared_link.id')
+    .as('viewCount');
+};
+
 const withSharedAssets = (eb: ExpressionBuilder<DB, 'shared_link'>) => {
   return eb
     .selectFrom('shared_link_asset')
@@ -69,6 +86,7 @@ export class SharedLinkRepository {
     return this.db
       .selectFrom('shared_link')
       .selectAll('shared_link')
+      .select(withViewCount)
       .select((eb) =>
         jsonArrayFrom(
           withSharedAssets(eb)
@@ -116,7 +134,8 @@ export class SharedLinkRepository {
       .where('shared_link.userId', '=', userId)
       .where((eb) => eb.or([eb('shared_link.type', '=', SharedLinkType.Individual), eb('album.id', 'is not', null)]))
       .orderBy('shared_link.createdAt', 'desc')
-      .executeTakeFirst();
+      .executeTakeFirst()
+      .then(optionalViewCount);
   }
 
   @GenerateSql({ params: [{ userId: DummyValue.UUID, albumId: DummyValue.UUID }] })
@@ -124,6 +143,7 @@ export class SharedLinkRepository {
     return this.db
       .selectFrom('shared_link')
       .selectAll('shared_link')
+      .select(withViewCount)
       .select((eb) => jsonArrayFrom(withSharedAssets(eb).limit(1)).as('assets'))
       .where('shared_link.userId', '=', userId)
       .leftJoinLateral(
@@ -139,7 +159,8 @@ export class SharedLinkRepository {
       .$if(!!albumId, (eb) => eb.where('shared_link.albumId', '=', albumId!))
       .$if(!!id, (eb) => eb.where('shared_link.id', '=', id!))
       .orderBy('shared_link.createdAt', 'desc')
-      .execute();
+      .execute()
+      .then(optionalViewCount);
   }
 
   @GenerateSql({ params: [DummyValue.BUFFER] })
@@ -208,6 +229,17 @@ export class SharedLinkRepository {
     return this.getSharedLinks(id);
   }
 
+  @GenerateSql({ params: [DummyValue.UUID] })
+  async incrementViewCount(id: string): Promise<void> {
+    await this.db
+      .insertInto('shared_link_view_count')
+      .values({ sharedLinkId: id, viewCount: 1 })
+      .onConflict((oc) =>
+        oc.column('sharedLinkId').doUpdateSet({ viewCount: sql`"shared_link_view_count"."viewCount" + 1` }),
+      )
+      .execute();
+  }
+
   async remove(id: string): Promise<void> {
     await this.db.deleteFrom('shared_link').where('shared_link.id', '=', id).execute();
   }
@@ -231,6 +263,7 @@ export class SharedLinkRepository {
     return this.db
       .selectFrom('shared_link')
       .selectAll('shared_link')
+      .select(withViewCount)
       .where('shared_link.id', '=', id)
       .leftJoin('shared_link_asset', 'shared_link_asset.sharedLinkId', 'shared_link.id')
       .leftJoinLateral(
@@ -254,6 +287,7 @@ export class SharedLinkRepository {
           .as('assets'),
       )
       .groupBy('shared_link.id')
-      .executeTakeFirstOrThrow();
+      .executeTakeFirstOrThrow()
+      .then(optionalViewCount);
   }
 }

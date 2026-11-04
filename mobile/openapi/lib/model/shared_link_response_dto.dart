@@ -27,6 +27,7 @@ class SharedLinkResponseDto {
     required this.slug,
     required this.type,
     required this.userId,
+    required this.viewCount,
   });
 
   ///
@@ -74,6 +75,12 @@ class SharedLinkResponseDto {
   /// Owner user ID
   String userId;
 
+  /// Number of times the shared link has been viewed
+  ///
+  /// Minimum value: 0
+  /// Maximum value: 9007199254740991
+  int viewCount;
+
   @override
   bool operator ==(Object other) => identical(this, other) || other is SharedLinkResponseDto &&
     other.album == album &&
@@ -89,7 +96,8 @@ class SharedLinkResponseDto {
     other.showMetadata == showMetadata &&
     other.slug == slug &&
     other.type == type &&
-    other.userId == userId;
+    other.userId == userId &&
+    other.viewCount == viewCount;
 
   @override
   int get hashCode =>
@@ -107,10 +115,11 @@ class SharedLinkResponseDto {
     (showMetadata.hashCode) +
     (slug == null ? 0 : slug!.hashCode) +
     (type.hashCode) +
-    (userId.hashCode);
+    (userId.hashCode) +
+    (viewCount.hashCode);
 
   @override
-  String toString() => 'SharedLinkResponseDto[album=$album, allowDownload=$allowDownload, allowUpload=$allowUpload, assets=$assets, createdAt=$createdAt, description=$description, expiresAt=$expiresAt, id=$id, key=$key, password=$password, showMetadata=$showMetadata, slug=$slug, type=$type, userId=$userId]';
+  String toString() => 'SharedLinkResponseDto[album=$album, allowDownload=$allowDownload, allowUpload=$allowUpload, assets=$assets, createdAt=$createdAt, description=$description, expiresAt=$expiresAt, id=$id, key=$key, password=$password, showMetadata=$showMetadata, slug=$slug, type=$type, userId=$userId, viewCount=$viewCount]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -151,6 +160,7 @@ class SharedLinkResponseDto {
     }
       json[r'type'] = this.type;
       json[r'userId'] = this.userId;
+      json[r'viewCount'] = this.viewCount;
     return json;
   }
 
@@ -177,6 +187,7 @@ class SharedLinkResponseDto {
         slug: mapValueOfType<String>(json, r'slug'),
         type: SharedLinkType.fromJson(json[r'type'])!,
         userId: mapValueOfType<String>(json, r'userId')!,
+        viewCount: mapValueOfType<int>(json, r'viewCount')!,
       );
     }
     return null;
@@ -237,6 +248,7 @@ class SharedLinkResponseDto {
     'slug',
     'type',
     'userId',
+    'viewCount',
   };
 }
 

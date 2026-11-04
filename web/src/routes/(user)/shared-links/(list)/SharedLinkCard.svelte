@@ -88,6 +88,10 @@
         {#if sharedLink.description}
           <Text size="small" class="line-clamp-1">{sharedLink.description}</Text>
         {/if}
+
+        <Text size="small" color="muted" data-testid="shared-link-view-count">
+          {$t('shared_link_view_count', { values: { count: sharedLink.viewCount } })}
+        </Text>
       </div>
 
       <div class="flex flex-wrap items-center gap-2">

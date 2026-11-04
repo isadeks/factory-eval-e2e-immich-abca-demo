@@ -95,8 +95,11 @@ export class SharedLinkController {
     description: 'Retrieve the current shared link associated with authentication method.',
     history: new HistoryBuilder().added('v1').beta('v1').stable('v2'),
   })
-  getMySharedLink(@Auth() auth: AuthDto, @Req() req: Request): Promise<SharedLinkResponseDto> {
-    return this.service.getMine(auth, getAuthTokens(req.cookies));
+  async getMySharedLink(@Auth() auth: AuthDto, @Req() req: Request): Promise<SharedLinkResponseDto> {
+    const sharedLink = await this.service.getMine(auth, getAuthTokens(req.cookies));
+    // only count the view once access (including the password, if any) has been granted
+    await this.service.recordView(auth);
+    return sharedLink;
   }
 
   @Get(':id')

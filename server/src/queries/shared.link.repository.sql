@@ -5,6 +5,14 @@ select
   "shared_link".*,
   (
     select
+      "shared_link_view_count"."viewCount"
+    from
+      "shared_link_view_count"
+    where
+      "shared_link_view_count"."sharedLinkId" = "shared_link"."id"
+  ) as "viewCount",
+  (
+    select
       coalesce(json_agg(agg), '[]')
     from
       (
@@ -172,6 +180,14 @@ select
   "shared_link".*,
   (
     select
+      "shared_link_view_count"."viewCount"
+    from
+      "shared_link_view_count"
+    where
+      "shared_link_view_count"."sharedLinkId" = "shared_link"."id"
+  ) as "viewCount",
+  (
+    select
       coalesce(json_agg(agg), '[]')
     from
       (
@@ -315,6 +331,14 @@ where
 -- SharedLinkRepository.getSharedLinks
 select
   "shared_link".*,
+  (
+    select
+      "shared_link_view_count"."viewCount"
+    from
+      "shared_link_view_count"
+    where
+      "shared_link_view_count"."sharedLinkId" = "shared_link"."id"
+  ) as "viewCount",
   coalesce(
     json_agg("assets") filter (
       where
@@ -374,3 +398,12 @@ where
   "shared_link"."id" = $1
 group by
   "shared_link"."id"
+
+-- SharedLinkRepository.incrementViewCount
+insert into
+  "shared_link_view_count" ("sharedLinkId", "viewCount")
+values
+  ($1, $2)
+on conflict ("sharedLinkId") do update
+set
+  "viewCount" = "shared_link_view_count"."viewCount" + 1
