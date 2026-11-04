@@ -21,6 +21,7 @@
     actions?: Array<HeaderButtonActionItem | MenuItemType>;
     sidebar?: Snippet;
     buttons?: Snippet;
+    titleBadge?: Snippet;
     children?: Snippet;
   }
 
@@ -33,6 +34,7 @@
     actions = [],
     sidebar,
     buttons,
+    titleBadge,
     children,
   }: Props = $props();
 
@@ -73,7 +75,10 @@
       <div class="absolute flex h-16 w-full place-items-center justify-between border-b p-2 text-dark">
         <div class="flex items-center gap-2">
           {#if title}
-            <div class="pe-8 outline-none" tabindex="-1" id={headerId}>{title}</div>
+            <div class="flex items-center gap-2 pe-8">
+              <div class="outline-none" tabindex="-1" id={headerId}>{title}</div>
+              {@render titleBadge?.()}
+            </div>
           {/if}
           {#if description}
             <p class="text-sm text-gray-400 dark:text-gray-600">{description}</p>

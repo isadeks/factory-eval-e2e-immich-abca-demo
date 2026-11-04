@@ -1,6 +1,7 @@
 <script lang="ts">
   import UserPageLayout from '$lib/components/layouts/UserPageLayout.svelte';
   import ButtonContextMenu from '$lib/components/shared-components/context-menu/ButtonContextMenu.svelte';
+  import CountPill from '$lib/components/shared-components/CountPill.svelte';
   import EmptyPlaceholder from '$lib/components/shared-components/EmptyPlaceholder.svelte';
   import ArchiveAction from '$lib/components/timeline/actions/ArchiveAction.svelte';
   import ChangeDate from '$lib/components/timeline/actions/ChangeDateAction.svelte';
@@ -49,6 +50,11 @@
 </script>
 
 <UserPageLayout hideNavbar={assetMultiSelectManager.selectionActive} title={data.meta.title} scrollbar={false}>
+  {#snippet titleBadge()}
+    {#if timelineManager?.isInitialized}
+      <CountPill count={timelineManager.assetCount} testId="favorites-count" />
+    {/if}
+  {/snippet}
   <Timeline
     enableRouting={true}
     withStacked={true}
