@@ -1,8 +1,8 @@
 <script lang="ts">
   import { cleanClass } from '$lib';
+  import { formatVideoDuration } from '$lib/utils/video-duration';
   import { Icon, LoadingSpinner } from '@immich/ui';
   import { mdiAlertCircleOutline, mdiPauseCircleOutline, mdiPlayCircleOutline } from '@mdi/js';
-  import { Duration } from 'luxon';
   import type { ClassValue } from 'svelte/elements';
 
   interface Props {
@@ -91,17 +91,14 @@
 {/if}
 
 <div
-  class="@container absolute inset-x-0 top-0 flex place-items-center justify-end gap-1 text-xs font-medium text-white text-shadow-[1px_1px_6px_rgb(0_0_0)]"
+  class="@container absolute inset-x-0 top-0 flex place-items-center justify-end gap-1 text-xs font-medium text-white"
 >
   {#if showTime}
-    <span class="hidden pt-2 @min-[100px]:inline">
-      {#if remainingSeconds < 60}
-        {Duration.fromObject({ seconds: remainingSeconds }).toFormat('m:ss')}
-      {:else if remainingSeconds < 3600}
-        {Duration.fromObject({ seconds: remainingSeconds }).toFormat('mm:ss')}
-      {:else}
-        {Duration.fromObject({ seconds: remainingSeconds }).toFormat('h:mm:ss')}
-      {/if}
+    <span
+      data-testid="video-duration-badge"
+      class="mt-2 hidden rounded-md bg-black/50 px-1.5 py-0.5 leading-none tabular-nums @min-[100px]:inline"
+    >
+      {formatVideoDuration(remainingSeconds)}
     </span>
   {/if}
 
