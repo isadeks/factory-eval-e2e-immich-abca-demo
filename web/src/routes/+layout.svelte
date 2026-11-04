@@ -4,6 +4,7 @@
   import { getPagesProvider, getSettingsProvider } from '$lib/commands';
   import DownloadPanel from './DownloadPanel.svelte';
   import ErrorLayout from './ErrorLayout.svelte';
+  import KeyboardShortcutsHandler from '$lib/components/KeyboardShortcutsHandler.svelte';
   import OnEvents from '$lib/components/OnEvents.svelte';
   import NavigationLoadingBar from './NavigationLoadingBar.svelte';
   import UploadPanel from './UploadPanel.svelte';
@@ -231,6 +232,8 @@
 </script>
 
 <OnEvents {onWebsocketConnect} />
+
+<KeyboardShortcutsHandler />
 
 <VersionAnnouncement />
 

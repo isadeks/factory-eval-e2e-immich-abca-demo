@@ -11,7 +11,6 @@
   import { featureFlagsManager } from '$lib/managers/feature-flags-manager.svelte';
   import type { TimelineAsset, Viewport } from '$lib/managers/timeline-manager/types';
   import AssetDeleteConfirmModal from '$lib/modals/AssetDeleteConfirmModal.svelte';
-  import ShortcutsModal from '$lib/modals/ShortcutsModal.svelte';
   import { Route } from '$lib/route';
   import { keyboardManager } from '$lib/stores/keyboard-manager.svelte';
   import { showDeleteModal } from '$lib/stores/preferences.store';
@@ -221,18 +220,6 @@
   const focusPreviousAsset = () =>
     moveFocus((element) => element.dataset.thumbnailFocusContainer !== undefined, 'previous');
 
-  let isShortcutModalOpen = false;
-
-  const handleOpenShortcutModal = async () => {
-    if (isShortcutModalOpen) {
-      return;
-    }
-
-    isShortcutModalOpen = true;
-    await modalManager.show(ShortcutsModal, {});
-    isShortcutModalOpen = false;
-  };
-
   const shortcutList = $derived(
     (() => {
       if (assetViewerManager.isViewing) {
@@ -240,7 +227,6 @@
       }
 
       const shortcuts: ShortcutOptions[] = [
-        { shortcut: { key: '?', shift: true }, onShortcut: handleOpenShortcutModal },
         { shortcut: { key: '/' }, onShortcut: () => goto(Route.explore()) },
         { shortcut: { key: 'A', ctrl: true }, onShortcut: () => selectAllAssets() },
         ...(arrowNavigation

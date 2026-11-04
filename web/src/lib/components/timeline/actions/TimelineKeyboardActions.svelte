@@ -13,7 +13,6 @@
   import type { TimelineAsset } from '$lib/managers/timeline-manager/types';
   import AssetDeleteConfirmModal from '$lib/modals/AssetDeleteConfirmModal.svelte';
   import NavigateToDateModal from '$lib/modals/NavigateToDateModal.svelte';
-  import ShortcutsModal from '$lib/modals/ShortcutsModal.svelte';
   import { Route } from '$lib/route';
   import { keyboardManager } from '$lib/stores/keyboard-manager.svelte';
   import { showDeleteModal } from '$lib/stores/preferences.store';
@@ -81,18 +80,6 @@
   };
 
   const isEmpty = $derived(timelineManager.isInitialized && timelineManager.months.length === 0);
-  let isShortcutModalOpen = false;
-
-  const handleOpenShortcutModal = async () => {
-    if (isShortcutModalOpen) {
-      return;
-    }
-
-    isShortcutModalOpen = true;
-    await modalManager.show(ShortcutsModal, {});
-    isShortcutModalOpen = false;
-  };
-
   $effect(() => {
     if (isEmpty) {
       assetInteraction.clear();
@@ -115,7 +102,6 @@
     }
 
     const shortcuts: ShortcutOptions[] = [
-      { shortcut: { key: '?', shift: true }, onShortcut: handleOpenShortcutModal },
       { shortcut: { key: '/' }, onShortcut: () => goto(Route.explore()) },
       { shortcut: { key: 'A', ctrl: true }, onShortcut: () => selectAllAssets(timelineManager, assetInteraction) },
       { shortcut: { key: 'ArrowRight' }, onShortcut: () => setFocusTo('earlier', 'asset') },
