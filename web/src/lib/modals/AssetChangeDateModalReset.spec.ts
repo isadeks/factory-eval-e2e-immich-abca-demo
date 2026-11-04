@@ -50,6 +50,7 @@ describe.each([
 
     expect(getDateInput().className).toContain('bg-green-100');
     expect(await screen.findByTestId('reset-date-button')).toHaveAttribute('aria-label', 'reset_to_original_value');
+    expect(await screen.findByTestId('reset-date-button')).toHaveAttribute('title', 'reset_to_original_value');
     await fireEvent.click(await screen.findByTestId('reset-date-button'));
 
     await waitFor(() => expect(getDateInput().value).toBe(original));
@@ -68,6 +69,7 @@ describe.each([
     expect(getTimeZoneInput().value).toBe('Pacific/Pitcairn (-08:00)');
     expect(screen.queryByTestId('reset-date-button')).not.toBeInTheDocument();
     expect(await screen.findByTestId('reset-timezone-button')).toHaveAttribute('aria-label', 'reset_to_original_value');
+    expect(await screen.findByTestId('reset-timezone-button')).toHaveAttribute('title', 'reset_to_original_value');
     await fireEvent.click(await screen.findByTestId('reset-timezone-button'));
 
     await waitFor(() => expect(getTimeZoneInput().value).toBe(original));
