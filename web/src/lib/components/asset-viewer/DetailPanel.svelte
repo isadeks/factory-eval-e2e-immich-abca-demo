@@ -216,7 +216,7 @@
 
           <div>
             {#if asset.exifInfo?.make || asset.exifInfo?.model}
-              <p>
+              <p data-testid="detail-panel-camera">
                 <a
                   href={Route.search({
                     make: asset.exifInfo?.make ?? undefined,
