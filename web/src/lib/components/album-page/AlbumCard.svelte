@@ -3,7 +3,7 @@
   import { authManager } from '$lib/managers/auth-manager.svelte';
   import { getContextMenuPositionFromEvent, type ContextMenuPosition } from '$lib/utils/context-menu';
   import { getShortDateRange } from '$lib/utils/date-time';
-  import { type AlbumResponseDto } from '@immich/sdk';
+  import { AlbumUserRole, type AlbumResponseDto } from '@immich/sdk';
   import { IconButton } from '@immich/ui';
   import { mdiDotsVertical } from '@mdi/js';
   import { t } from 'svelte-i18n';
@@ -25,6 +25,8 @@
     preload = false,
     onShowContextMenu,
   }: Props = $props();
+
+  const sharedWithCount = $derived(album.albumUsers.filter(({ role }) => role !== AlbumUserRole.Owner).length);
 
   const showAlbumContextMenu = (e: MouseEvent) => {
     e.stopPropagation();
@@ -93,8 +95,17 @@
             {$t('shared_by_user', { values: { user: owner.name } })}
           </p>
         {/if}
-      {:else if album.shared}
+      {:else if album.shared && sharedWithCount === 0}
         <p>{$t('shared')}</p>
+      {/if}
+
+      {#if sharedWithCount > 0}
+        {#if showItemCount || showOwner}
+          <p>•</p>
+        {/if}
+        <p data-testid="album-shared-with-count">
+          {$t('shared_with_count', { values: { count: sharedWithCount } })}
+        </p>
       {/if}
     </span>
   </div>
