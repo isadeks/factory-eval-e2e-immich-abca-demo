@@ -335,7 +335,12 @@
         <!-- Favorite asset star -->
         {#if !authManager.isSharedLink && asset.isFavorite}
           <div class="absolute inset-s-2 bottom-2 z-2">
-            <Icon data-icon-favorite icon={mdiHeart} size="24" class="text-white" />
+            <Icon
+              data-icon-favorite
+              icon={mdiHeart}
+              size="24"
+              class="text-[#ff69b4] drop-shadow-[0_0_2px_rgba(0,0,0,0.6)]"
+            />
           </div>
         {/if}
 

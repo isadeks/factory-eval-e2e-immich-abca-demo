@@ -44,9 +44,21 @@ test('asset viewer shows a heart badge only for favorited assets', async ({ page
   await page.goto(`/photos/${favoriteId}`);
   await expect(badge).toBeVisible();
   const box = await badge.boundingBox();
-  expect(box!.x).toBeLessThan(100);
-  expect(box!.y).toBeLessThan(120);
+  expect(box!.x).toBeLessThan(120);
+  expect(box!.y).toBeLessThan(60);
   await expect(badge).toHaveCSS('color', 'rgb(255, 105, 180)');
+  await expect(badge.locator('svg path')).toHaveCSS('fill', 'rgb(255, 105, 180)');
+  // move focus/hover off the "Go back" button so its tooltip does not cover the badge
+  await page.mouse.move(640, 400);
+  await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
   await highlight(page, badge, 'New: Favorite badge');
-  await shot(page, 'A favorited asset shows a heart badge top-left', { focus: badge });
+  await shot(page, 'A favorited asset shows a pink heart badge top-left', { focus: badge });
+
+  await page.goto('/photos');
+  const heart = page.locator(`[data-asset="${favoriteId}"] [data-icon-favorite]`);
+  await expect(heart.first()).toBeVisible();
+  await expect(page.locator('[data-icon-favorite]')).toHaveCount(1);
+  await expect(heart.first()).toHaveCSS('color', 'rgb(255, 105, 180)');
+  await highlight(page, heart.first(), 'New: pink favorite heart');
+  await shot(page, 'The home timeline shows the pink heart on the favorited photo', { focus: heart.first() });
 });
