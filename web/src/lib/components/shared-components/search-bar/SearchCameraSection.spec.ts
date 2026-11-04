@@ -43,4 +43,20 @@ describe('SearchCameraSection component', () => {
     const lens = screen.getByRole('combobox', { name: /lens_model/i }) as HTMLInputElement;
     await waitFor(() => expect(lens.value).toBe('EF 50mm f/1.8'));
   });
+
+  it('narrows the make and model suggestions by the selected lens model', async () => {
+    render(TestWrapper, {
+      component: SearchCameraSection,
+      componentProps: { filters: { lensModel: 'EF 50mm f/1.8' } },
+    });
+
+    await waitFor(() => {
+      expect(getSearchSuggestions).toHaveBeenCalledWith(
+        expect.objectContaining({ $type: SearchSuggestionType.CameraMake, lensModel: 'EF 50mm f/1.8' }),
+      );
+      expect(getSearchSuggestions).toHaveBeenCalledWith(
+        expect.objectContaining({ $type: SearchSuggestionType.CameraModel, lensModel: 'EF 50mm f/1.8' }),
+      );
+    });
+  });
 });

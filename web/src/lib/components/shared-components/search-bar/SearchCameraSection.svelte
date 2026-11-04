@@ -16,9 +16,10 @@
   let models: string[] = $state([]);
   let lensModels: string[] = $state([]);
 
-  async function updateMakes() {
+  async function updateMakes(lensModel?: string) {
     const results: Array<string | null> = await getSearchSuggestions({
       $type: SearchSuggestionType.CameraMake,
+      lensModel,
       includeNull: true,
     });
 
@@ -29,10 +30,11 @@
     }
   }
 
-  async function updateModels(make?: string) {
+  async function updateModels(make?: string, lensModel?: string) {
     const results: Array<string | null> = await getSearchSuggestions({
       $type: SearchSuggestionType.CameraModel,
       make,
+      lensModel,
       includeNull: true,
     });
 
@@ -64,10 +66,10 @@
 
   // TODO replace by async $derived, at the latest when it's in stable https://svelte.dev/docs/svelte/await-expressions
   $effect(() => {
-    handlePromiseError(updateMakes());
+    handlePromiseError(updateMakes(lensModelFilter));
   });
   $effect(() => {
-    handlePromiseError(updateModels(makeFilter));
+    handlePromiseError(updateModels(makeFilter, lensModelFilter));
   });
   $effect(() => {
     handlePromiseError(updateLensModels(makeFilter, modelFilter));
