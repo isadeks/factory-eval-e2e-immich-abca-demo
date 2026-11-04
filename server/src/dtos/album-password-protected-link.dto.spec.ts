@@ -19,14 +19,14 @@ const build = (sharedLinks?: AuthSharedLink[]) =>
 
 describe('mapAlbum hasPasswordProtectedSharedLink', () => {
   it('should be false without shared links', () => {
-    expect(build().hasPasswordProtectedSharedLink).toBe(false);
-    expect(build([]).hasPasswordProtectedSharedLink).toBe(false);
+    expect(build().hasPasswordProtectedSharedLink).toBeUndefined();
+    expect(build([]).hasPasswordProtectedSharedLink).toBeUndefined();
   });
 
   it('should be false when no shared link has a password', () => {
     const dto = build([sharedLink(null), sharedLink('')]);
     expect(dto.hasSharedLink).toBe(true);
-    expect(dto.hasPasswordProtectedSharedLink).toBe(false);
+    expect(dto.hasPasswordProtectedSharedLink).toBeUndefined();
   });
 
   it('should be true when any shared link has a password', () => {

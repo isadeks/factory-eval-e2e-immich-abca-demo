@@ -16592,7 +16592,7 @@
             "type": "string"
           },
           "hasPasswordProtectedSharedLink": {
-            "description": "Has a password protected shared link",
+            "description": "Has a password protected shared link (omitted when false)",
             "type": "boolean"
           },
           "hasSharedLink": {

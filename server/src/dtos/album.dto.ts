@@ -124,7 +124,10 @@ export const AlbumResponseSchema = z
         'First entry is always the album owner. Second entry is the auth user, if it differs from the owner. The rest are ordered alphabetically.',
       ),
     hasSharedLink: z.boolean().describe('Has shared link'),
-    hasPasswordProtectedSharedLink: z.boolean().optional().describe('Has a password protected shared link'),
+    hasPasswordProtectedSharedLink: z
+      .boolean()
+      .optional()
+      .describe('Has a password protected shared link (omitted when false)'),
     assetCount: z.int().min(0).describe('Number of assets'),
     // TODO: use `isoDatetimeToDate` when using `ZodSerializerDto` on the controllers.
     lastModifiedAssetTimestamp: z
@@ -217,7 +220,8 @@ export const mapAlbum = (entity: MaybeDehydrated<MapAlbumDto>): AlbumResponseDto
     albumUsers,
     shared: hasSharedUser || hasSharedLink,
     hasSharedLink,
-    hasPasswordProtectedSharedLink,
+    // only included when true, so existing responses stay unchanged
+    hasPasswordProtectedSharedLink: hasPasswordProtectedSharedLink || undefined,
     startDate: asDateTimeString(startDate),
     endDate: asDateTimeString(endDate),
     assetCount: entity.assets?.length || 0,

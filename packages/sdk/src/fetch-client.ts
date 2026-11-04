@@ -511,7 +511,7 @@ export type AlbumResponseDto = {
     description: string;
     /** End date (latest asset) */
     endDate?: string;
-    /** Has a password protected shared link */
+    /** Has a password protected shared link (omitted when false) */
     hasPasswordProtectedSharedLink?: boolean;
     /** Has shared link */
     hasSharedLink: boolean;

@@ -64,7 +64,7 @@ class AlbumResponseDto {
   ///
   Optional<DateTime?> endDate;
 
-  /// Has a password protected shared link
+  /// Has a password protected shared link (omitted when false)
   ///
   /// Please note: This property should have been non-nullable! Since the specification file
   /// does not include a default value (using the "default:" property), however, the generated

@@ -37,10 +37,9 @@ describe('/albums hasPasswordProtectedSharedLink', () => {
     const byId = new Map(albums.map((album) => [album.id, album]));
 
     expect(byId.get(albumWithPassword.id)).toMatchObject({ hasSharedLink: true, hasPasswordProtectedSharedLink: true });
-    expect(byId.get(albumWithoutPassword.id)).toMatchObject({
-      hasSharedLink: true,
-      hasPasswordProtectedSharedLink: false,
-    });
-    expect(byId.get(albumWithoutLink.id)).toMatchObject({ hasSharedLink: false, hasPasswordProtectedSharedLink: false });
+    expect(byId.get(albumWithoutPassword.id)).toMatchObject({ hasSharedLink: true });
+    expect(byId.get(albumWithoutPassword.id)?.hasPasswordProtectedSharedLink).toBeFalsy();
+    expect(byId.get(albumWithoutLink.id)).toMatchObject({ hasSharedLink: false });
+    expect(byId.get(albumWithoutLink.id)?.hasPasswordProtectedSharedLink).toBeFalsy();
   });
 });
