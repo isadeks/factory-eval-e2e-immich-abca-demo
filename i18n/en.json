@@ -1592,6 +1592,7 @@
   "partners": "Partners",
   "password": "Password",
   "password_does_not_match": "Password does not match",
+  "password_protected_shared_link": "Shared with a password",
   "password_required": "Password Required",
   "password_reset_success": "Password reset success",
   "past_durations": {

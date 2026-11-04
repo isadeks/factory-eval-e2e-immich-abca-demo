@@ -21,6 +21,7 @@ class AlbumResponseDto {
     required this.createdAt,
     required this.description,
     this.endDate = const Optional.absent(),
+    this.hasPasswordProtectedSharedLink = const Optional.absent(),
     required this.hasSharedLink,
     required this.id,
     required this.isActivityEnabled,
@@ -62,6 +63,15 @@ class AlbumResponseDto {
   /// Consider adding a "default:" property in the specification file to hide this note.
   ///
   Optional<DateTime?> endDate;
+
+  /// Has a password protected shared link
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  Optional<bool?> hasPasswordProtectedSharedLink;
 
   /// Has shared link
   bool hasSharedLink;
@@ -114,6 +124,7 @@ class AlbumResponseDto {
     other.createdAt == createdAt &&
     other.description == description &&
     other.endDate == endDate &&
+    other.hasPasswordProtectedSharedLink == hasPasswordProtectedSharedLink &&
     other.hasSharedLink == hasSharedLink &&
     other.id == id &&
     other.isActivityEnabled == isActivityEnabled &&
@@ -134,6 +145,7 @@ class AlbumResponseDto {
     (createdAt.hashCode) +
     (description.hashCode) +
     (endDate == null ? 0 : endDate!.hashCode) +
+    (hasPasswordProtectedSharedLink == null ? 0 : hasPasswordProtectedSharedLink!.hashCode) +
     (hasSharedLink.hashCode) +
     (id.hashCode) +
     (isActivityEnabled.hashCode) +
@@ -144,7 +156,7 @@ class AlbumResponseDto {
     (updatedAt.hashCode);
 
   @override
-  String toString() => 'AlbumResponseDto[albumName=$albumName, albumThumbnailAssetId=$albumThumbnailAssetId, albumUsers=$albumUsers, assetCount=$assetCount, contributorCounts=$contributorCounts, createdAt=$createdAt, description=$description, endDate=$endDate, hasSharedLink=$hasSharedLink, id=$id, isActivityEnabled=$isActivityEnabled, lastModifiedAssetTimestamp=$lastModifiedAssetTimestamp, order=$order, shared=$shared, startDate=$startDate, updatedAt=$updatedAt]';
+  String toString() => 'AlbumResponseDto[albumName=$albumName, albumThumbnailAssetId=$albumThumbnailAssetId, albumUsers=$albumUsers, assetCount=$assetCount, contributorCounts=$contributorCounts, createdAt=$createdAt, description=$description, endDate=$endDate, hasPasswordProtectedSharedLink=$hasPasswordProtectedSharedLink, hasSharedLink=$hasSharedLink, id=$id, isActivityEnabled=$isActivityEnabled, lastModifiedAssetTimestamp=$lastModifiedAssetTimestamp, order=$order, shared=$shared, startDate=$startDate, updatedAt=$updatedAt]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -165,6 +177,10 @@ class AlbumResponseDto {
     if (this.endDate.isPresent) {
       final value = this.endDate.value;
       json[r'endDate'] = value == null ? null : value.toUtc().toIso8601String();
+    }
+    if (this.hasPasswordProtectedSharedLink.isPresent) {
+      final value = this.hasPasswordProtectedSharedLink.value;
+      json[r'hasPasswordProtectedSharedLink'] = value;
     }
       json[r'hasSharedLink'] = this.hasSharedLink;
       json[r'id'] = this.id;
@@ -203,6 +219,7 @@ class AlbumResponseDto {
         createdAt: mapDateTime(json, r'createdAt', r'')!,
         description: mapValueOfType<String>(json, r'description')!,
         endDate: json.containsKey(r'endDate') ? Optional.present(mapDateTime(json, r'endDate', r'')) : const Optional.absent(),
+        hasPasswordProtectedSharedLink: json.containsKey(r'hasPasswordProtectedSharedLink') ? Optional.present(mapValueOfType<bool>(json, r'hasPasswordProtectedSharedLink')) : const Optional.absent(),
         hasSharedLink: mapValueOfType<bool>(json, r'hasSharedLink')!,
         id: mapValueOfType<String>(json, r'id')!,
         isActivityEnabled: mapValueOfType<bool>(json, r'isActivityEnabled')!,

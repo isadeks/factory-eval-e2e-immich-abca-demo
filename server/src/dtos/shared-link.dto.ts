@@ -100,6 +100,7 @@ export function mapSharedLink(sharedLink: SharedLink, options: { stripAssetMetad
   // unless we select sharedLink.album.sharedLinks this will be wrong
   if (response.album) {
     response.album.hasSharedLink = true;
+    response.album.hasPasswordProtectedSharedLink = !!sharedLink.password;
     response.album.shared = true;
   }
 

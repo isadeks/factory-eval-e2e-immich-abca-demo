@@ -4,8 +4,8 @@
   import { getContextMenuPositionFromEvent, type ContextMenuPosition } from '$lib/utils/context-menu';
   import { getShortDateRange } from '$lib/utils/date-time';
   import { type AlbumResponseDto } from '@immich/sdk';
-  import { IconButton } from '@immich/ui';
-  import { mdiDotsVertical } from '@mdi/js';
+  import { Icon, IconButton } from '@immich/ui';
+  import { mdiDotsVertical, mdiLock } from '@mdi/js';
   import { t } from 'svelte-i18n';
 
   interface Props {
@@ -95,6 +95,18 @@
         {/if}
       {:else if album.shared}
         <p>{$t('shared')}</p>
+      {/if}
+
+      {#if album.hasPasswordProtectedSharedLink}
+        <span
+          class="inline-flex items-center"
+          role="img"
+          title={$t('password_protected_shared_link')}
+          aria-label={$t('password_protected_shared_link')}
+          data-testid="album-password-protected-icon"
+        >
+          <Icon icon={mdiLock} size="16" aria-hidden />
+        </span>
       {/if}
     </span>
   </div>

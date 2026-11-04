@@ -16591,6 +16591,10 @@
             "format": "date-time",
             "type": "string"
           },
+          "hasPasswordProtectedSharedLink": {
+            "description": "Has a password protected shared link",
+            "type": "boolean"
+          },
           "hasSharedLink": {
             "description": "Has shared link",
             "type": "boolean"
