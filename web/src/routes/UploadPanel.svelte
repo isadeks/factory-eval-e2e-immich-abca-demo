@@ -1,4 +1,5 @@
 <script lang="ts">
+  import UploadProgressAnnouncer from '$lib/components/shared-components/UploadProgressAnnouncer.svelte';
   import { locale } from '$lib/stores/preferences.store';
   import { uploadAssetsStore } from '$lib/stores/upload';
   import { uploadExecutionQueue } from '$lib/utils/file-uploader';
@@ -32,6 +33,8 @@
     }
   });
 </script>
+
+<UploadProgressAnnouncer />
 
 {#if $isUploading}
   <div
