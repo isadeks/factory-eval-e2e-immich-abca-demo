@@ -7,7 +7,7 @@
   import { getAssetMediaUrl, getAssetPlaybackUrl } from '$lib/utils';
   import { moveFocus } from '$lib/utils/focus-util';
   import { currentUrlReplaceAssetId } from '$lib/utils/navigation';
-  import { getAltText } from '$lib/utils/thumbnail-util';
+  import { getAltText, getThumbnailTitle } from '$lib/utils/thumbnail-util';
   import { AssetMediaSize, AssetVisibility, type UserResponseDto } from '@immich/sdk';
   import { Icon } from '@immich/ui';
   import {
@@ -83,6 +83,7 @@
   let width = $derived(thumbnailSize || thumbnailWidth || 235);
   let height = $derived(thumbnailSize || thumbnailHeight || 235);
 
+  let title = $derived(getThumbnailTitle(asset, $locale));
   let assetOwner = $derived(albumUsers?.find((user) => user.id === asset.ownerId) ?? null);
 
   const onIconClickedHandler = (e?: MouseEvent) => {
@@ -225,6 +226,7 @@
   onclick={handleClick}
   bind:this={element}
   data-asset={asset.id}
+  {title}
   data-thumbnail-focus-container
   data-selected={selected ? true : undefined}
   data-readonly={readonly ? true : undefined}

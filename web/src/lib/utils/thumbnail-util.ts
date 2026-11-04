@@ -1,3 +1,4 @@
+import { DateTime } from 'luxon';
 import { t } from 'svelte-i18n';
 import { derived, get } from 'svelte/store';
 import type { TimelineAsset } from '$lib/managers/timeline-manager/types';
@@ -37,6 +38,18 @@ export function getThumbnailSize(assetCount: number, viewWidth: number): number 
 
   return 300;
 }
+
+/**
+ * Tooltip text for a thumbnail: the capture date (and time) in the asset's local time.
+ */
+export const getThumbnailTitle = (asset: TimelineAsset, dateLocale?: string): string => {
+  // tolerate assets that still carry an ISO string (e.g. raw AssetResponseDto) instead of a plain date-time object
+  const localDateTime =
+    typeof asset.localDateTime === 'string'
+      ? DateTime.fromISO(asset.localDateTime, { zone: 'UTC' })
+      : fromTimelinePlainDateTime(asset.localDateTime);
+  return localDateTime.toLocaleString(DateTime.DATETIME_MED, { locale: dateLocale });
+};
 
 export const getAltText = derived(t, ($t) => {
   return (asset: TimelineAsset) => {
