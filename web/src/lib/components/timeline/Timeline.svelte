@@ -41,6 +41,8 @@
     removeAction?: AssetAction.UNARCHIVE | AssetAction.ARCHIVE | AssetAction.SET_VISIBILITY_TIMELINE | null;
     withStacked?: boolean;
     showArchiveIcon?: boolean;
+    /** show the number of assets next to each day's date header */
+    showDayAssetCount?: boolean;
     isShared?: boolean;
     album?: AlbumResponseDto;
     albumUsers?: UserResponseDto[];
@@ -73,6 +75,7 @@
     removeAction = null,
     withStacked = false,
     showArchiveIcon = false,
+    showDayAssetCount = false,
     isShared = false,
     album,
     albumUsers = [],
@@ -650,6 +653,7 @@
             {assetInteraction}
             {customThumbnailLayout}
             {singleSelect}
+            {showDayAssetCount}
             {timelineMonth}
             manager={timelineManager}
             onTimelineDaySelect={handleGroupSelect}
