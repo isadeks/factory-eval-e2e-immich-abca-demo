@@ -1517,6 +1517,7 @@
   "no_remote_assets_found": "No remote assets found with this checksum",
   "no_results": "No results",
   "no_results_description": "Try a synonym or more general keyword",
+  "no_results_for_query": "No results for \"{query}\"",
   "no_shared_albums_message": "Create an album to share photos and videos with people in your network",
   "no_steps": "No steps added yet",
   "none": "None",
