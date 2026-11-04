@@ -17,7 +17,7 @@
   import { getAssetMediaUrl, handlePromiseError } from '$lib/utils';
   import { getMapMarkers, type MapMarkerResponseDto } from '@immich/sdk';
   import { Icon, modalManager, Theme, themeManager } from '@immich/ui';
-  import { mdiCog, mdiMap, mdiMapMarker } from '@mdi/js';
+  import { mdiCog, mdiFitToScreen, mdiMap, mdiMapMarker } from '@mdi/js';
   import type { Feature, GeoJsonProperties, Geometry, Point } from 'geojson';
   import { isEqual, omit } from 'lodash-es';
   import { DateTime, Duration } from 'luxon';
@@ -47,6 +47,7 @@
     ScaleControl,
   } from 'svelte-maplibre';
   import type { SelectionBBox } from './types';
+  import { getMarkersBounds } from './utils';
 
   interface Props {
     mapMarkers?: MapMarkerResponseDto[];
@@ -119,6 +120,15 @@
 
     center = { lng, lat };
     marker = new Marker().setLngLat([lng, lat]).addTo(map);
+  }
+
+  function handleFitAll() {
+    const bounds = getMarkersBounds(mapMarkers);
+    if (!map || !bounds) {
+      return;
+    }
+
+    map.fitBounds(bounds, { padding: 50, maxZoom: 15 });
   }
 
   function handleAssetClick(assetId: string, map: Map | null) {
@@ -359,6 +369,16 @@
         <ControlGroup>
           <ControlButton onclick={handleSettingsClick}>
             <Icon icon={mdiCog} size="100%" class="text-black/80" />
+          </ControlButton>
+        </ControlGroup>
+      </Control>
+    {/if}
+
+    {#if showSimpleControls && mapMarkers && mapMarkers.length > 0}
+      <Control>
+        <ControlGroup>
+          <ControlButton onclick={handleFitAll} title={$t('fit_all')}>
+            <Icon icon={mdiFitToScreen} size="100%" class="text-black/80" />
           </ControlButton>
         </ControlGroup>
       </Control>
