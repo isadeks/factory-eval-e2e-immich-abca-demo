@@ -95,6 +95,7 @@
           type="button"
           class="text-xs text-primary hover:underline"
           data-testid="reset-date-button"
+          aria-label={$t('reset_to_original_value')}
           onclick={resetDate}
         >
           {$t('reset')}
@@ -121,6 +122,7 @@
         type="button"
         class="absolute inset-e-0 top-0 text-xs text-primary hover:underline"
         data-testid="reset-timezone-button"
+        aria-label={$t('reset_to_original_value')}
         onclick={resetTimeZone}
       >
         {$t('reset')}
