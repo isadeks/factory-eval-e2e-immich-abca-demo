@@ -367,6 +367,7 @@
                 id={album.id}
                 albumName={album.albumName}
                 {isOwned}
+                assetCount={album.assetCount}
                 onUpdate={(albumName) => (album = { ...album, albumName })}
               />
 

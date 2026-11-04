@@ -11,10 +11,11 @@
     id: string;
     albumName: string;
     isOwned: boolean;
+    assetCount: number;
     onUpdate: (albumName: string) => void;
   };
 
-  let { id, albumName = $bindable(), isOwned, onUpdate }: Props = $props();
+  let { id, albumName = $bindable(), isOwned, assetCount, onUpdate }: Props = $props();
 
   let newAlbumName = $derived(albumName);
 
@@ -38,21 +39,29 @@
   const textClasses = 'text-2xl lg:text-6xl text-primary';
 </script>
 
-<div class="mb-2">
+<div class="mb-2 flex items-center gap-x-3">
   {#if isOwned}
-    <Textarea
-      bind:value={newAlbumName}
-      variant="ghost"
-      title={$t('edit_title')}
-      onblur={handleUpdate}
-      placeholder={$t('add_a_title')}
-      class={textClasses}
-      {@attach fromAction(shortcut, () => ({
-        shortcut: { key: 'Enter' },
-        onShortcut: (event) => event.currentTarget.blur(),
-      }))}
-    />
+    <div class="min-w-0">
+      <Textarea
+        bind:value={newAlbumName}
+        variant="ghost"
+        title={$t('edit_title')}
+        onblur={handleUpdate}
+        placeholder={$t('add_a_title')}
+        class="{textClasses} field-sizing-content w-auto max-w-full"
+        {@attach fromAction(shortcut, () => ({
+          shortcut: { key: 'Enter' },
+          onShortcut: (event) => event.currentTarget.blur(),
+        }))}
+      />
+    </div>
   {:else}
-    <div class={textClasses}>{newAlbumName}</div>
+    <div class="min-w-0 {textClasses}">{newAlbumName}</div>
   {/if}
+  <span
+    data-testid="album-asset-count"
+    class="shrink-0 rounded-full bg-gray-200 px-3 py-1 text-sm font-medium text-gray-600 dark:bg-gray-700 dark:text-gray-300"
+  >
+    {$t('items_count', { values: { count: assetCount } })}
+  </span>
 </div>
