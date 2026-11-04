@@ -14,22 +14,20 @@ test('map restores the last zoom level and centre after a fresh visit', async ({
   await expect(canvas).toBeVisible();
   await expect(page).toHaveURL(/#[\d.]+\/-?[\d.]+\/-?[\d.]+/);
 
-  // zoom in with the navigation control a few times
+  // zoom in with the navigation control, letting each animation finish before the next click
   const zoomIn = page.locator('.maplibregl-ctrl-zoom-in');
   await expect(zoomIn).toBeVisible();
-  for (let i = 0; i < 3; i++) {
+  const start = parseHash(new URL(page.url()).hash).zoom;
+  for (let i = 1; i <= 3; i++) {
     await zoomIn.click();
+    await expect.poll(() => parseHash(new URL(page.url()).hash).zoom).toBeCloseTo(start + i, 1);
   }
 
-  // wait until the view has been saved and the zoom has settled
+  // wait until the settled view has been saved
   await expect
     .poll(async () => {
       const stored = await page.evaluate(() => localStorage.getItem('map-view'));
-      if (!stored) {
-        return false;
-      }
-      const { zoom } = parseHash(new URL(page.url()).hash);
-      return Math.abs(JSON.parse(stored).zoom - zoom) < 0.05 && zoom > 3;
+      return stored ? Math.abs(JSON.parse(stored).zoom - (start + 3)) < 0.05 : false;
     })
     .toBe(true);
 
