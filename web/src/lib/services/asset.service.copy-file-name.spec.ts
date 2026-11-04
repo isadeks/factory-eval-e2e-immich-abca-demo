@@ -31,7 +31,7 @@ vi.mock(import('$lib/managers/feature-flags-manager.svelte'), function () {
 describe('AssetService CopyFileName', () => {
   it('should use the copy_file_name translation key as title', () => {
     const asset = assetFactory.build({ originalFileName: 'IMG_0001.jpg' });
-    const { CopyFileName } = getAssetActions((key: string) => key, asset);
+    const { CopyFileName } = getAssetActions(((key: unknown) => String(key)) as never, asset);
     expect(CopyFileName.title).toBe('copy_file_name');
   });
 
