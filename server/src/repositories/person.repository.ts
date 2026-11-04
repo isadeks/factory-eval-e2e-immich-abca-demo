@@ -152,6 +152,7 @@ export class PersonRepository {
     const items = await this.db
       .selectFrom('person')
       .selectAll('person')
+      .select((eb) => eb.fn.count<number>(sql`DISTINCT "asset_face"."assetId"`).as('assetCount'))
       .innerJoin('asset_face', 'asset_face.personId', 'person.id')
       .innerJoin('asset', (join) =>
         join
@@ -210,7 +211,10 @@ export class PersonRepository {
       .limit(pagination.take + 1)
       .execute();
 
-    return paginationHelper(items, pagination.take);
+    return paginationHelper(
+      items as Array<Omit<(typeof items)[number], 'assetCount'> & { assetCount?: number }>,
+      pagination.take,
+    );
   }
 
   @GenerateSql()

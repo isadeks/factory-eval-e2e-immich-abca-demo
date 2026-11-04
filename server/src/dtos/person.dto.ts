@@ -83,6 +83,11 @@ export const PersonResponseSchema = z
       .optional()
       .describe('Person color (hex)')
       .meta(new HistoryBuilder().added('v1.126.0').stable('v2').getExtensions()),
+    assetCount: z
+      .int()
+      .min(0)
+      .optional()
+      .describe('Number of assets the person appears in (only set when listing people)'),
   })
   .meta({ id: 'PersonResponseDto' });
 
@@ -171,7 +176,7 @@ const PeopleResponseSchema = z
   .describe('People response');
 export class PeopleResponseDto extends createZodDto(PeopleResponseSchema) {}
 
-export function mapPerson(person: MaybeDehydrated<Person>): PersonResponseDto {
+export function mapPerson(person: MaybeDehydrated<Person>, assetCount?: number): PersonResponseDto {
   return {
     id: person.id,
     name: person.name,
@@ -181,6 +186,7 @@ export function mapPerson(person: MaybeDehydrated<Person>): PersonResponseDto {
     isFavorite: person.isFavorite,
     color: person.color ?? undefined,
     updatedAt: asDateTimeString(person.updatedAt),
+    ...(assetCount !== undefined && { assetCount }),
   };
 }
 

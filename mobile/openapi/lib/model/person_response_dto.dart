@@ -13,6 +13,7 @@ part of openapi.api;
 class PersonResponseDto {
   /// Returns a new [PersonResponseDto] instance.
   PersonResponseDto({
+    this.assetCount = const Optional.absent(),
     required this.birthDate,
     this.color = const Optional.absent(),
     required this.id,
@@ -22,6 +23,18 @@ class PersonResponseDto {
     required this.thumbnailPath,
     this.updatedAt = const Optional.absent(),
   });
+
+  /// Number of assets the person appears in (only set when listing people)
+  ///
+  /// Minimum value: 0
+  /// Maximum value: 9007199254740991
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  Optional<int?> assetCount;
 
   /// Person date of birth
   DateTime? birthDate;
@@ -67,6 +80,7 @@ class PersonResponseDto {
 
   @override
   bool operator ==(Object other) => identical(this, other) || other is PersonResponseDto &&
+    other.assetCount == assetCount &&
     other.birthDate == birthDate &&
     other.color == color &&
     other.id == id &&
@@ -79,6 +93,7 @@ class PersonResponseDto {
   @override
   int get hashCode =>
     // ignore: unnecessary_parenthesis
+    (assetCount == null ? 0 : assetCount!.hashCode) +
     (birthDate == null ? 0 : birthDate!.hashCode) +
     (color == null ? 0 : color!.hashCode) +
     (id.hashCode) +
@@ -89,10 +104,14 @@ class PersonResponseDto {
     (updatedAt == null ? 0 : updatedAt!.hashCode);
 
   @override
-  String toString() => 'PersonResponseDto[birthDate=$birthDate, color=$color, id=$id, isFavorite=$isFavorite, isHidden=$isHidden, name=$name, thumbnailPath=$thumbnailPath, updatedAt=$updatedAt]';
+  String toString() => 'PersonResponseDto[assetCount=$assetCount, birthDate=$birthDate, color=$color, id=$id, isFavorite=$isFavorite, isHidden=$isHidden, name=$name, thumbnailPath=$thumbnailPath, updatedAt=$updatedAt]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
+    if (this.assetCount.isPresent) {
+      final value = this.assetCount.value;
+      json[r'assetCount'] = value;
+    }
     if (this.birthDate != null) {
       json[r'birthDate'] = _dateFormatter.format(this.birthDate!.toUtc());
     } else {
@@ -126,6 +145,7 @@ class PersonResponseDto {
       final json = value.cast<String, dynamic>();
 
       return PersonResponseDto(
+        assetCount: json.containsKey(r'assetCount') ? Optional.present(json[r'assetCount'] == null ? null : int.parse('${json[r'assetCount']}')) : const Optional.absent(),
         birthDate: mapDateTime(json, r'birthDate', r''),
         color: json.containsKey(r'color') ? Optional.present(mapValueOfType<String>(json, r'color')) : const Optional.absent(),
         id: mapValueOfType<String>(json, r'id')!,

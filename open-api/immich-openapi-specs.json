@@ -21073,6 +21073,12 @@
       },
       "PersonResponseDto": {
         "properties": {
+          "assetCount": {
+            "description": "Number of assets the person appears in (only set when listing people)",
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
           "birthDate": {
             "description": "Person date of birth",
             "format": "date",

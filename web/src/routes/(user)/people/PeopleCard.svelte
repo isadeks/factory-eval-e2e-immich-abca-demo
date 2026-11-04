@@ -63,6 +63,11 @@
       {/if}
     </div>
   </a>
+  {#if person.assetCount !== undefined}
+    <p class="mt-1 text-center text-xs text-gray-600 dark:text-gray-300" data-testid="person-photo-count">
+      {$t('photos_count', { values: { count: person.assetCount } })}
+    </p>
+  {/if}
 
   {#if showVerticalDots}
     <div class="absolute inset-e-2 top-2 z-1">

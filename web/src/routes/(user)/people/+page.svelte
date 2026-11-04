@@ -170,7 +170,7 @@
 
       people = people.map((person: PersonResponseDto) => {
         if (person.id === updatedPerson.id) {
-          return updatedPerson;
+          return { ...updatedPerson, assetCount: person.assetCount };
         }
         return person;
       });
@@ -190,7 +190,7 @@
 
       people = people.map((person: PersonResponseDto) => {
         if (person.id === updatedPerson.id) {
-          return updatedPerson;
+          return { ...updatedPerson, assetCount: person.assetCount };
         }
         return person;
       });
@@ -279,7 +279,7 @@
   const onPersonUpdate = (response: PersonResponseDto) => {
     people = people.map((person: PersonResponseDto) => {
       if (person.id === response.id) {
-        return response;
+        return { ...response, assetCount: person.assetCount };
       }
       return person;
     });
