@@ -1,5 +1,6 @@
 <script lang="ts">
   import AssetLayout from '$lib/components/timeline/AssetLayout.svelte';
+  import TimelineDaySelectCheckbox from '$lib/components/timeline/TimelineDaySelectCheckbox.svelte';
   import type { AssetMultiSelectManager } from '$lib/managers/asset-multi-select-manager.svelte';
   import { TimelineDay } from '$lib/managers/timeline-manager/timeline-day.svelte';
   import type { TimelineMonth } from '$lib/managers/timeline-manager/timeline-month.svelte';
@@ -9,8 +10,6 @@
   import { uploadAssetsStore } from '$lib/stores/upload';
   import type { CommonPosition } from '$lib/utils/layout-utils';
   import { fromTimelinePlainDate, getDateLocaleString } from '$lib/utils/timeline-util';
-  import { Icon } from '@immich/ui';
-  import { mdiCheckCircle, mdiCircleOutline } from '@mdi/js';
   import type { Snippet } from 'svelte';
 
   type Props = {
@@ -79,17 +78,14 @@
     >
       {#if !singleSelect}
         <div
-          class="w-0 overflow-hidden transition-all duration-200 ease-out hover:cursor-pointer"
+          class="w-0 overflow-hidden transition-all duration-200 ease-out focus-within:w-8 hover:cursor-pointer"
           class:w-8={hoveredTimelineDay === timelineDay.groupTitle ||
             assetInteraction.selectedGroup.has(timelineDay.groupTitle)}
-          onclick={() => onTimelineDaySelect(timelineDay, assetsSnapshot(timelineDay.getAssets()))}
-          onkeydown={() => onTimelineDaySelect(timelineDay, assetsSnapshot(timelineDay.getAssets()))}
         >
-          {#if isTimelineDaySelected}
-            <Icon icon={mdiCheckCircle} size="24" class="text-primary" />
-          {:else}
-            <Icon icon={mdiCircleOutline} size="24" class="text-light-500" />
-          {/if}
+          <TimelineDaySelectCheckbox
+            checked={isTimelineDaySelected}
+            onToggle={() => onTimelineDaySelect(timelineDay, assetsSnapshot(timelineDay.getAssets()))}
+          />
         </div>
       {/if}
 
