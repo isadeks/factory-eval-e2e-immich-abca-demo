@@ -8,7 +8,7 @@
   import type { VirtualScrollManager } from '$lib/managers/VirtualScrollManager/VirtualScrollManager.svelte';
   import { uploadAssetsStore } from '$lib/stores/upload';
   import type { CommonPosition } from '$lib/utils/layout-utils';
-  import { fromTimelinePlainDate, getDateLocaleString } from '$lib/utils/timeline-util';
+  import { fromTimelinePlainDate, getDateLocaleString, isTimelineDateToday } from '$lib/utils/timeline-util';
   import { Icon } from '@immich/ui';
   import { mdiCheckCircle, mdiCircleOutline } from '@mdi/js';
   import type { Snippet } from 'svelte';
@@ -59,6 +59,7 @@
 
 {#each filterIsInOrNearViewport(timelineMonth.timelineDays) as timelineDay, groupIndex (timelineDay.day)}
   {@const isTimelineDaySelected = assetInteraction.selectedGroup.has(timelineDay.groupTitle)}
+  {@const isTimelineDayToday = isTimelineDateToday({ ...timelineMonth.yearMonth, day: timelineDay.day })}
   <!-- svelte-ignore a11y_no_static_element_interactions -->
   <section
     class={[
@@ -74,7 +75,12 @@
   >
     <!-- Day title -->
     <div
-      class="flex h-6 place-items-center pt-7 pb-5 text-xs font-medium text-immich-fg max-md:pt-5 max-md:pb-3 md:text-sm dark:text-immich-dark-fg"
+      class={[
+        'flex h-6 place-items-center pt-7 pb-5 text-xs font-medium max-md:pt-5 max-md:pb-3 md:text-sm',
+        isTimelineDayToday ? 'text-primary' : 'text-immich-fg dark:text-immich-dark-fg',
+      ]}
+      data-today={isTimelineDayToday ? 'true' : undefined}
+      data-testid="timeline-day-title"
       style:width={timelineDay.width + 'px'}
     >
       {#if !singleSelect}

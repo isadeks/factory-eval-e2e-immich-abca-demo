@@ -114,6 +114,9 @@ export function formatTimelineMonthTitle(_date: DateTime): string {
   );
 }
 
+export const isTimelineDateToday = (timelineDate: TimelineDate): boolean =>
+  DateTime.now().hasSame(fromTimelinePlainDate(timelineDate), 'day');
+
 export function formatGroupTitle(_date: DateTime): string {
   if (!_date.isValid) {
     return _date.toString();
