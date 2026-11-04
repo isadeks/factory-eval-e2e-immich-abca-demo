@@ -11,10 +11,7 @@ describe('trashed asset count', () => {
   });
 
   it('should report the number of trashed assets, matching what emptying the trash removes', async () => {
-    const [a, b] = await Promise.all([
-      utils.createAsset(admin.accessToken),
-      utils.createAsset(admin.accessToken),
-    ]);
+    const [a, b] = await Promise.all([utils.createAsset(admin.accessToken), utils.createAsset(admin.accessToken)]);
     await utils.createAsset(admin.accessToken); // not trashed
     await utils.deleteAssets(admin.accessToken, [a.id, b.id]);
 
