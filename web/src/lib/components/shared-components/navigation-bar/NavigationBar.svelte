@@ -22,6 +22,7 @@
   import ThemeButton from '../ThemeButton.svelte';
   import UserAvatar from '../UserAvatar.svelte';
   import AccountInfoPanel from './AccountInfoPanel.svelte';
+  import FeedbackButton from './FeedbackButton.svelte';
 
   type Props = {
     onUploadClick?: () => void;
@@ -124,6 +125,8 @@
             class="lg:hidden"
           />
         {/if}
+
+        <FeedbackButton />
 
         <ThemeButton />
 

@@ -60,6 +60,7 @@
 - [Features](#features)
 - [Translations](https://docs.immich.app/developer/translations)
 - [Contributing](https://docs.immich.app/overview/support-the-project)
+- [Contributors](#contributors)
 
 ## Demo
 
@@ -133,3 +134,9 @@ Read more about translations [here](https://docs.immich.app/developer/translatio
 <a href="https://github.com/immich-app/immich/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=immich-app/immich" width="100%"/>
 </a>
+
+Additional contributors to this project:
+
+- Fred
+- Nizar
+- [isadeks](https://github.com/isadeks)
