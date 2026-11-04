@@ -49,6 +49,7 @@
   import EditorPanel from './editor/EditorPanel.svelte';
   import CropArea from './editor/transform-tool/CropArea.svelte';
   import ImagePanoramaViewer from './ImagePanoramaViewer.svelte';
+  import FavoriteBadge from './FavoriteBadge.svelte';
   import OcrButton from './OcrButton.svelte';
   import PhotoViewer from './PhotoViewer.svelte';
   import SlideshowBar from './SlideshowBar.svelte';
@@ -519,6 +520,10 @@
         {setPlayOriginalVideo}
       />
     </div>
+  {/if}
+
+  {#if asset.isFavorite && $slideshowState === SlideshowState.None && !assetViewerManager.isShowEditor}
+    <FavoriteBadge />
   {/if}
 
   {#if $slideshowState != SlideshowState.None}
