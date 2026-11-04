@@ -40,8 +40,20 @@ test('Explore shows the number of places next to the Places title', async ({ pag
       });
       expect(upload.ok()).toBeTruthy();
       const { id } = await upload.json();
+
+      // Metadata extraction would overwrite coordinates set before it finishes, so wait for it first.
+      await expect
+        .poll(async () => (await (await request.get(`${API}/assets/${id}`, { headers })).json()).exifInfo?.exifImageWidth, {
+          timeout: 60_000,
+        })
+        .toBeTruthy();
       const update = await request.put(`${API}/assets/${id}`, { headers, data: coordinates });
       expect(update.ok()).toBeTruthy();
+      await expect
+        .poll(async () => (await (await request.get(`${API}/assets/${id}`, { headers })).json()).exifInfo?.city, {
+          timeout: 60_000,
+        })
+        .toBeTruthy();
     }
   }
 
