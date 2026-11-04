@@ -1506,7 +1506,7 @@
   "no_duplicates_found": "No duplicates were found.",
   "no_exif_info_available": "No exif info available",
   "no_explore_results_message": "Upload more photos to explore your collection.",
-  "no_favorites_message": "Add favorites to quickly find your best pictures and videos",
+  "no_favorites_yet": "No favorites yet",
   "no_libraries_message": "Create an external library to view your photos and videos",
   "no_local_assets_found": "No local assets found with this checksum",
   "no_locked_photos_message": "Photos and videos in the locked folder are hidden and won't show up as you browse or search your library.",

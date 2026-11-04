@@ -2,7 +2,7 @@
   import UserPageLayout from '$lib/components/layouts/UserPageLayout.svelte';
   import ButtonContextMenu from '$lib/components/shared-components/context-menu/ButtonContextMenu.svelte';
   import CountPill from '$lib/components/shared-components/CountPill.svelte';
-  import EmptyPlaceholder from '$lib/components/shared-components/EmptyPlaceholder.svelte';
+  import FavoritesEmptyState from '$lib/components/shared-components/FavoritesEmptyState.svelte';
   import ArchiveAction from '$lib/components/timeline/actions/ArchiveAction.svelte';
   import ChangeDate from '$lib/components/timeline/actions/ChangeDateAction.svelte';
   import ChangeDescription from '$lib/components/timeline/actions/ChangeDescriptionAction.svelte';
@@ -64,7 +64,7 @@
     onEscape={handleEscape}
   >
     {#snippet empty()}
-      <EmptyPlaceholder text={$t('no_favorites_message')} class="mx-auto mt-10" />
+      <FavoritesEmptyState />
     {/snippet}
   </Timeline>
 </UserPageLayout>
