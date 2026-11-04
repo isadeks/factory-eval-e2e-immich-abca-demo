@@ -131,8 +131,8 @@ export function formatGroupTitle(_date: DateTime): string {
     return date.toRelativeCalendar({ locale: get(locale), unit: 'days' });
   }
 
-  // Last week
-  if (date >= today.minus({ days: 6 }) && date < today) {
+  // Last week (only within the current year, otherwise the weekday name alone would hide the year)
+  if (today.hasSame(date, 'year') && date >= today.minus({ days: 6 }) && date < today) {
     return date.toLocaleString({ weekday: 'long' }, { locale: get(locale) });
   }
 

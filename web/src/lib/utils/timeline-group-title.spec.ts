@@ -36,6 +36,16 @@ describe('formatGroupTitle year display', () => {
     expect(formatGroupTitle(parseUtcDate('2023-07-27T12:00:00Z'))).toBe('Thu, Jul 27, 2023');
   });
 
+  it('shows the year for a date in the last week that falls in the previous year', () => {
+    vi.setSystemTime(new Date('2025-01-02T12:00:00Z'));
+    expect(formatGroupTitle(parseUtcDate('2024-12-30T10:00:00Z'))).toBe('Mon, Dec 30, 2024');
+  });
+
+  it('still uses the weekday name for the last week within the current year', () => {
+    vi.setSystemTime(new Date('2025-01-08T12:00:00Z'));
+    expect(formatGroupTitle(parseUtcDate('2025-01-05T10:00:00Z'))).toBe('Sunday');
+  });
+
   it('shows the year according to the locale', () => {
     locale.set('de');
     expect(formatGroupTitle(parseUtcDate('2020-03-15T10:00:00Z'))).toContain('2020');
