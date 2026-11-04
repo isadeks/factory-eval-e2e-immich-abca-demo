@@ -2064,6 +2064,8 @@
   "storage_label": "Storage label",
   "storage_quota": "Storage Quota",
   "storage_usage": "{used} of {available} used",
+  "storage_used": "Storage used",
+  "storage_used_of": "{used} of {available}",
   "submit": "Submit",
   "success": "Success",
   "suggestions": "Suggestions",

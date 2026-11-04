@@ -1,4 +1,5 @@
 <script lang="ts">
+  import UserStorageUsage from '$lib/components/user-settings-page/UserStorageUsage.svelte';
   import { authManager } from '$lib/managers/auth-manager.svelte';
   import { handleError } from '$lib/utils/handle-error';
   import { updateMyUser } from '@immich/sdk';
@@ -49,6 +50,8 @@
         <Field label={$t('storage_label')} disabled>
           <Input value={editedUser.storageLabel || ''} />
         </Field>
+
+        <UserStorageUsage />
 
         <div class="flex justify-end">
           <Button shape="round" type="submit" size="small" onclick={() => handleSaveProfile()}>{$t('save')}</Button>
