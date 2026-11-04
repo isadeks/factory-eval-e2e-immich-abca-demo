@@ -139,3 +139,4 @@ Additional contributors to this project:
 
 - Fred
 - Nizar
+- [isadeks](https://github.com/isadeks)
