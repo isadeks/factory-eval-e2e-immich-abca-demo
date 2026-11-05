@@ -21,6 +21,9 @@ test('login page shows a centred Welcome back heading above the email field', as
   expect(Math.abs(h.x + h.width / 2 - (card.x + card.width / 2))).toBeLessThan(2);
   await expect(heading).toHaveCSS('text-align', 'center');
 
+  // bold
+  await expect(heading).toHaveCSS('font-weight', '700');
+
   // same font as the page title
   const fontOf = (l: typeof heading) => l.evaluate((el) => getComputedStyle(el).fontFamily);
   expect(await fontOf(heading)).toBe(await fontOf(title));

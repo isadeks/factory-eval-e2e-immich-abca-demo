@@ -141,7 +141,7 @@
           <Alert color="danger" title={errorMessage} closable />
         {/if}
 
-        <Heading size="large" class="text-center font-semibold" color="primary" tag="h2">{$t('welcome_back')}</Heading>
+        <Heading size="large" class="text-center font-bold" color="primary" tag="h2">{$t('welcome_back')}</Heading>
 
         <Field label={$t('email')} required="indicator">
           <Input id="email" name="email" type="email" autocomplete="email" bind:value={email} />

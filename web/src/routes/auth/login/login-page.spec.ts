@@ -25,7 +25,7 @@ describe('login page', () => {
     const email = screen.getByLabelText(/email/i);
 
     expect(heading).toBeVisible();
-    expect(heading).toHaveClass('text-center');
+    expect(heading).toHaveClass('text-center', 'font-bold');
     expect(heading.compareDocumentPosition(email) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 });
