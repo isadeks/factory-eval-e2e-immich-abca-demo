@@ -36,7 +36,7 @@ describe('login page', () => {
     const subtitle = screen.getByText('Sign in to continue');
     const email = screen.getByLabelText(/email/i);
 
-    expect(subtitle).toHaveClass('text-center', 'text-gray-500');
+    expect(subtitle).toHaveClass('text-center', 'text-xs', 'text-gray-500');
     expect(heading.compareDocumentPosition(subtitle) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(subtitle.compareDocumentPosition(email) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });

@@ -40,6 +40,7 @@ test('login page shows a centred Welcome back heading above the email field', as
   expect(h.y + h.height).toBeLessThanOrEqual(s.y);
   expect(s.y + s.height).toBeLessThanOrEqual(e.y);
   await expect(subtitle).toHaveCSS('text-align', 'center');
+  await expect(subtitle).toHaveCSS('font-size', '12px');
   // computed colour may be oklch(); rasterise it to RGB through a canvas
   const [r, g, b] = await subtitle.evaluate((el) => {
     const ctx = document.createElement('canvas').getContext('2d')!;
