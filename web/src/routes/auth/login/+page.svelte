@@ -8,7 +8,7 @@
   import { oauth } from '$lib/utils';
   import { getServerErrorMessage, handleError } from '$lib/utils/handle-error';
   import { login, type LoginResponseDto } from '@immich/sdk';
-  import { Alert, Button, Field, Input, PasswordInput, Stack } from '@immich/ui';
+  import { Alert, Button, Field, Heading, Input, PasswordInput, Stack } from '@immich/ui';
   import { onMount } from 'svelte';
   import { t } from 'svelte-i18n';
   import type { PageData } from './$types';
@@ -140,6 +140,8 @@
         {#if errorMessage}
           <Alert color="danger" title={errorMessage} closable />
         {/if}
+
+        <Heading size="large" class="text-center font-semibold" color="primary" tag="h2">{$t('welcome_back')}</Heading>
 
         <Field label={$t('email')} required="indicator">
           <Input id="email" name="email" type="email" autocomplete="email" bind:value={email} />
