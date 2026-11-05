@@ -34,7 +34,7 @@ test('login page shows a centred Welcome back heading above the email field', as
   expect(await fontOf(heading)).toBe(await fontOf(title));
 
   // grey subtitle between the heading and the email field
-  const subtitle = page.getByText('Sign in to continue');
+  const subtitle = page.getByText('Sign in to your account');
   await expect(subtitle).toBeVisible();
   const s = (await subtitle.boundingBox())!;
   expect(h.y + h.height).toBeLessThanOrEqual(s.y);

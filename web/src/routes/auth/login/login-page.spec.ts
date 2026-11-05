@@ -29,11 +29,11 @@ describe('login page', () => {
     expect(heading.compareDocumentPosition(email) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
-  it('shows a grey Sign in to continue subtitle between the heading and the email field', async () => {
+  it('shows a grey Sign in to your account subtitle between the heading and the email field', async () => {
     render(Page, { props: { data: { meta: { title: 'Login' }, continueUrl: '/photos' } as never } });
 
     const heading = await screen.findByRole('heading', { name: 'Welcome back' });
-    const subtitle = screen.getByText('Sign in to continue');
+    const subtitle = screen.getByText('Sign in to your account');
     const email = screen.getByLabelText(/email/i);
 
     expect(subtitle).toHaveClass('text-center', 'text-xs', 'text-gray-500');
