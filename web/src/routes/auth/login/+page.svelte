@@ -157,6 +157,9 @@
         </Field>
 
         <Button type="submit" size="large" shape="round" fullWidth {loading} class="mt-6">{$t('to_login')}</Button>
+        <p id="login-forgot-password-hint" class="text-center text-xs text-gray-500 dark:text-gray-400">
+          {$t('forgot_password_ask_admin')}
+        </p>
       </form>
     {/if}
 
