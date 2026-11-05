@@ -141,7 +141,12 @@
           <Alert color="danger" title={errorMessage} closable />
         {/if}
 
-        <Heading size="large" class="text-center font-bold" color="primary" tag="h2">{$t('welcome_back')}</Heading>
+        <div class="flex flex-col gap-1">
+          <Heading size="large" class="text-center font-bold" color="primary" tag="h2">{$t('welcome_back')}</Heading>
+          <p id="login-subtitle" class="text-center text-sm text-gray-500 dark:text-gray-400">
+            {$t('sign_in_to_continue')}
+          </p>
+        </div>
 
         <Field label={$t('email')} required="indicator">
           <Input id="email" name="email" type="email" autocomplete="email" bind:value={email} />

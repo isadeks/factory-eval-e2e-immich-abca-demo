@@ -19,5 +19,9 @@ test.describe('Login page', () => {
     const headingBox = await heading.boundingBox();
     const emailBox = await email.boundingBox();
     expect(headingBox!.y + headingBox!.height).toBeLessThanOrEqual(emailBox!.y);
+
+    const subtitleBox = await page.getByText('Sign in to continue').boundingBox();
+    expect(headingBox!.y + headingBox!.height).toBeLessThanOrEqual(subtitleBox!.y);
+    expect(subtitleBox!.y + subtitleBox!.height).toBeLessThanOrEqual(emailBox!.y);
   });
 });
