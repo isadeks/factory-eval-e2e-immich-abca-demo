@@ -18,7 +18,7 @@ test('login page shows the server version in small grey text at the bottom of th
   await expect(version).toHaveText(
     new RegExp(`^v${major}\\.${minor}\\.${patch}`),
   );
-  await expect(version).toHaveCSS('font-size', '12px');
+  await expect(version).toHaveCSS('font-size', '10px');
   await expect(version).toHaveCSS('text-align', 'center');
 
   const [r, g, b] = await version.evaluate((el) => {

@@ -192,7 +192,7 @@
     {/if}
 
     {#if data.serverVersion}
-      <p id="login-server-version" class="text-center text-xs text-gray-500 dark:text-gray-400">
+      <p id="login-server-version" class="text-center text-[10px] text-gray-500 dark:text-gray-400">
         {data.serverVersion}
       </p>
     {/if}

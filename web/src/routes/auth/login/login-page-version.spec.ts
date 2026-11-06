@@ -27,7 +27,7 @@ describe('login page server version', () => {
     const button = screen.getByRole('button', { name: /login/i });
 
     expect(version).toBeVisible();
-    expect(version).toHaveClass('text-center', 'text-xs', 'text-gray-500');
+    expect(version).toHaveClass('text-center', 'text-[10px]', 'text-gray-500');
     expect(button.compareDocumentPosition(version) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
