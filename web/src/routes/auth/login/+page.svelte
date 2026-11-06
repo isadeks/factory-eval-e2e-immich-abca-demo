@@ -190,5 +190,11 @@
     {#if !featureFlagsManager.value.passwordLogin && !featureFlagsManager.value.oauth}
       <Alert color="warning" title={$t('login_has_been_disabled')} />
     {/if}
+
+    {#if data.serverVersion}
+      <p id="login-server-version" class="text-center text-[10px] text-gray-500 dark:text-gray-400">
+        {data.serverVersion}
+      </p>
+    {/if}
   </Stack>
 </AuthPageLayout>
